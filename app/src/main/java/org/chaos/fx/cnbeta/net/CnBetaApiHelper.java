@@ -9,87 +9,90 @@ import org.chaos.fx.cnbeta.net.model.Topic;
 import java.util.List;
 
 import retrofit.Call;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 /**
  * @author Chaos
  *         2015/11/03.
  */
-public class CnBetaUtil {
+public class CnBetaApiHelper {
 
-    public static String getTypeString(int type) {
-        return type == CnBetaApi.TYPE_COMMENTS ? "comments" : type == CnBetaApi.TYPE_COUNTER ? "counter" : "dig";
+    private static CnBetaApi sCnBetaApi;
+
+    public static void initialize() {
+        sCnBetaApi = new Retrofit.Builder()
+                .baseUrl(CnBetaApi.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(CnBetaApi.class);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> articles(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> articles() {
         long timestamp = System.currentTimeMillis();
-        return api.articles(timestamp, CnBetaSignUtil.articlesSign(timestamp));
+        return sCnBetaApi.articles(timestamp, CnBetaSignUtil.articlesSign(timestamp));
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(CnBetaApi api, String topicId) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(String topicId) {
         long timestamp = System.currentTimeMillis();
-        return api.topicArticles(
+        return sCnBetaApi.topicArticles(
                 timestamp,
                 CnBetaSignUtil.topicArticlesSign(timestamp, topicId),
                 topicId);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> newArticles(CnBetaApi api, String topicId, int startSid) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> newArticles(String topicId, int startSid) {
         long timestamp = System.currentTimeMillis();
-        return api.newArticles(
+        return sCnBetaApi.newArticles(
                 timestamp,
                 CnBetaSignUtil.newArticlesSign(timestamp, topicId, startSid),
                 topicId,
                 startSid);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(CnBetaApi api,
-                                                                           String topicId,
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(String topicId,
                                                                            int endSid) {
         long timestamp = System.currentTimeMillis();
-        return api.oldArticles(
+        return sCnBetaApi.oldArticles(
                 timestamp,
                 CnBetaSignUtil.oldArticlesSign(timestamp, topicId, endSid),
                 topicId,
                 endSid);
     }
 
-    public static Call<CnBetaApi.Result<NewsContent>> articleContent(CnBetaApi api,
-                                                                     int sid) {
+    public static Call<CnBetaApi.Result<NewsContent>> articleContent(int sid) {
         long timestamp = System.currentTimeMillis();
-        return api.articleContent(
+        return sCnBetaApi.articleContent(
                 timestamp,
                 CnBetaSignUtil.articleContentSign(timestamp, sid),
                 sid);
     }
 
-    public static Call<CnBetaApi.Result<List<Comment>>> comments(CnBetaApi api,
-                                                                 int sid,
+    public static Call<CnBetaApi.Result<List<Comment>>> comments(int sid,
                                                                  int page) {
         long timestamp = System.currentTimeMillis();
-        return api.comments(
+        return sCnBetaApi.comments(
                 timestamp,
                 CnBetaSignUtil.commentsSign(timestamp, sid, page),
                 sid,
                 page);
     }
 
-    public static Call<CnBetaApi.Result<Object>> addComment(CnBetaApi api,
-                                                            int sid,
+    public static Call<CnBetaApi.Result<Object>> addComment(int sid,
                                                             String content) {
         long timestamp = System.currentTimeMillis();
-        return api.addComment(
+        return sCnBetaApi.addComment(
                 timestamp,
                 CnBetaSignUtil.addCommentSign(timestamp, sid, content),
                 sid,
                 content);
     }
 
-    public static Call<CnBetaApi.Result<Object>> replyComment(CnBetaApi api,
-                                                              int sid,
+    public static Call<CnBetaApi.Result<Object>> replyComment(int sid,
                                                               int pid,
                                                               String content) {
         long timestamp = System.currentTimeMillis();
-        return api.replyComment(
+        return sCnBetaApi.replyComment(
                 timestamp,
                 CnBetaSignUtil.replyCommentSign(timestamp, sid, pid, content),
                 sid,
@@ -97,45 +100,47 @@ public class CnBetaUtil {
                 content);
     }
 
-    public static Call<CnBetaApi.Result<String>> supportComment(CnBetaApi api,
-                                                                int sid) {
+    public static Call<CnBetaApi.Result<String>> supportComment(int sid) {
         long timestamp = System.currentTimeMillis();
-        return api.supportComment(
+        return sCnBetaApi.supportComment(
                 timestamp,
                 CnBetaSignUtil.supportCommentSign(timestamp, sid),
                 sid);
     }
 
-    public static Call<CnBetaApi.Result<String>> againstComment(CnBetaApi api,
-                                                                int sid) {
+    public static Call<CnBetaApi.Result<String>> againstComment(int sid) {
         long timestamp = System.currentTimeMillis();
-        return api.againstComment(
+        return sCnBetaApi.againstComment(
                 timestamp,
                 CnBetaSignUtil.againstCommentSign(timestamp, sid),
                 sid);
     }
 
-    public static Call<CnBetaApi.Result<List<HotComment>>> hotComment(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<HotComment>>> hotComment() {
         long timestamp = System.currentTimeMillis();
-        return api.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
+        return sCnBetaApi.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(CnBetaApi api,
-                                                                         String type) {
+    private static String getTypeString(int type) {
+        return type == CnBetaApi.TYPE_COMMENTS ? "comments" : type == CnBetaApi.TYPE_COUNTER ? "counter" : "dig";
+    }
+
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(int type) {
         long timestamp = System.currentTimeMillis();
-        return api.todayRank(
+        String typeStr = getTypeString(type);
+        return sCnBetaApi.todayRank(
                 timestamp,
-                CnBetaSignUtil.todayRankSign(timestamp, type),
-                type);
+                CnBetaSignUtil.todayRankSign(timestamp, typeStr),
+                typeStr);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> top10(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> top10() {
         long timestamp = System.currentTimeMillis();
-        return api.top10(timestamp, CnBetaSignUtil.top10Sign(timestamp));
+        return sCnBetaApi.top10(timestamp, CnBetaSignUtil.top10Sign(timestamp));
     }
 
-    public static Call<CnBetaApi.Result<List<Topic>>> topics(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<Topic>>> topics() {
         long timestamp = System.currentTimeMillis();
-        return api.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
+        return sCnBetaApi.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
     }
 }

@@ -73,7 +73,7 @@ public interface CnBetaApi {
     Call<Result<List<ArticleSummary>>> newArticles(@Query("timestamp") long timestamp,
                                                    @Query("sign") String sign,
                                                    @Query("topicid") String topicId,
-                                                   @Query("start_sid") String startSid);
+                                                   @Query("start_sid") int startSid);
 
     /**
      * 最新文章
@@ -88,7 +88,7 @@ public interface CnBetaApi {
     Call<Result<List<ArticleSummary>>> oldArticles(@Query("timestamp") long timestamp,
                                                    @Query("sign") String sign,
                                                    @Query("topicid") String topicId,
-                                                   @Query("end_sid") String endSid);
+                                                   @Query("end_sid") int endSid);
 
     /**
      * 文章详情
@@ -101,12 +101,12 @@ public interface CnBetaApi {
     @GET(BASE_PARAMS + "Article.NewsContent")
     Call<Result<NewsContent>> articleContent(@Query("timestamp") long timestamp,
                                              @Query("sign") String sign,
-                                             @Query("sid") String sid);
+                                             @Query("sid") int sid);
 
     @GET(BASE_PARAMS + "Article.Comment&pageSize=20")
     Call<Result<List<Comment>>> comments(@Query("timestamp") long timestamp,
                                          @Query("sign") String sign,
-                                         @Query("sid") String sid,
+                                         @Query("sid") int sid,
                                          @Query("page") int page);
 
     /**
@@ -121,7 +121,7 @@ public interface CnBetaApi {
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
     Call<Result<Object>> addComment(@Query("timestamp") long timestamp,
                                     @Query("sign") String sign,
-                                    @Query("sid") String sid,
+                                    @Query("sid") int sid,
                                     @Query("content") String content);
 
     /**
@@ -137,8 +137,8 @@ public interface CnBetaApi {
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
     Call<Result<Object>> replyComment(@Query("timestamp") long timestamp,
                                       @Query("sign") String sign,
-                                      @Query("sid") String sid,
-                                      @Query("pid") String pid,
+                                      @Query("sid") int sid,
+                                      @Query("pid") int pid,
                                       @Query("content") String content);
 
     /**
@@ -152,7 +152,7 @@ public interface CnBetaApi {
     @GET(BASE_PARAMS + "Article.DoCmt&op=support&tid=1")
     Call<Result<String>> supportComment(@Query("timestamp") long timestamp,
                                         @Query("sign") String sign,
-                                        @Query("sid") String sid);
+                                        @Query("sid") int sid);
 
     /**
      * 反对评论
@@ -165,7 +165,7 @@ public interface CnBetaApi {
     @GET(BASE_PARAMS + "Article.DoCmt&op=against&tid=0")
     Call<Result<String>> againstComment(@Query("timestamp") long timestamp,
                                         @Query("sign") String sign,
-                                        @Query("sid") String sid);
+                                        @Query("sid") int sid);
 
     /**
      * 热门评论

@@ -25,7 +25,7 @@ public class CnBetaUtil {
         return api.articles(timestamp, CnBetaSignUtil.articlesSign(timestamp));
     }
 
-    Call<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(CnBetaApi api, String topicId) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(CnBetaApi api, String topicId) {
         long timestamp = System.currentTimeMillis();
         return api.topicArticles(
                 timestamp,
@@ -33,7 +33,7 @@ public class CnBetaUtil {
                 topicId);
     }
 
-    Call<CnBetaApi.Result<List<ArticleSummary>>> newArticles(CnBetaApi api, String topicId, String startSid) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> newArticles(CnBetaApi api, String topicId, int startSid) {
         long timestamp = System.currentTimeMillis();
         return api.newArticles(
                 timestamp,
@@ -42,9 +42,9 @@ public class CnBetaUtil {
                 startSid);
     }
 
-    Call<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(CnBetaApi api,
-                                                             String topicId,
-                                                             String endSid) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(CnBetaApi api,
+                                                                           String topicId,
+                                                                           int endSid) {
         long timestamp = System.currentTimeMillis();
         return api.oldArticles(
                 timestamp,
@@ -53,8 +53,8 @@ public class CnBetaUtil {
                 endSid);
     }
 
-    Call<CnBetaApi.Result<NewsContent>> articleContent(CnBetaApi api,
-                                                       String sid) {
+    public static Call<CnBetaApi.Result<NewsContent>> articleContent(CnBetaApi api,
+                                                                     int sid) {
         long timestamp = System.currentTimeMillis();
         return api.articleContent(
                 timestamp,
@@ -62,9 +62,9 @@ public class CnBetaUtil {
                 sid);
     }
 
-    Call<CnBetaApi.Result<List<Comment>>> comments(CnBetaApi api,
-                                                   String sid,
-                                                   int page) {
+    public static Call<CnBetaApi.Result<List<Comment>>> comments(CnBetaApi api,
+                                                                 int sid,
+                                                                 int page) {
         long timestamp = System.currentTimeMillis();
         return api.comments(
                 timestamp,
@@ -73,9 +73,9 @@ public class CnBetaUtil {
                 page);
     }
 
-    Call<CnBetaApi.Result<Object>> addComment(CnBetaApi api,
-                                              String sid,
-                                              String content) {
+    public static Call<CnBetaApi.Result<Object>> addComment(CnBetaApi api,
+                                                            int sid,
+                                                            String content) {
         long timestamp = System.currentTimeMillis();
         return api.addComment(
                 timestamp,
@@ -84,10 +84,10 @@ public class CnBetaUtil {
                 content);
     }
 
-    Call<CnBetaApi.Result<Object>> replyComment(CnBetaApi api,
-                                                String sid,
-                                                String pid,
-                                                String content) {
+    public static Call<CnBetaApi.Result<Object>> replyComment(CnBetaApi api,
+                                                              int sid,
+                                                              int pid,
+                                                              String content) {
         long timestamp = System.currentTimeMillis();
         return api.replyComment(
                 timestamp,
@@ -97,8 +97,8 @@ public class CnBetaUtil {
                 content);
     }
 
-    Call<CnBetaApi.Result<String>> supportComment(CnBetaApi api,
-                                                  String sid) {
+    public static Call<CnBetaApi.Result<String>> supportComment(CnBetaApi api,
+                                                                int sid) {
         long timestamp = System.currentTimeMillis();
         return api.supportComment(
                 timestamp,
@@ -106,8 +106,8 @@ public class CnBetaUtil {
                 sid);
     }
 
-    Call<CnBetaApi.Result<String>> againstComment(CnBetaApi api,
-                                                  String sid) {
+    public static Call<CnBetaApi.Result<String>> againstComment(CnBetaApi api,
+                                                                int sid) {
         long timestamp = System.currentTimeMillis();
         return api.againstComment(
                 timestamp,
@@ -115,13 +115,13 @@ public class CnBetaUtil {
                 sid);
     }
 
-    Call<CnBetaApi.Result<List<HotComment>>> hotComment(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<HotComment>>> hotComment(CnBetaApi api) {
         long timestamp = System.currentTimeMillis();
         return api.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
     }
 
-    Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(CnBetaApi api,
-                                                           String type) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(CnBetaApi api,
+                                                                         String type) {
         long timestamp = System.currentTimeMillis();
         return api.todayRank(
                 timestamp,
@@ -129,12 +129,12 @@ public class CnBetaUtil {
                 type);
     }
 
-    Call<CnBetaApi.Result<List<ArticleSummary>>> top10(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> top10(CnBetaApi api) {
         long timestamp = System.currentTimeMillis();
         return api.top10(timestamp, CnBetaSignUtil.top10Sign(timestamp));
     }
 
-    Call<CnBetaApi.Result<List<Topic>>> topics(CnBetaApi api) {
+    public static Call<CnBetaApi.Result<List<Topic>>> topics(CnBetaApi api) {
         long timestamp = System.currentTimeMillis();
         return api.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
     }

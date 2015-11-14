@@ -28,9 +28,21 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
     private Context mContext;
     private List<ArticleSummary> mSummaries = new ArrayList<>();
+    private RecyclerView mBindView;
 
-    public ArticleAdapter(Context context) {
+    private OnItemClickListener mOnItemClickListener;
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (mBindView != null && mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(mBindView.getChildAdapterPosition(v));
+            }
+        }
+    };
+
+    public ArticleAdapter(Context context, RecyclerView bindView) {
         mContext = context;
+        mBindView = bindView;
     }
 
     public void addArticle(ArticleSummary summary) {
@@ -51,6 +63,10 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
     public List<ArticleSummary> getArticles() {
         return mSummaries;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
     }
 
     @Override
@@ -80,6 +96,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(mOnClickListener);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 }

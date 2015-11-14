@@ -18,4 +18,7 @@
     <string name="time_months">%d months ago</string>
     <string name="time_year">1 year ago</string>
     <string name="time_years">%d years ago</string>
+
+    <string name="no_more_articles">没有更多内容</string>
+    <string name="load_articles_failed">加载失败</string>
 </resources>

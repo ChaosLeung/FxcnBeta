@@ -1,4 +1,21 @@
 <resources>
     <string name="app_name">FxcnBeta</string>
     <string name="action_settings">Settings</string>
+
+    <string name="card_image_content_description">Thumb image of the article.</string>
+
+    <string name="time_second">1 second ago</string>
+    <string name="time_seconds">%d second ago</string>
+    <string name="time_minute">1 minute ago</string>
+    <string name="time_minutes">%d minutes ago</string>
+    <string name="time_hour">1 hour ago</string>
+    <string name="time_hours">%d hours ago</string>
+    <string name="time_day">yesterday</string>
+    <string name="time_days">%d days ago</string>
+    <string name="time_week">1 week ago</string>
+    <string name="time_weeks">%d weeks ago</string>
+    <string name="time_month">1 month ago</string>
+    <string name="time_months">%d months ago</string>
+    <string name="time_year">1 year ago</string>
+    <string name="time_years">%d years ago</string>
 </resources>

@@ -3,4 +3,19 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="card_height">96dp</dimen>
+
+    <dimen name="intrinsic_card_padding">4dp</dimen>
+    <dimen name="intrinsic_card_horizontal">5dp</dimen>
+    <dimen name="intrinsic_card_padding_minus_bg_bottom_padding">2dp</dimen>
+
+    <dimen name="time_text_size">36sp</dimen>
+
+    <dimen name="card_inner_content_padding">12dp</dimen>
+    <dimen name="card_news_item_text_headline">20sp</dimen>
+
+    <dimen name="article_title_size">16sp</dimen>
+    <dimen name="article_time_size">20sp</dimen>
+
 </resources>

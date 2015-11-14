@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <inset android:drawable="@color/card_ripple_color_darken"
+               android:insetLeft="@dimen/intrinsic_card_padding"
+               android:insetRight="@dimen/intrinsic_card_padding"
+               android:insetTop="@dimen/intrinsic_card_padding"
+               android:insetBottom="@dimen/intrinsic_card_padding" />
+    </item>
+</selector>

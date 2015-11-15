@@ -18,7 +18,19 @@
     <string name="time_months">%d months ago</string>
     <string name="time_year">1 year ago</string>
     <string name="time_years">%d years ago</string>
+    
+    <string name="prevalence_count">热度：%d</string>
 
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="nav_home">最新咨询</string>
+    <string name="nav_rank">今日排行</string>
+    <string name="nav_hot_articles">本月热门</string>
+    <string name="nav_hot_comments">热门评论</string>
+    <string name="nav_help">帮助 &amp; 反馈</string>
+    <string name="nav_settings">设置</string>
 </resources>

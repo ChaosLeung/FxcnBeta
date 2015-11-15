@@ -1,4 +1,4 @@
-package org.chaos.fx.cnbeta;
+package org.chaos.fx.cnbeta.app;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,10 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
+import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +22,9 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         2015/11/14.
  */
-public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
+public abstract class BaseArticleAdapter extends RecyclerView.Adapter<BaseArticleAdapter.ViewHolder> {
 
-    private Context mContext;
+    protected Context mContext;
     private List<ArticleSummary> mSummaries = new ArrayList<>();
     private RecyclerView mBindView;
 
@@ -40,7 +38,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         }
     };
 
-    public ArticleAdapter(Context context, RecyclerView bindView) {
+    public BaseArticleAdapter(Context context, RecyclerView bindView) {
         mContext = context;
         mBindView = bindView;
     }
@@ -75,23 +73,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        ArticleSummary summary = mSummaries.get(position);
-        holder.title.setText(summary.getTitle());
-        holder.time.setText(TimeStringHelper.getTimeString(summary.getPubtime()));
-        Picasso.with(mContext).load(summary.getThumb()).into(holder.image);
-    }
-
-    @Override
     public int getItemCount() {
         return mSummaries.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.title) TextView title;
-        @Bind(R.id.time) TextView time;
-        @Bind(R.id.image) ImageView image;
+        @Bind(R.id.title) public TextView title;
+        @Bind(R.id.time) public TextView time;
+        @Bind(R.id.image) public ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);

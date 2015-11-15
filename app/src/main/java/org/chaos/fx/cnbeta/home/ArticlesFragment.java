@@ -1,10 +1,9 @@
-package org.chaos.fx.cnbeta;
+package org.chaos.fx.cnbeta.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import org.chaos.fx.cnbeta.ContentActivity;
+import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -29,7 +31,7 @@ import retrofit.Retrofit;
  * @author Chaos
  *         2015/11/14.
  */
-public class ArticlesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
@@ -98,6 +100,7 @@ public class ArticlesFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSwipeLayout.setRefreshing(true);
+        getSupportActionBar().setTitle(R.string.nav_home);
     }
 
     private void initArticles() {

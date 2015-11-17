@@ -121,17 +121,12 @@ public class CnBetaApiHelper {
         return sCnBetaApi.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
     }
 
-    private static String getTypeString(int type) {
-        return type == CnBetaApi.TYPE_COMMENTS ? "comments" : type == CnBetaApi.TYPE_COUNTER ? "counter" : "dig";
-    }
-
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(int type) {
+    public static Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(@CnBetaApi.RankType String type) {
         long timestamp = System.currentTimeMillis();
-        String typeStr = getTypeString(type);
         return sCnBetaApi.todayRank(
                 timestamp,
-                CnBetaSignUtil.todayRankSign(timestamp, typeStr),
-                typeStr);
+                CnBetaSignUtil.todayRankSign(timestamp, type),
+                type);
     }
 
     public static Call<CnBetaApi.Result<List<ArticleSummary>>> top10() {

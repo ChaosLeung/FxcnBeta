@@ -1,11 +1,15 @@
 package org.chaos.fx.cnbeta.net;
 
+import android.support.annotation.StringDef;
+
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.net.model.Topic;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import retrofit.Call;
@@ -24,17 +28,22 @@ public interface CnBetaApi {
     /**
      * 评论最热
      */
-    int TYPE_COMMENTS = 1;
+    String TYPE_COMMENTS = "comments";
 
     /**
      * 阅读最多
      */
-    int TYPE_COUNTER = 2;
+    String TYPE_COUNTER = "counter";
 
     /**
      * 最高推荐
      */
-    int TYPE_DIG = 3;
+    String TYPE_DIG = "dig";
+
+    @StringDef({TYPE_COMMENTS, TYPE_COUNTER, TYPE_DIG})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RankType {
+    }
 
     /**
      * 文章列表 api，一次返回 20 条

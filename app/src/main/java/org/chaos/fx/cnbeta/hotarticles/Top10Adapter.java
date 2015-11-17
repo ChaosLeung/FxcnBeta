@@ -3,8 +3,6 @@ package org.chaos.fx.cnbeta.hotarticles;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseArticleAdapter;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -19,10 +17,8 @@ public class Top10Adapter extends BaseArticleAdapter {
     }
 
     @Override
-    public void onBindViewHolder(BaseArticleAdapter.ViewHolder holder, int position) {
+    public void onBindHolderInternal(BaseArticleAdapter.ViewHolder holder, int position) {
         ArticleSummary summary = getArticles().get(position);
-        holder.title.setText(summary.getTitle());
-        holder.time.setText(String.format(mContext.getString(R.string.prevalence_count), summary.getCounter()));
-        Picasso.with(mContext).load(summary.getThumb()).into(holder.image);
+        holder.time.setText(String.format(mContext.getString(R.string.read_count), summary.getCounter()));
     }
 }

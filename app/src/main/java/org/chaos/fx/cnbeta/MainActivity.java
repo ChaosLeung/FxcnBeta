@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
-import org.chaos.fx.cnbeta.rank.RankFragment;
+import org.chaos.fx.cnbeta.rank.RanksFragment;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
     private ArticlesFragment mHomeFragment;
     private Top10Fragment mHotArticlesFragment;
     private HotCommentFragment mHotCommentFragment;
-    private RankFragment mRankFragment;
+    private RanksFragment mRanksFragment;
 
     private void switchPage(@Page String pageTag) {
         Fragment fragment = null;
@@ -117,10 +117,10 @@ public class MainActivity extends AppCompatActivity
             }
             fragment = mHotCommentFragment;
         } else if (PAGE_RANK.equals(pageTag)) {
-            if (mRankFragment == null) {
-                mRankFragment = RankFragment.newInstance();
+            if (mRanksFragment == null) {
+                mRanksFragment = RanksFragment.newInstance();
             }
-            fragment = mRankFragment;
+            fragment = mRanksFragment;
         }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)

@@ -18,8 +18,9 @@
     <string name="time_months">%d months ago</string>
     <string name="time_year">1 year ago</string>
     <string name="time_years">%d years ago</string>
-    
-    <string name="prevalence_count">热度：%d</string>
+
+    <string name="read_count">%d 人已查看</string>
+    <string name="comment_count">评论数：%d</string>
 
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
@@ -33,4 +34,12 @@
     <string name="nav_hot_comments">热门评论</string>
     <string name="nav_help">帮助 &amp; 反馈</string>
     <string name="nav_settings">设置</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string-array name="rank_types">
+        <item>最高推荐</item>
+        <item>阅读最多</item>
+        <item>评论最热</item>
+    </string-array>
 </resources>

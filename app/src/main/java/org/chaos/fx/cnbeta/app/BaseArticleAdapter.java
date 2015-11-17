@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 
@@ -70,6 +72,17 @@ public abstract class BaseArticleAdapter extends RecyclerView.Adapter<BaseArticl
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.article_item, parent, false));
+    }
+
+    @Override
+    public final void onBindViewHolder(ViewHolder holder, int position) {
+        ArticleSummary summary = getArticles().get(position);
+        holder.title.setText(summary.getTitle());
+        Picasso.with(mContext).load(summary.getThumb()).into(holder.image);
+        onBindHolderInternal(holder, position);
+    }
+
+    protected void onBindHolderInternal(ViewHolder holder, int position) {
     }
 
     @Override

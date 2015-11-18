@@ -19,8 +19,8 @@
     <string name="time_year">1 year ago</string>
     <string name="time_years">%d years ago</string>
 
-    <string name="read_count">%d 人已查看</string>
-    <string name="comment_count">评论数：%d</string>
+    <string name="read_count">阅读 %d</string>
+    <string name="comment_count">评论 %d</string>
 
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>

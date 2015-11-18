@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseArticleAdapter;
+import org.chaos.fx.cnbeta.app.DividerItemDecoration;
 import org.chaos.fx.cnbeta.home.ArticleAdapter;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
@@ -74,6 +75,7 @@ public class RankSubFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         mArticlesView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView);
+        mArticlesView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mArticleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {

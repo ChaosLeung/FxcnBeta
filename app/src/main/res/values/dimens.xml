@@ -5,6 +5,7 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="card_height">96dp</dimen>
+    <dimen name="thumb_height">72dp</dimen>
 
     <dimen name="intrinsic_card_padding">4dp</dimen>
     <dimen name="intrinsic_card_horizontal">5dp</dimen>

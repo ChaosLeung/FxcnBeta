@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.app.DividerItemDecoration;
 import org.chaos.fx.cnbeta.home.ArticleAdapter;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
@@ -55,6 +56,7 @@ public class Top10Fragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_top10, container, false);
         ButterKnife.bind(this, rootView);
         mTop10View.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mTop10View.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         mTop10Adapter = new Top10Adapter(getActivity(), mTop10View);
         mTop10Adapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {

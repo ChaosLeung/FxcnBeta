@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.app.DividerItemDecoration;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -73,6 +74,7 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mArticlesView.setLayoutManager(mLayoutManager);
+        mArticlesView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mArticlesView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

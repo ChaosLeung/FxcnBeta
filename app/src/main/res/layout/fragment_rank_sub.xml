@@ -6,4 +6,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_background"
-    tools:listitem="@layout/article_item" />
+    tools:listitem="@layout/article_card_item" />

@@ -102,13 +102,29 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mSwipeLayout.setRefreshing(true);
+        mSwipeLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeLayout.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void onDestroyView() {
         mCall.cancel();
+        clearSwipeLayout();
         super.onDestroyView();
+    }
+
+    /**
+     * refreshing 的时候切换 fragment 会导致当前 fragment 的视图覆盖在新 fragment 之上，这是其中一个解决方案
+     * 更多可以查看 <a href="http://t.cn/RUntUGt">StackOverFlow<a/>
+     */
+    private void clearSwipeLayout() {
+        mSwipeLayout.setRefreshing(false);
+        mSwipeLayout.destroyDrawingCache();
+        mSwipeLayout.clearAnimation();
     }
 
     private void initArticles() {
@@ -171,8 +187,8 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
         public void onFailure(Throwable t) {
             if (isVisible()) {
                 showSnackBar(R.string.load_articles_failed);
-                resetStatus();
             }
+            resetStatus();
         }
 
         private void resetStatus() {

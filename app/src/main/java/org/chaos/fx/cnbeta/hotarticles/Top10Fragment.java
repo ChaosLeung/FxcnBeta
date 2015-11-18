@@ -43,6 +43,12 @@ public class Top10Fragment extends BaseFragment {
         return new Top10Fragment();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.nav_hot_articles);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,12 +67,6 @@ public class Top10Fragment extends BaseFragment {
         mTop10View.setAdapter(mTop10Adapter);
         loadTop10Articles();
         return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getSupportActionBar().setTitle(R.string.nav_hot_comments);
     }
 
     @Override

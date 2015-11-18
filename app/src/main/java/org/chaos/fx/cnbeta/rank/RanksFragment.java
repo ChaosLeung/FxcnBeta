@@ -34,6 +34,12 @@ public class RanksFragment extends BaseFragment {
         return new RanksFragment();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.nav_rank);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,7 +55,6 @@ public class RanksFragment extends BaseFragment {
             mToolbarElevation = getActivity().findViewById(R.id.appbar).getElevation();
             getActivity().findViewById(R.id.appbar).setElevation(0);
         }
-        getSupportActionBar().setTitle(R.string.nav_rank);
         SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);

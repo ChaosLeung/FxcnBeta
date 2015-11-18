@@ -61,6 +61,7 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.nav_home);
         mTopicId = getArguments().getString(KEY_TOPIC_ID, "null");
     }
 
@@ -102,7 +103,6 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSwipeLayout.setRefreshing(true);
-        getSupportActionBar().setTitle(R.string.nav_home);
     }
 
     @Override

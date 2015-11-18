@@ -50,10 +50,9 @@ public class RanksFragment extends BaseFragment {
             getActivity().findViewById(R.id.appbar).setElevation(0);
         }
         getSupportActionBar().setTitle(R.string.nav_rank);
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(pagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-        mTabLayout.setTabsFromPagerAdapter(mSectionsPagerAdapter);
     }
 
     @Override

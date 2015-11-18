@@ -25,6 +25,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -58,6 +59,8 @@ public class RankSubFragment extends Fragment {
 
     private RankSubAdapter mArticleAdapter;
 
+    private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +87,8 @@ public class RankSubFragment extends Fragment {
     }
 
     private void initArticles() {
-        CnBetaApiHelper.todayRank(mType).enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
+        mCall = CnBetaApiHelper.todayRank(mType);
+        mCall.enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
@@ -98,9 +102,17 @@ public class RankSubFragment extends Fragment {
 
             @Override
             public void onFailure(Throwable t) {
-                showSnackBar(R.string.load_articles_failed);
+                if (isVisible()) {
+                    showSnackBar(R.string.load_articles_failed);
+                }
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        mCall.cancel();
+        super.onDestroyView();
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -122,7 +134,7 @@ public class RankSubFragment extends Fragment {
             } else if (CnBetaApi.TYPE_DIG.equals(mType)) {
                 subText = getSubText(R.string.read_count, summary.getCounter());
             } else if (CnBetaApi.TYPE_COMMENTS.equals(mType)) {
-                subText =getSubText(R.string.comment_count, summary.getComment());
+                subText = getSubText(R.string.comment_count, summary.getComment());
             }
             holder.time.setText(subText);
         }

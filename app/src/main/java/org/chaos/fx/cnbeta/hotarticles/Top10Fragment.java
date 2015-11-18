@@ -22,6 +22,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -35,6 +36,8 @@ public class Top10Fragment extends BaseFragment {
     @Bind(R.id.articles) RecyclerView mTop10View;
 
     private Top10Adapter mTop10Adapter;
+
+    private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
 
     public static Top10Fragment newInstance() {
         return new Top10Fragment();
@@ -66,8 +69,15 @@ public class Top10Fragment extends BaseFragment {
         getSupportActionBar().setTitle(R.string.nav_hot_comments);
     }
 
+    @Override
+    public void onDestroyView() {
+        mCall.cancel();
+        super.onDestroyView();
+    }
+
     private void loadTop10Articles() {
-        CnBetaApiHelper.top10().enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
+        mCall = CnBetaApiHelper.top10();
+        mCall.enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
@@ -81,7 +91,9 @@ public class Top10Fragment extends BaseFragment {
 
             @Override
             public void onFailure(Throwable t) {
-                showSnackBar(R.string.load_articles_failed);
+                if (isVisible()) {
+                    showSnackBar(R.string.load_articles_failed);
+                }
             }
         });
     }

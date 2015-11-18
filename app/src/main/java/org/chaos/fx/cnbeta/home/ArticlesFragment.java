@@ -23,6 +23,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -47,6 +48,7 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
     private String mTopicId;
 
     private ArticleCallback mApiCallback = new ArticleCallback();
+    private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
 
     public static ArticlesFragment newInstance(String topicId) {
         ArticlesFragment fragment = new ArticlesFragment();
@@ -103,8 +105,15 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
         getSupportActionBar().setTitle(R.string.nav_home);
     }
 
+    @Override
+    public void onDestroyView() {
+        mCall.cancel();
+        super.onDestroyView();
+    }
+
     private void initArticles() {
-        CnBetaApiHelper.topicArticles(mTopicId).enqueue(mApiCallback);
+        mCall = CnBetaApiHelper.topicArticles(mTopicId);
+        mCall.enqueue(mApiCallback);
     }
 
     @Override
@@ -114,10 +123,10 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
             if (mArticleAdapter.getItemCount() == 0) {
                 initArticles();
             } else {
-                CnBetaApiHelper.newArticles(
+                mCall = CnBetaApiHelper.newArticles(
                         mTopicId,
-                        mArticleAdapter.getArticles().get(0).getSid())
-                        .enqueue(mApiCallback);
+                        mArticleAdapter.getArticles().get(0).getSid());
+                mCall.enqueue(mApiCallback);
             }
         }
     }
@@ -126,10 +135,10 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
         if (!isLoading) {
             isLoading = true;
             mProgressBar.setVisibility(View.VISIBLE);
-            CnBetaApiHelper.oldArticles(
+            mCall = CnBetaApiHelper.oldArticles(
                     mTopicId,
-                    mArticleAdapter.getArticles().get(mArticleAdapter.getItemCount() - 1).getSid())
-                    .enqueue(mApiCallback);
+                    mArticleAdapter.getArticles().get(mArticleAdapter.getItemCount() - 1).getSid());
+            mCall.enqueue(mApiCallback);
         }
     }
 
@@ -160,8 +169,10 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
 
         @Override
         public void onFailure(Throwable t) {
-            showSnackBar(R.string.load_articles_failed);
-            resetStatus();
+            if (isVisible()) {
+                showSnackBar(R.string.load_articles_failed);
+                resetStatus();
+            }
         }
 
         private void resetStatus() {

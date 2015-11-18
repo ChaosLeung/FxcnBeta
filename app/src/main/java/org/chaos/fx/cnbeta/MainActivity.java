@@ -94,33 +94,16 @@ public class MainActivity extends AppCompatActivity
     private static final String PAGE_HOT_ARTICLES = "HotArticlesFragment";
     private static final String PAGE_HOT_COMMENT = "HotCommentFragment";
 
-    private ArticlesFragment mHomeFragment;
-    private Top10Fragment mHotArticlesFragment;
-    private HotCommentFragment mHotCommentFragment;
-    private RanksFragment mRanksFragment;
-
     private void switchPage(@Page String pageTag) {
         Fragment fragment = null;
         if (PAGE_HOME.equals(pageTag)) {
-            if (mHomeFragment == null) {
-                mHomeFragment = ArticlesFragment.newInstance("null");
-            }
-            fragment = mHomeFragment;
+            fragment = ArticlesFragment.newInstance("null");
         } else if (PAGE_HOT_ARTICLES.equals(pageTag)) {
-            if (mHotArticlesFragment == null) {
-                mHotArticlesFragment = Top10Fragment.newInstance();
-            }
-            fragment = mHotArticlesFragment;
+            fragment = Top10Fragment.newInstance();
         } else if (PAGE_HOT_COMMENT.equals(pageTag)) {
-            if (mHotCommentFragment == null) {
-                mHotCommentFragment = HotCommentFragment.newInstance();
-            }
-            fragment = mHotCommentFragment;
+            fragment = HotCommentFragment.newInstance();
         } else if (PAGE_RANK.equals(pageTag)) {
-            if (mRanksFragment == null) {
-                mRanksFragment = RanksFragment.newInstance();
-            }
-            fragment = mRanksFragment;
+            fragment = RanksFragment.newInstance();
         }
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)

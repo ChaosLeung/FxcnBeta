@@ -8,7 +8,7 @@
 
     <style name="CardArticleItemText.Headline" parent="@style/CardArticleItemText">
         <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
-        <item name="android:textSize">@dimen/article_title_size</item>
+        <item name="android:textSize">@dimen/article_item_title_size</item>
         <item name="android:textColor">@color/card_text</item>
         <item name="android:maxLines">2</item>
     </style>
@@ -19,5 +19,11 @@
         <item name="android:singleLine">true</item>
         <item name="android:textSize">12.0sp</item>
         <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="ArticleContentText">
+        <item name="android:textColor">@color/content_text</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textSize">@dimen/article_content_size</item>
     </style>
 </resources>

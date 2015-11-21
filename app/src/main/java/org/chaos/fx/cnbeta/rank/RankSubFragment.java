@@ -80,7 +80,7 @@ public class RankSubFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 ArticleSummary summary = mArticleAdapter.getArticles().get(position);
-                ContentActivity.start(getActivity(), summary.getSid());
+                ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
         });
         mArticlesView.setAdapter(mArticleAdapter);

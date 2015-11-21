@@ -34,12 +34,15 @@
     <string name="nav_hot_comments">热门评论</string>
     <string name="nav_help">帮助 &amp; 反馈</string>
     <string name="nav_settings">设置</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="content">文章正文</string>
 
     <string-array name="rank_types">
         <item>最高推荐</item>
         <item>阅读最多</item>
         <item>评论最热</item>
     </string-array>
+
+    <string name="failed_to_load">加载失败，点击按钮重试</string>
+    <string name="retry">重试</string>
 </resources>

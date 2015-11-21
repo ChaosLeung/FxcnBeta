@@ -63,7 +63,7 @@ public class Top10Fragment extends BaseFragment {
             @Override
             public void onItemClick(int position) {
                 ArticleSummary summary = mTop10Adapter.getArticles().get(position);
-                ContentActivity.start(getActivity(), summary.getSid());
+                ContentActivity.start(getActivity(), summary.getSid(),summary.getTopicLogo());
             }
         });
         mTop10View.setAdapter(mTop10Adapter);

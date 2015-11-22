@@ -31,7 +31,7 @@
     <string name="nav_home">最新咨询</string>
     <string name="nav_rank">今日排行</string>
     <string name="nav_hot_articles">本月热门</string>
-    <string name="nav_hot_comments">热门评论</string>
+    <string name="nav_hot_comments">精彩评论</string>
     <string name="nav_help">帮助 &amp; 反馈</string>
     <string name="nav_settings">设置</string>
 
@@ -50,4 +50,7 @@
     <string name="version_name">版本号</string>
     <string name="author_email">联系邮箱</string>
     <string name="info_default">Unknown</string>
+
+    <string name="hot_comment_content">%1$s：%2$s</string>
+    <string name="anonymous">匿名网友</string>
 </resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/card_inner_content_padding">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/CardArticleItemText.Headline"
+        tools:text="Preview Article Item Title, Preview Article Item Title, Preview Article Item Title" />
+
+    <TextView
+        android:id="@+id/comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_inner_content_half_padding"
+        style="@style/CardArticleItemText.Time"
+        android:textSize="14sp"
+        android:singleLine="false"
+        tools:text="匿名网友：Holly Shit!" />
+
+</LinearLayout>

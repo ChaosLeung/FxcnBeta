@@ -91,25 +91,20 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
             @Override
             public void onItemClick(int position) {
                 ArticleSummary summary = mArticleAdapter.getArticles().get(position);
-                ContentActivity.start(getActivity(), summary.getSid(),summary.getTopicLogo());
+                ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
         });
         mArticlesView.setAdapter(mArticleAdapter);
 
         mSwipeLayout.setOnRefreshListener(this);
-        initArticles();
-        return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         mSwipeLayout.post(new Runnable() {
             @Override
             public void run() {
                 mSwipeLayout.setRefreshing(true);
+                initArticles();
             }
         });
+        return rootView;
     }
 
     @Override

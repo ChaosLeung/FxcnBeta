@@ -62,7 +62,7 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle(R.string.nav_home);
+        setActionBarTitle(R.string.nav_home);
         mTopicId = getArguments().getString(KEY_TOPIC_ID, "null");
     }
 

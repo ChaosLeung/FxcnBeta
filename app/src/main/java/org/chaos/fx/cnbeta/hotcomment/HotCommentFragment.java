@@ -46,7 +46,7 @@ public class HotCommentFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle(R.string.nav_hot_comments);
+        setActionBarTitle(R.string.nav_hot_comments);
     }
 
     @Nullable

@@ -37,7 +37,7 @@ public class RanksFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle(R.string.nav_rank);
+        setActionBarTitle(R.string.nav_rank);
     }
 
     @Nullable

@@ -1,6 +1,7 @@
 package org.chaos.fx.cnbeta.app;
 
 import android.app.Activity;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,5 +21,16 @@ public class BaseFragment extends Fragment {
             }
         }
         return null;
+    }
+
+    public void setActionBarTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        }
+    }
+
+    public void setActionBarTitle(@StringRes int strRes) {
+        setActionBarTitle(getString(strRes));
     }
 }

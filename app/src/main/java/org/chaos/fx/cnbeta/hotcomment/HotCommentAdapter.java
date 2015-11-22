@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
  */
 public class HotCommentAdapter extends RecyclerView.Adapter<HotCommentAdapter.ViewHolder> {
 
-    protected Context mContext;
+    private Context mContext;
     private List<HotComment> mComments = new ArrayList<>();
     private RecyclerView mBindView;
 

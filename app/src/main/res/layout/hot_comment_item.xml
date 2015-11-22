@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:foreground="@drawable/list_item_overlay_darken"
     android:padding="@dimen/card_inner_content_padding">
 
     <TextView

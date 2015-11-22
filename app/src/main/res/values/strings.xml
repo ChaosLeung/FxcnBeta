@@ -45,4 +45,9 @@
 
     <string name="failed_to_load">加载失败，点击按钮重试</string>
     <string name="retry">重试</string>
+
+    <string name="about">关于</string>
+    <string name="version_name">版本号</string>
+    <string name="author_email">联系邮箱</string>
+    <string name="info_default">Unknown</string>
 </resources>

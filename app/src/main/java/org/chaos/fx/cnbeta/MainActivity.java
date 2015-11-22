@@ -1,5 +1,6 @@
 package org.chaos.fx.cnbeta;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringDef;
 import android.support.design.widget.NavigationView;
@@ -15,6 +16,7 @@ import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
 import org.chaos.fx.cnbeta.rank.RanksFragment;
+import org.chaos.fx.cnbeta.settings.SettingsActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_help:
                 break;
             case R.id.nav_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
 

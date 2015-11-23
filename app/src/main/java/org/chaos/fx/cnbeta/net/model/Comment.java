@@ -98,4 +98,18 @@ public class Comment {
                 ", content = " + mContent +
                 ", tid = " + mTid;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof Comment) {
+            Comment c = (Comment) o;
+            if (c.mTid == this.mTid) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

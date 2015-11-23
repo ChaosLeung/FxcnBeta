@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:foreground="@drawable/list_item_overlay_darken"
+                android:padding="@dimen/card_inner_content_padding">
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        style="@style/CommentItemText.Username"
+        tools:text="username" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/username"
+        android:layout_toEndOf="@+id/username"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:gravity="end"
+        tools:text="1 hour ago" />
+
+    <TextView
+        android:id="@+id/reply_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/username"
+        android:layout_alignStart="@+id/username"
+        android:layout_below="@+id/username"
+        android:layout_marginTop="@dimen/card_inner_content_half_padding"
+        style="@style/CommentItemText"
+        android:background="@color/main_background"
+        android:visibility="gone"
+        tools:text="reply comment string here" />
+
+    <TextView
+        android:id="@+id/comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/username"
+        android:layout_alignStart="@+id/username"
+        android:layout_below="@+id/reply_comment"
+        android:layout_marginTop="@dimen/card_inner_content_half_padding"
+        style="@style/CommentItemText"
+        tools:text="comment string here" />
+</RelativeLayout>

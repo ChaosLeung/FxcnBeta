@@ -26,4 +26,14 @@
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:textSize">@dimen/article_content_size</item>
     </style>
+
+    <style name="CommentItemText">
+        <item name="android:textColor">@color/content_text</item>
+        <item name="android:textSize">@dimen/article_comment_size</item>
+    </style>
+
+    <style name="CommentItemText.Username" parent="CommentItemText">
+        <item name="android:singleLine">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

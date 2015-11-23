@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,12 +19,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
@@ -43,7 +43,7 @@ import retrofit.Retrofit;
  * @author Chaos
  *         2015/11/15.
  */
-public class ContentActivity extends AppCompatActivity {
+public class ContentActivity extends AppCompatActivity implements SwipeLinearRecyclerView.OnLoadMoreListener {
 
     private static final String KEY_SID = "sid";
     private static final String KEY_TOPIC_LOGO = "topic_logo";
@@ -64,7 +64,7 @@ public class ContentActivity extends AppCompatActivity {
     @Bind(R.id.error_layout) View mErrorLayout;
     @Bind(R.id.error_button) View mRetryButton;
 
-    @Bind(R.id.recycler_view) RecyclerView mCommentView;
+    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
     private CommentAdapter mCommentAdapter;
 
     private HeaderWrapper mHeaderWrapper;
@@ -85,13 +85,13 @@ public class ContentActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mCommentView.setLayoutManager(new LinearLayoutManager(this));
-        mCommentView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
-        mCommentAdapter = new CommentAdapter(this, mCommentView);
+        mCommentAdapter = new CommentAdapter(this, mCommentView.getRecyclerView());
 
         mHeaderWrapper = new HeaderWrapper();
         mCommentAdapter.addHeaderView(mHeaderWrapper.headerView);
         mCommentView.setAdapter(mCommentAdapter);
+        mCommentView.setOnLoadMoreListener(this);
+        mCommentView.setShowLoadingBar(false);
 
         mRetryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +101,9 @@ public class ContentActivity extends AppCompatActivity {
         });
 
         loadContent();
-        loadComments();
+
+        mCommentView.setLoading(true);
+        loadComments(1);
     }
 
     @Override
@@ -127,20 +129,36 @@ public class ContentActivity extends AppCompatActivity {
         mHeaderWrapper.loadContent();
     }
 
-    private void loadComments() {
-        mCommentCall = CnBetaApiHelper.comments(mSid, 1);
+    private void loadComments(int page) {
+        mCommentCall = CnBetaApiHelper.comments(mSid, page);
         mCommentCall.enqueue(new Callback<CnBetaApi.Result<List<Comment>>>() {
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<Comment>>> response, Retrofit retrofit) {
                 mCommentAdapter.addAll(response.body().result);
                 mCommentAdapter.notifyDataSetChanged();
+                mCommentView.setLoading(false);
             }
 
             @Override
             public void onFailure(Throwable t) {
-
+                showSnackBar(R.string.load_articles_failed);
+                mCommentView.setLoading(false);
             }
         });
+    }
+
+    private void showSnackBar(@StringRes int strId) {
+        Snackbar.make(mCommentView, strId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLoadMore() {
+        int size = mCommentAdapter.getList().size();
+        if (size % 20 == 0) {
+            loadComments(size / 20 + 1);
+        } else {
+            mCommentView.setLoading(false);
+        }
     }
 
     class HeaderWrapper {

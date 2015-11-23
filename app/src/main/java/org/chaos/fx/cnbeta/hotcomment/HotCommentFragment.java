@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +15,7 @@ import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
-import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
+import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
@@ -32,13 +30,13 @@ import retrofit.Retrofit;
  * @author Chaos
  *         2015/11/15.
  */
-public class HotCommentFragment extends BaseFragment {
+public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyclerView.OnRefreshListener{
 
     public static HotCommentFragment newInstance() {
         return new HotCommentFragment();
     }
 
-    @Bind(R.id.hot_comments) RecyclerView mHotCommentView;
+    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mHotCommentView;
 
     private HotCommentAdapter mHotCommentAdapter;
 
@@ -53,14 +51,10 @@ public class HotCommentFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_hot_comment, container, false);
+        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        mHotCommentView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mHotCommentView.addItemDecoration(
-                new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-
-        mHotCommentAdapter = new HotCommentAdapter(getActivity(), mHotCommentView);
+        mHotCommentAdapter = new HotCommentAdapter(getActivity(), mHotCommentView.getRecyclerView());
         mHotCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -70,7 +64,15 @@ public class HotCommentFragment extends BaseFragment {
         });
 
         mHotCommentView.setAdapter(mHotCommentAdapter);
-        loadHotComments();
+
+        mHotCommentView.setOnRefreshListener(this);
+        mHotCommentView.post(new Runnable() {
+            @Override
+            public void run() {
+                mHotCommentView.setRefreshing(true);
+                loadHotComments();
+            }
+        });
         return rootView;
     }
 
@@ -87,11 +89,13 @@ public class HotCommentFragment extends BaseFragment {
             public void onResponse(Response<CnBetaApi.Result<List<HotComment>>> response, Retrofit retrofit) {
                 List<HotComment> result = response.body().result;
                 if (!result.isEmpty()) {
+                    mHotCommentAdapter.clear();
                     mHotCommentAdapter.addAll(0, result);
                     mHotCommentAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);
                 }
+                mHotCommentView.setRefreshing(false);
             }
 
             @Override
@@ -99,11 +103,17 @@ public class HotCommentFragment extends BaseFragment {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }
+                mHotCommentView.setRefreshing(false);
             }
         });
     }
 
     private void showSnackBar(@StringRes int strId) {
         Snackbar.make(mHotCommentView, strId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRefresh() {
+        loadHotComments();
     }
 }

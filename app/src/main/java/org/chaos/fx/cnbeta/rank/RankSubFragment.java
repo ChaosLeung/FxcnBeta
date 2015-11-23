@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,7 @@ import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
-import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
+import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
@@ -35,7 +34,7 @@ import retrofit.Retrofit;
  * @author Chaos
  *         2015/11/17.
  */
-public class RankSubFragment extends Fragment {
+public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView.OnRefreshListener {
 
     private static final String KEY_TYPE = "type";
 
@@ -56,7 +55,7 @@ public class RankSubFragment extends Fragment {
 
     private String mType;
 
-    @Bind(R.id.articles) RecyclerView mArticlesView;
+    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
 
     private RankSubAdapter mArticleAdapter;
 
@@ -71,11 +70,10 @@ public class RankSubFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_rank_sub, container, false);
+        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
         ButterKnife.bind(this, rootView);
-        mArticlesView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView);
-        mArticlesView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+
+        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView.getRecyclerView());
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -84,7 +82,15 @@ public class RankSubFragment extends Fragment {
             }
         });
         mArticlesView.setAdapter(mArticleAdapter);
-        initArticles();
+
+        mArticlesView.setOnRefreshListener(this);
+        mArticlesView.post(new Runnable() {
+            @Override
+            public void run() {
+                mArticlesView.setRefreshing(true);
+                initArticles();
+            }
+        });
         return rootView;
     }
 
@@ -95,11 +101,13 @@ public class RankSubFragment extends Fragment {
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
                 if (!result.isEmpty()) {
+                    mArticleAdapter.clear();
                     mArticleAdapter.addAll(0, result);
                     mArticleAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);
                 }
+                mArticlesView.setRefreshing(false);
             }
 
             @Override
@@ -107,6 +115,7 @@ public class RankSubFragment extends Fragment {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }
+                mArticlesView.setRefreshing(false);
             }
         });
     }
@@ -119,6 +128,11 @@ public class RankSubFragment extends Fragment {
 
     private void showSnackBar(@StringRes int strId) {
         Snackbar.make(mArticlesView, strId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRefresh() {
+        initArticles();
     }
 
     private class RankSubAdapter extends BaseArticleAdapter {

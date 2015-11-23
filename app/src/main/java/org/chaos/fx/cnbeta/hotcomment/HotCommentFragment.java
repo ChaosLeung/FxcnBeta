@@ -13,10 +13,11 @@ import android.view.ViewGroup;
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.app.DividerItemDecoration;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.HotComment;
+import org.chaos.fx.cnbeta.widget.BaseAdapter;
+import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
 
 import java.util.List;
 
@@ -60,10 +61,10 @@ public class HotCommentFragment extends BaseFragment {
                 new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         mHotCommentAdapter = new HotCommentAdapter(getActivity(), mHotCommentView);
-        mHotCommentAdapter.setOnItemClickListener(new HotCommentAdapter.OnItemClickListener() {
+        mHotCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                HotComment comment = mHotCommentAdapter.getComments().get(position);
+            public void onItemClick(View v, int position) {
+                HotComment comment = mHotCommentAdapter.get(position);
                 ContentActivity.start(getActivity(), comment.getSid(), null);
             }
         });
@@ -86,7 +87,7 @@ public class HotCommentFragment extends BaseFragment {
             public void onResponse(Response<CnBetaApi.Result<List<HotComment>>> response, Retrofit retrofit) {
                 List<HotComment> result = response.body().result;
                 if (!result.isEmpty()) {
-                    mHotCommentAdapter.getComments().addAll(0, result);
+                    mHotCommentAdapter.addAll(0, result);
                     mHotCommentAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);

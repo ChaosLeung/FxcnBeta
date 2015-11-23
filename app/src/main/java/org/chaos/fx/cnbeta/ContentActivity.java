@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import org.chaos.fx.cnbeta.app.DividerItemDecoration;
+import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.Comment;
@@ -132,7 +132,7 @@ public class ContentActivity extends AppCompatActivity {
         mCommentCall.enqueue(new Callback<CnBetaApi.Result<List<Comment>>>() {
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<Comment>>> response, Retrofit retrofit) {
-                mCommentAdapter.getComments().addAll(response.body().result);
+                mCommentAdapter.addAll(response.body().result);
                 mCommentAdapter.notifyDataSetChanged();
             }
 

@@ -14,13 +14,13 @@ import android.view.ViewGroup;
 
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.app.BaseArticleAdapter;
-import org.chaos.fx.cnbeta.app.DividerItemDecoration;
-import org.chaos.fx.cnbeta.home.ArticleAdapter;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.widget.BaseAdapter;
+import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
+import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
 
 import java.util.List;
 
@@ -76,10 +76,10 @@ public class RankSubFragment extends Fragment {
         mArticlesView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView);
         mArticlesView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-        mArticleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
+        mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                ArticleSummary summary = mArticleAdapter.getArticles().get(position);
+            public void onItemClick(View v, int position) {
+                ArticleSummary summary = mArticleAdapter.get(position);
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
         });
@@ -95,7 +95,7 @@ public class RankSubFragment extends Fragment {
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
                 if (!result.isEmpty()) {
-                    mArticleAdapter.addArticles(0, result);
+                    mArticleAdapter.addAll(0, result);
                     mArticleAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);
@@ -128,8 +128,9 @@ public class RankSubFragment extends Fragment {
         }
 
         @Override
-        protected void onBindHolderInternal(ViewHolder holder, int position) {
-            ArticleSummary summary = getArticles().get(position);
+        protected void onBindHolderInternal(ArticleHolder holder, int position) {
+            super.onBindHolderInternal(holder, position);
+            ArticleSummary summary = get(position);
             String subText = "";
             if (CnBetaApi.TYPE_COUNTER.equals(mType)) {
                 subText = TimeStringHelper.getTimeString(summary.getPubtime());
@@ -138,11 +139,11 @@ public class RankSubFragment extends Fragment {
             } else if (CnBetaApi.TYPE_COMMENTS.equals(mType)) {
                 subText = getSubText(R.string.comment_count, summary.getComment());
             }
-            holder.time.setText(subText);
+            holder.summary.setText(subText);
         }
 
         private String getSubText(@StringRes int strId, int value) {
-            return String.format(mContext.getString(strId), value);
+            return String.format(getContext().getString(strId), value);
         }
     }
 }

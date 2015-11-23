@@ -15,10 +15,11 @@ import android.widget.ProgressBar;
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.app.DividerItemDecoration;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.widget.BaseAdapter;
+import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
 
 import java.util.List;
 
@@ -87,10 +88,10 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
             }
         });
         mArticleAdapter = new ArticleAdapter(getActivity(), mArticlesView);
-        mArticleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
+        mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                ArticleSummary summary = mArticleAdapter.getArticles().get(position);
+            public void onItemClick(View v,int position) {
+                ArticleSummary summary = mArticleAdapter.get(position);
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
         });
@@ -138,7 +139,7 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
             } else {
                 mCall = CnBetaApiHelper.newArticles(
                         mTopicId,
-                        mArticleAdapter.getArticles().get(0).getSid());
+                        mArticleAdapter.get(0).getSid());
                 mCall.enqueue(mApiCallback);
             }
         }
@@ -150,7 +151,7 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
             mProgressBar.setVisibility(View.VISIBLE);
             mCall = CnBetaApiHelper.oldArticles(
                     mTopicId,
-                    mArticleAdapter.getArticles().get(mArticleAdapter.getItemCount() - 1).getSid());
+                    mArticleAdapter.get(mArticleAdapter.getItemCount() - 1).getSid());
             mCall.enqueue(mApiCallback);
         }
     }
@@ -167,11 +168,11 @@ public class ArticlesFragment extends BaseFragment implements SwipeRefreshLayout
             List<ArticleSummary> result = response.body().result;
             if (!result.isEmpty()) {
                 if (mSwipeLayout.isRefreshing()) {
-                    mArticleAdapter.addArticles(0, result);
+                    mArticleAdapter.addAll(0, result);
                     mArticleAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     int preSize = mArticleAdapter.getItemCount();
-                    mArticleAdapter.addArticles(response.body().result);
+                    mArticleAdapter.addAll(response.body().result);
                     mArticleAdapter.notifyItemRangeInserted(preSize, result.size());
                 }
             } else {

@@ -20,7 +20,7 @@
         android:layout_alignParentStart="true" />
 
     <TextView
-        android:id="@+id/time"
+        android:id="@+id/summary"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:paddingLeft="@dimen/card_inner_content_padding"

@@ -3,7 +3,7 @@ package org.chaos.fx.cnbeta.home;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
-import org.chaos.fx.cnbeta.app.BaseArticleAdapter;
+import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
@@ -18,8 +18,9 @@ public class ArticleAdapter extends BaseArticleAdapter {
     }
 
     @Override
-    public void onBindHolderInternal(ViewHolder holder, int position) {
-        ArticleSummary summary = getArticles().get(position);
-        holder.time.setText(TimeStringHelper.getTimeString(summary.getPubtime()));
+    protected void onBindHolderInternal(ArticleHolder holder, int position) {
+        super.onBindHolderInternal(holder, position);
+        ArticleSummary summary = get(position);
+        holder.summary.setText(TimeStringHelper.getTimeString(summary.getPubtime()));
     }
 }

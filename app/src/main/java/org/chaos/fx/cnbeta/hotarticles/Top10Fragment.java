@@ -13,11 +13,11 @@ import android.view.ViewGroup;
 import org.chaos.fx.cnbeta.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.app.DividerItemDecoration;
-import org.chaos.fx.cnbeta.home.ArticleAdapter;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.widget.BaseAdapter;
+import org.chaos.fx.cnbeta.widget.DividerItemDecoration;
 
 import java.util.List;
 
@@ -59,11 +59,11 @@ public class Top10Fragment extends BaseFragment {
         mTop10View.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
         mTop10Adapter = new Top10Adapter(getActivity(), mTop10View);
-        mTop10Adapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
+        mTop10Adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                ArticleSummary summary = mTop10Adapter.getArticles().get(position);
-                ContentActivity.start(getActivity(), summary.getSid(),summary.getTopicLogo());
+            public void onItemClick(View v, int position) {
+                ArticleSummary summary = mTop10Adapter.get(position);
+                ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
         });
         mTop10View.setAdapter(mTop10Adapter);
@@ -84,7 +84,7 @@ public class Top10Fragment extends BaseFragment {
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
                 if (!result.isEmpty()) {
-                    mTop10Adapter.addArticles(0, result);
+                    mTop10Adapter.addAll(0, result);
                     mTop10Adapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);

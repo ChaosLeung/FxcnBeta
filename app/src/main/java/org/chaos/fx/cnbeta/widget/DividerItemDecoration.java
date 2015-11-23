@@ -1,4 +1,4 @@
-package org.chaos.fx.cnbeta.app;
+package org.chaos.fx.cnbeta.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

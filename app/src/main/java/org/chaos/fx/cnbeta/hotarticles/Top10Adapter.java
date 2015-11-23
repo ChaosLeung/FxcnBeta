@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.app.BaseArticleAdapter;
+import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 
 /**
@@ -17,8 +17,9 @@ public class Top10Adapter extends BaseArticleAdapter {
     }
 
     @Override
-    public void onBindHolderInternal(BaseArticleAdapter.ViewHolder holder, int position) {
-        ArticleSummary summary = getArticles().get(position);
-        holder.time.setText(String.format(mContext.getString(R.string.read_count), summary.getCounter()));
+    public void onBindHolderInternal(ArticleHolder holder, int position) {
+        super.onBindHolderInternal(holder, position);
+        ArticleSummary summary = get(position);
+        holder.summary.setText(String.format(getContext().getString(R.string.read_count), summary.getCounter()));
     }
 }

@@ -57,6 +57,7 @@ public class RanksFragment extends BaseFragment {
         }
         SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(pagerAdapter);
+        mViewPager.setOffscreenPageLimit(pagerAdapter.getCount() - 1);
         mTabLayout.setupWithViewPager(mViewPager);
     }
 

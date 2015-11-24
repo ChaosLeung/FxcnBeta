@@ -20,11 +20,12 @@
 
     <dimen name="article_item_img_margin">16dp</dimen>
 
-    <dimen name="article_item_title_size">16sp</dimen>
+    <dimen name="article_item_text_title">16sp</dimen>
+    <dimen name="article_item_text_time">12sp</dimen>
 
-    <dimen name="article_content_size">16sp</dimen>
-
-    <dimen name="article_comment_size">14sp</dimen>
+    <dimen name="article_text_content">16sp</dimen>
+    <dimen name="article_text_comment">14sp</dimen>
+    <dimen name="article_text_comment_time">12sp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>

@@ -73,4 +73,18 @@ public class HotComment {
                 ", comment = " + mComment +
                 ", sid = " + mSid;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof HotComment) {
+            HotComment h = (HotComment) o;
+            if (h.mCid == this.mCid) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

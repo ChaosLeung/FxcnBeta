@@ -42,7 +42,7 @@ public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, Bas
 
     @Override
     protected int getItemCountInternal() {
-        return getList().size();
+        return listSize();
     }
 
     public class ArticleHolder extends RecyclerView.ViewHolder {

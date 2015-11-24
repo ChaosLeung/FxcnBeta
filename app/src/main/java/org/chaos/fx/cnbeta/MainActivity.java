@@ -2,6 +2,7 @@ package org.chaos.fx.cnbeta;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.StringDef;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
@@ -20,6 +22,8 @@ import org.chaos.fx.cnbeta.settings.SettingsActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
     @Bind(R.id.nav_content) NavigationView mNavigationView;
 
+    private List<OnActionBarDoubleClickListener> mActionBarDoubleClickListeners = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +44,22 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+
+            private long preBarClickTime;
+
+            @Override
+            public void onClick(View v) {
+                long currentTime = SystemClock.elapsedRealtime();
+                if (currentTime - preBarClickTime > 750) {
+                    preBarClickTime = currentTime;
+                } else {
+                    for (OnActionBarDoubleClickListener listener : mActionBarDoubleClickListeners) {
+                        listener.onActionBarDoubleClick();
+                    }
+                }
+            }
+        });
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -97,7 +119,14 @@ public class MainActivity extends AppCompatActivity
     private static final String PAGE_HOT_ARTICLES = "HotArticlesFragment";
     private static final String PAGE_HOT_COMMENT = "HotCommentFragment";
 
+    private String mCurrentPageTag;
+
     private void switchPage(@Page String pageTag) {
+        if (pageTag.equals(mCurrentPageTag)) {
+            return;
+        }
+
+        mCurrentPageTag = pageTag;
         Fragment fragment = null;
         if (PAGE_HOME.equals(pageTag)) {
             fragment = ArticlesFragment.newInstance("null");
@@ -111,5 +140,19 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    public interface OnActionBarDoubleClickListener {
+        void onActionBarDoubleClick();
+    }
+
+    public void addOnActionBarDoubleClickListener(OnActionBarDoubleClickListener listener) {
+        if (!mActionBarDoubleClickListeners.contains(listener)) {
+            mActionBarDoubleClickListeners.add(listener);
+        }
+    }
+
+    public void removeOnActionBarDoubleClickListener(OnActionBarDoubleClickListener listener) {
+        mActionBarDoubleClickListeners.remove(listener);
     }
 }

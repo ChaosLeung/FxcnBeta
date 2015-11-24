@@ -30,7 +30,7 @@ import retrofit.Retrofit;
  * @author Chaos
  *         2015/11/15.
  */
-public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyclerView.OnRefreshListener{
+public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyclerView.OnRefreshListener {
 
     public static HotCommentFragment newInstance() {
         return new HotCommentFragment();
@@ -78,7 +78,9 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
 
     @Override
     public void onDestroyView() {
-        mCall.cancel();
+        if (mCall != null) {
+            mCall.cancel();
+        }
         super.onDestroyView();
     }
 
@@ -88,10 +90,9 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<HotComment>>> response, Retrofit retrofit) {
                 List<HotComment> result = response.body().result;
-                if (!result.isEmpty()) {
+                if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
                     mHotCommentAdapter.clear();
                     mHotCommentAdapter.addAll(0, result);
-                    mHotCommentAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);
                 }

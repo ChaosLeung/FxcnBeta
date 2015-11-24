@@ -24,6 +24,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:gravity="end"
+        style="@style/CommentItemText.Time"
         tools:text="1 hour ago" />
 
     <TextView
@@ -35,7 +36,7 @@
         android:layout_below="@+id/username"
         android:layout_marginTop="@dimen/card_inner_content_half_padding"
         style="@style/CommentItemText"
-        android:background="@color/main_background"
+        android:background="@color/reply_comment"
         android:visibility="gone"
         tools:text="reply comment string here" />
 

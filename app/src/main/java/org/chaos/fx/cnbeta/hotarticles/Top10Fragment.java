@@ -77,7 +77,9 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
 
     @Override
     public void onDestroyView() {
-        mCall.cancel();
+        if (mCall != null) {
+            mCall.cancel();
+        }
         super.onDestroyView();
     }
 
@@ -87,10 +89,9 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
-                if (!result.isEmpty()) {
+                if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
                     mTop10Adapter.clear();
                     mTop10Adapter.addAll(0, result);
-                    mTop10Adapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);
                 }

@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,12 +79,6 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
         mSid = getIntent().getIntExtra(KEY_SID, -1);
         mLogoLink = getIntent().getStringExtra(KEY_TOPIC_LOGO);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.content);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
         ButterKnife.bind(this);
 
         mCommentAdapter = new CommentAdapter(this, mCommentView.getRecyclerView());
@@ -104,6 +100,37 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
 
         mCommentView.setLoading(true);
         loadComments(1);
+
+        setupActionBar();
+    }
+
+    private void setupActionBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+
+            private long preBarClickTime;
+
+            @Override
+            public void onClick(View v) {
+                long currentTime = SystemClock.elapsedRealtime();
+                if (currentTime - preBarClickTime > 750) {
+                    preBarClickTime = currentTime;
+                } else {
+                    onActionBarDoubleClick();
+                }
+            }
+        });
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.content);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void onActionBarDoubleClick() {
+        mCommentView.getRecyclerView().scrollToPosition(0);
     }
 
     @Override
@@ -116,7 +143,9 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
 
     @Override
     protected void onDestroy() {
-        mHeaderWrapper.contentCall.cancel();
+        if (mHeaderWrapper.contentCall != null) {
+            mHeaderWrapper.contentCall.cancel();
+        }
         if (mCommentCall != null) {
             mCommentCall.cancel();
         }
@@ -134,8 +163,10 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
         mCommentCall.enqueue(new Callback<CnBetaApi.Result<List<Comment>>>() {
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<Comment>>> response, Retrofit retrofit) {
-                mCommentAdapter.addAll(response.body().result);
-                mCommentAdapter.notifyDataSetChanged();
+                List<Comment> result = response.body().result;
+                if (!result.isEmpty()) {
+                    mCommentAdapter.addAll(result);
+                }
                 mCommentView.setLoading(false);
             }
 

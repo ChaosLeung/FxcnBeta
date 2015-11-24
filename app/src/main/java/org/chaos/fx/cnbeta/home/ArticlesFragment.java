@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chaos.fx.cnbeta.ContentActivity;
+import org.chaos.fx.cnbeta.MainActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
@@ -32,7 +33,8 @@ import retrofit.Retrofit;
  */
 public class ArticlesFragment extends BaseFragment
         implements SwipeLinearRecyclerView.OnRefreshListener,
-        SwipeLinearRecyclerView.OnLoadMoreListener {
+        SwipeLinearRecyclerView.OnLoadMoreListener,
+        MainActivity.OnActionBarDoubleClickListener {
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
@@ -89,8 +91,22 @@ public class ArticlesFragment extends BaseFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        ((MainActivity) getActivity()).removeOnActionBarDoubleClickListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).addOnActionBarDoubleClickListener(this);
+    }
+
+    @Override
     public void onDestroyView() {
-        mCall.cancel();
+        if (mCall != null) {
+            mCall.cancel();
+        }
         super.onDestroyView();
     }
 
@@ -123,6 +139,11 @@ public class ArticlesFragment extends BaseFragment
         Snackbar.make(mArticlesView, strId, Snackbar.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onActionBarDoubleClick() {
+        mArticlesView.getRecyclerView().scrollToPosition(0);
+    }
+
     private class ArticleCallback implements Callback<CnBetaApi.Result<List<ArticleSummary>>> {
 
         @Override
@@ -132,11 +153,8 @@ public class ArticlesFragment extends BaseFragment
             if (!result.isEmpty()) {
                 if (mArticlesView.isRefreshing()) {
                     mArticleAdapter.addAll(0, result);
-                    mArticleAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
-                    int preSize = mArticleAdapter.getItemCount();
                     mArticleAdapter.addAll(response.body().result);
-                    mArticleAdapter.notifyItemRangeInserted(preSize, result.size());
                 }
             } else {
                 showSnackBar(R.string.no_more_articles);

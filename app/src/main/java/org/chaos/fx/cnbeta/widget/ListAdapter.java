@@ -3,10 +3,10 @@ package org.chaos.fx.cnbeta.widget;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -16,8 +16,6 @@ import java.util.List;
 public abstract class ListAdapter<E, VH extends RecyclerView.ViewHolder> extends BaseAdapter<VH> {
 
     private final List<E> mList = new ArrayList<>();
-
-    private View mHeaderView;
 
     public ListAdapter(Context context, RecyclerView bindView) {
         super(context, bindView);
@@ -102,10 +100,11 @@ public abstract class ListAdapter<E, VH extends RecyclerView.ViewHolder> extends
     public boolean removeAll(@NonNull Collection<?> collection) {
         boolean modified = false;
 
-        for (int i = 0; i < mList.size(); i++) {
-            Object object = mList.get(i);
+        Iterator<E> iterator = mList.iterator();
+        for (int i = 0; iterator.hasNext(); i++) {
+            Object object = iterator.next();
             if (collection.contains(object)) {
-                mList.remove(i);
+                iterator.remove();
                 notifyItemRemoved(i);
                 modified = true;
             }
@@ -117,10 +116,11 @@ public abstract class ListAdapter<E, VH extends RecyclerView.ViewHolder> extends
     public boolean retainAll(@NonNull Collection<?> collection) {
         boolean modified = false;
 
-        for (int i = 0; i < mList.size(); i++) {
-            Object object = mList.get(i);
+        Iterator<E> iterator = mList.iterator();
+        for (int i = 0; iterator.hasNext(); i++) {
+            Object object = iterator.next();
             if (!collection.contains(object)) {
-                mList.remove(i);
+                iterator.remove();
                 notifyItemRemoved(i);
                 modified = true;
             }
@@ -135,7 +135,15 @@ public abstract class ListAdapter<E, VH extends RecyclerView.ViewHolder> extends
         return origin;
     }
 
+    public List<E> subList(int start, int end) {
+        return mList.subList(start, end);
+    }
+
     public List<E> getList() {
         return mList;
+    }
+
+    public int listSize() {
+        return mList.size();
     }
 }

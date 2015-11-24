@@ -27,7 +27,7 @@
         android:paddingRight="@dimen/card_inner_content_padding"
         android:layout_marginTop="@dimen/card_inner_content_padding"
         android:layout_marginBottom="@dimen/card_inner_content_padding"
-        style="@style/CardArticleItemText.Time"
+        style="@style/CardArticleItemText.Summary"
         tools:text="2 hours ago"
         android:layout_toLeftOf="@+id/image"
         android:layout_toStartOf="@+id/image"

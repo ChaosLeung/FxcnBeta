@@ -100,10 +100,9 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
             @Override
             public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
                 List<ArticleSummary> result = response.body().result;
-                if (!result.isEmpty()) {
+                if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
                     mArticleAdapter.clear();
                     mArticleAdapter.addAll(0, result);
-                    mArticleAdapter.notifyItemRangeInserted(0, result.size());
                 } else {
                     showSnackBar(R.string.no_more_articles);
                 }
@@ -122,7 +121,9 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     @Override
     public void onDestroyView() {
-        mCall.cancel();
+        if (mCall != null) {
+            mCall.cancel();
+        }
         super.onDestroyView();
     }
 

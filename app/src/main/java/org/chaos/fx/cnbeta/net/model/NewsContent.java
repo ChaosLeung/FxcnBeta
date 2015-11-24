@@ -444,4 +444,17 @@ public class NewsContent {
                 ", userId = " + mUserId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof NewsContent) {
+            NewsContent n = (NewsContent) o;
+            if (n.mSid == this.mSid) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

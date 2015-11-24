@@ -169,4 +169,18 @@ public class ArticleSummary {
                 ", counter = " + mCounter +
                 ", rating = " + mRating;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof ArticleSummary) {
+            ArticleSummary a = (ArticleSummary) o;
+            if (a.mSid == this.mSid) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

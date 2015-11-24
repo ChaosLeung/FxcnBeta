@@ -8,32 +8,39 @@
 
     <style name="CardArticleItemText.Headline" parent="@style/CardArticleItemText">
         <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
-        <item name="android:textSize">@dimen/article_item_title_size</item>
+        <item name="android:textSize">@dimen/article_item_text_title</item>
         <item name="android:textColor">@color/card_text</item>
         <item name="android:maxLines">2</item>
     </style>
 
-    <style name="CardArticleItemText.Time" parent="@style/CardArticleItemText">
+    <style name="CardArticleItemText.Summary" parent="@style/CardArticleItemText">
         <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
         <item name="android:textColor">@color/card_time_text</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textSize">12.0sp</item>
+        <item name="android:textSize">@dimen/article_item_text_time</item>
         <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="ArticleContentText">
         <item name="android:textColor">@color/content_text</item>
         <item name="android:lineSpacingMultiplier">1.2</item>
-        <item name="android:textSize">@dimen/article_content_size</item>
+        <item name="android:textSize">@dimen/article_text_content</item>
     </style>
 
     <style name="CommentItemText">
         <item name="android:textColor">@color/content_text</item>
-        <item name="android:textSize">@dimen/article_comment_size</item>
+        <item name="android:textSize">@dimen/article_text_comment</item>
     </style>
 
     <style name="CommentItemText.Username" parent="CommentItemText">
         <item name="android:singleLine">true</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CommentItemText.Time" parent="CommentItemText">
+        <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
+        <item name="android:textColor">@color/card_time_text</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/article_item_text_time</item>
     </style>
 </resources>

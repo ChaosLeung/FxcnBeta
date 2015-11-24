@@ -42,7 +42,7 @@ public class HotCommentAdapter extends ListAdapter<HotComment, HotCommentAdapter
 
     @Override
     public int getItemCountInternal() {
-        return getList().size();
+        return listSize();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

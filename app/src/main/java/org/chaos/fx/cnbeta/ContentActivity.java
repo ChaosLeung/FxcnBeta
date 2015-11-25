@@ -12,6 +12,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,6 +28,7 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -62,6 +65,18 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
 
     private Call<CnBetaApi.Result<List<Comment>>> mCommentCall;
 
+    private static final Callback<CnBetaApi.Result<String>> NO_OP_CALLBACK = new Callback<CnBetaApi.Result<String>>() {
+        @Override
+        public void onResponse(Response<CnBetaApi.Result<String>> response, Retrofit retrofit) {
+            // no-op
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+            // no-op
+        }
+    };
+
     @Bind(R.id.loading_view) View mLoadingBar;
     @Bind(R.id.error_layout) View mErrorLayout;
     @Bind(R.id.error_button) View mRetryButton;
@@ -70,6 +85,8 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
     private CommentAdapter mCommentAdapter;
 
     private HeaderWrapper mHeaderWrapper;
+
+    private int mPositionForDisplayedMenu = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +102,17 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
 
         mHeaderWrapper = new HeaderWrapper();
         mCommentAdapter.addHeaderView(mHeaderWrapper.headerView);
+        mCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                mPositionForDisplayedMenu = position;
+                mCommentView.showContextMenuForChild(v);
+            }
+        });
         mCommentView.setAdapter(mCommentAdapter);
         mCommentView.setOnLoadMoreListener(this);
         mCommentView.setShowLoadingBar(false);
+        registerForContextMenu(mCommentView.getRecyclerView());
 
         mRetryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +156,35 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
 
     private void onActionBarDoubleClick() {
         mCommentView.getRecyclerView().scrollToPosition(0);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle(R.string.comment_menu_title);
+        getMenuInflater().inflate(R.menu.comment_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int tid = mCommentAdapter.get(mPositionForDisplayedMenu - 1).getTid();
+        switch (item.getItemId()) {
+            case R.id.support:
+                CnBetaApiHelper.supportComment(tid).enqueue(NO_OP_CALLBACK);
+                break;
+            case R.id.against:
+                CnBetaApiHelper.againstComment(tid).enqueue(NO_OP_CALLBACK);
+                break;
+            case R.id.reply:
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onContextMenuClosed(Menu menu) {
+        super.onContextMenuClosed(menu);
+        mPositionForDisplayedMenu = -1;
     }
 
     @Override
@@ -279,7 +333,8 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
             StringBuilder sb = new StringBuilder();
             addView(sb, node);
             if (sb.length() > 0) {
-                addTextView(sb.delete(sb.length() - 3, sb.length()).toString());// 移除最后两个回车符
+                removeLastEnterChars(sb);
+                addTextView(sb.toString());// 移除最后两个回车符
             }
         }
 
@@ -288,7 +343,8 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
             for (Node subNode : node.childNodes()) {
                 if ("img".equals(subNode.nodeName())) {
                     if (sb.length() > 0) {
-                        addTextView(sb.delete(sb.length() - 3, sb.length()).toString());// 移除最后两个回车符
+                        removeLastEnterChars(sb);
+                        addTextView(sb.toString());// 移除最后两个回车符
                         sb.delete(0, sb.length());
                         preSBLen = 0;
                     }
@@ -301,6 +357,12 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
             }
             if (sb.length() - preSBLen > 0 && "p".equals(node.nodeName())) {
                 sb.append("\n\n");
+            }
+        }
+
+        private void removeLastEnterChars(StringBuilder sb) {
+            if (sb.length() > 1 && sb.lastIndexOf("\n\n") == sb.length() - 2) {
+                sb.delete(sb.length() - 2, sb.length());
             }
         }
 

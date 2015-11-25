@@ -53,4 +53,9 @@
 
     <string name="hot_comment_content">%1$s：%2$s</string>
     <string name="anonymous">匿名网友</string>
+
+    <string name="comment_menu_support">支持</string>
+    <string name="comment_menu_against">反对</string>
+    <string name="comment_menu_reply">回复评论</string>
+    <string name="comment_menu_title">评论选项</string>
 </resources>

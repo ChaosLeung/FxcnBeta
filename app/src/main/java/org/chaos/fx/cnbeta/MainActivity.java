@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.chaos.fx.cnbeta.help.FeedbackActivity;
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity
                 switchPage(PAGE_HOT_COMMENT);
                 break;
             case R.id.nav_help:
+                startActivity(new Intent(this, FeedbackActivity.class));
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(this, SettingsActivity.class));

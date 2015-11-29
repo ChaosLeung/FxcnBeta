@@ -25,6 +25,8 @@
         <activity android:name=".ContentActivity"
                   android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".settings.SettingsActivity" />
+
+        <activity android:name=".help.FeedbackActivity"/>
     </application>
 
 </manifest>

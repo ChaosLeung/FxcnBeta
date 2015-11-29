@@ -1,0 +1,3 @@
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+ext.UMENG_APPKEY = properties.getProperty('UMENG_APPKEY')

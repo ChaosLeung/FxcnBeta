@@ -58,4 +58,12 @@
     <string name="comment_menu_against">反对</string>
     <string name="comment_menu_reply">回复评论</string>
     <string name="comment_menu_title">评论选项</string>
+
+    <string name="fb_name_hint">姓名 (可选)</string>
+    <string name="fb_contact_hint">联系方式 (可选)</string>
+    <string name="fb_feedback_hint">请填写您的问题或建议</string>
+    <string name="send">发送</string>
+
+    <string name="feedback_content_should_not_empty">反馈内容不能为空</string>
+    <string name="sent">已发送，感谢您的反馈</string>
 </resources>

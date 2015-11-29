@@ -51,6 +51,7 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
         View v = LayoutInflater.from(getContext()).inflate(R.layout.swipe_recycler_view_internal, this);
         ButterKnife.bind(this, v);
         mSwipeLayout.setEnabled(false);
+        mSwipeLayout.setColorSchemeColors(getContext().getResources().getColor(R.color.colorAccent));
         mSwipeLayout.setOnRefreshListener(this);
         mProgressBar.setEnabled(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

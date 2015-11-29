@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:divider="@drawable/divider"
+              android:showDividers="middle">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        style="@style/FeedbackEdit"
+        android:hint="@string/fb_name_hint" />
+
+    <EditText
+        android:id="@+id/contact_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        style="@style/FeedbackEdit"
+        android:hint="@string/fb_contact_hint" />
+
+    <EditText
+        android:id="@+id/feedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/FeedbackEdit.Multi"
+        android:hint="@string/fb_feedback_hint"
+        android:gravity="top"
+        android:imeOptions="actionDone" />
+</LinearLayout>

@@ -43,4 +43,17 @@
         <item name="android:singleLine">true</item>
         <item name="android:textSize">@dimen/article_item_text_time</item>
     </style>
+
+    <style name="FeedbackEdit">
+        <item name="android:textColor">@color/content_text</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:padding">@dimen/fb_edit_padding</item>
+    </style>
+
+    <style name="FeedbackEdit.Multi" parent="FeedbackEdit">
+        <item name="android:singleLine">false</item>
+        <item name="android:minLines">5</item>
+    </style>
 </resources>

@@ -1,5 +1,6 @@
 package org.chaos.fx.cnbeta.rank;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -94,6 +95,7 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
         return rootView;
     }
 
+    @SuppressLint("WrongConstant")
     private void initArticles() {
         mCall = CnBetaApiHelper.todayRank(mType);
         mCall.enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {

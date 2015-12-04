@@ -4,13 +4,43 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:divider="@drawable/divider"
-              android:showDividers="middle">
+              android:showDividers="middle"
+              android:dividerPadding="@dimen/fb_edit_padding">
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/FeedbackEdit.Multi"
+            android:hint="@string/fb_feedback_hint"
+            android:gravity="top"
+            android:imeOptions="actionDone"
+            android:maxLength="200" />
+
+        <TextView
+            android:id="@+id/fb_current_length"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/fb_content_length"
+            android:layout_alignEnd="@+id/feedback"
+            android:layout_alignRight="@+id/feedback"
+            android:layout_alignBottom="@+id/feedback"
+            android:layout_marginRight="@dimen/fb_edit_padding"
+            android:layout_marginEnd="@dimen/fb_edit_padding"
+            android:layout_marginBottom="@dimen/fb_edit_padding"
+            android:text="@string/fb_feedback_max_length" />
+
+    </RelativeLayout>
 
     <EditText
         android:id="@+id/name"
@@ -28,12 +58,7 @@
         style="@style/FeedbackEdit"
         android:hint="@string/fb_contact_hint" />
 
-    <EditText
-        android:id="@+id/feedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/FeedbackEdit.Multi"
-        android:hint="@string/fb_feedback_hint"
-        android:gravity="top"
-        android:imeOptions="actionDone" />
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
 </LinearLayout>

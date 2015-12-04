@@ -20,6 +20,8 @@
 
     <color name="reply_comment">#ffeeeeee</color>
 
-    <color name="divider">#BDBDBD</color>
+    <color name="divider">#aaaaaa</color>
+
+    <color name="fb_content_length">#aaaaaa</color>
 
 </resources>

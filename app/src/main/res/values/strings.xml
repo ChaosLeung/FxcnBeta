@@ -28,7 +28,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="nav_home">最新咨询</string>
+    <string name="nav_home">最新资讯</string>
     <string name="nav_rank">今日排行</string>
     <string name="nav_hot_articles">本月热门</string>
     <string name="nav_hot_comments">精彩评论</string>
@@ -60,10 +60,11 @@
     <string name="comment_menu_title">评论选项</string>
 
     <string name="fb_name_hint">姓名 (可选)</string>
-    <string name="fb_contact_hint">联系方式 (可选)</string>
+    <string name="fb_contact_hint">QQ 或 Email (可选)</string>
     <string name="fb_feedback_hint">请填写您的问题或建议</string>
     <string name="send">发送</string>
 
     <string name="feedback_content_should_not_empty">反馈内容不能为空</string>
     <string name="sent">已发送，感谢您的反馈</string>
+    <string name="fb_feedback_max_length">200</string>
 </resources>

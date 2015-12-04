@@ -1,16 +1,20 @@
 package org.chaos.fx.cnbeta.help;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.fb.FeedbackAgent;
@@ -25,7 +29,9 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         2015/11/29.
  */
-public class FeedbackActivity extends AppCompatActivity {
+public class FeedbackActivity extends AppCompatActivity implements TextWatcher {
+
+    private static final int MAX_CONTENT_LEN = 200;
 
     private FeedbackFragment mFeedbackFragment;
     private EditText mUmengEdit;
@@ -34,6 +40,7 @@ public class FeedbackActivity extends AppCompatActivity {
     @Bind(R.id.name) EditText mNameEdit;
     @Bind(R.id.contact_info) EditText mContactEdit;
     @Bind(R.id.feedback) EditText mContentEdit;
+    @Bind(R.id.fb_current_length) TextView mCurrentLenView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,7 +50,9 @@ public class FeedbackActivity extends AppCompatActivity {
         setupActionBar();
 
         ButterKnife.bind(this);
+        mContentEdit.addTextChangedListener(this);
 
+        mFeedbackFragment = (FeedbackFragment) getSupportFragmentManager().findFragmentById(R.id.container);
         if (savedInstanceState == null) {
             mFeedbackFragment = FeedbackFragment.newInstance(
                     new FeedbackAgent(this).getDefaultConversation().getId());
@@ -109,5 +118,21 @@ public class FeedbackActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.sent, Toast.LENGTH_SHORT).show();
             mContentEdit.setText("");
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // no-op
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mCurrentLenView.setText(Integer.toString(MAX_CONTENT_LEN - start - count));
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        // no-op
     }
 }

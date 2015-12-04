@@ -62,5 +62,7 @@ dependencies {
 
     compile 'org.jsoup:jsoup:1.8.3'
 
+    compile 'com.github.ikew0ng:SwipeBackLayout:-SNAPSHOT'
+
     compile project(':ThirdPartyLib')
 }

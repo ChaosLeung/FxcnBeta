@@ -9,7 +9,6 @@ import android.os.SystemClock;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -39,6 +38,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -48,7 +48,7 @@ import retrofit.Retrofit;
  * @author Chaos
  *         2015/11/15.
  */
-public class ContentActivity extends AppCompatActivity implements SwipeLinearRecyclerView.OnLoadMoreListener {
+public class ContentActivity extends SwipeBackActivity implements SwipeLinearRecyclerView.OnLoadMoreListener {
 
     private static final String KEY_SID = "sid";
     private static final String KEY_TOPIC_LOGO = "topic_logo";
@@ -189,8 +189,10 @@ public class ContentActivity extends AppCompatActivity implements SwipeLinearRec
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                scrollToFinishActivity();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

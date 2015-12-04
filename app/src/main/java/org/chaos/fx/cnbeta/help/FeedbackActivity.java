@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,12 +24,13 @@ import org.chaos.fx.cnbeta.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         2015/11/29.
  */
-public class FeedbackActivity extends AppCompatActivity implements TextWatcher {
+public class FeedbackActivity extends SwipeBackActivity implements TextWatcher {
 
     private static final int MAX_CONTENT_LEN = 200;
 
@@ -60,6 +61,13 @@ public class FeedbackActivity extends AppCompatActivity implements TextWatcher {
                     .add(R.id.container, mFeedbackFragment)
                     .commit();
         }
+    }
+
+    private static final String TAG = "FeedbackActivity";
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called with: " + "");
     }
 
     @Override
@@ -96,7 +104,7 @@ public class FeedbackActivity extends AppCompatActivity implements TextWatcher {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                scrollToFinishActivity();
                 return true;
             case R.id.send:
                 sendFeedback();

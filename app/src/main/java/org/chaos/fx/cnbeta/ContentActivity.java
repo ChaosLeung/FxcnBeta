@@ -227,6 +227,7 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
     private void loadContent() {
         mLoadingBar.setVisibility(View.VISIBLE);
         mErrorLayout.setVisibility(View.GONE);
+        mCommentView.setVisibility(View.GONE);
         mHeaderWrapper.loadContent();
     }
 
@@ -237,7 +238,10 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
             public void onResponse(Response<CnBetaApi.Result<List<Comment>>> response, Retrofit retrofit) {
                 List<Comment> result = response.body().result;
                 if (!result.isEmpty()) {
-                    mCommentAdapter.addAll(result);
+                    // HeaderView 太高时，调用 notifyItemInserted 相关方法
+                    // 会导致 RecyclerView 跳转到奇怪的位置
+                    mCommentAdapter.getList().addAll(result);
+                    mCommentAdapter.notifyDataSetChanged();
                 }
                 mCommentView.setLoading(false);
             }
@@ -308,7 +312,6 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                 @SuppressLint("SetTextI18n")
                 @Override
                 public void onResponse(Response<CnBetaApi.Result<NewsContent>> response, Retrofit retrofit) {
-                    mLoadingBar.setVisibility(View.GONE);
                     NewsContent newsContent = response.body().result;
 
                     Picasso.with(ContentActivity.this)
@@ -325,6 +328,9 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
 
                     doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
                     addViewByNode(doc.body());
+
+                    mLoadingBar.setVisibility(View.GONE);
+                    mCommentView.setVisibility(View.VISIBLE);
                 }
 
                 @Override

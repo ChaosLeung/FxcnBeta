@@ -17,7 +17,8 @@
 
 <lint>
     <issue id="InvalidPackage">
-        <ignore path="**/okio-**.jar"/>
-        <ignore path="**/retrofit-**.jar"/>
+        <ignore path="**/okio-**.jar" />
+        <ignore path="**/retrofit-**.jar" />
+        <ignore path="**/realm-android-**.jar" />
     </issue>
 </lint>

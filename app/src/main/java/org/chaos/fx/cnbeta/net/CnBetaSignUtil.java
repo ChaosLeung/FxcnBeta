@@ -18,6 +18,7 @@ package org.chaos.fx.cnbeta.net;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 /**
  * CB 反编译出来的代码
@@ -122,7 +123,7 @@ public class CnBetaSignUtil {
         try {
             MessageDigest md5Digest = MessageDigest.getInstance("MD5");
             md5Digest.update(signStr.getBytes());
-            digestStr = generateSignStr(md5Digest.digest()).toLowerCase();
+            digestStr = generateSignStr(md5Digest.digest()).toLowerCase(Locale.CHINA);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return "";

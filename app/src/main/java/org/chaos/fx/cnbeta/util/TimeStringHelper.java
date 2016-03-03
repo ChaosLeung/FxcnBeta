@@ -18,7 +18,7 @@ package org.chaos.fx.cnbeta.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.StringRes;
+import android.support.annotation.PluralsRes;
 
 import org.chaos.fx.cnbeta.R;
 
@@ -52,53 +52,25 @@ public class TimeStringHelper {
             long deltaTime = System.currentTimeMillis() - parseFormattedTimeStr(pubTime);
             if (deltaTime >= YEAR) {
                 int year = (int) (deltaTime / YEAR);
-                if (year == 1) {
-                    pubTime = getResString(R.string.time_year);
-                } else {
-                    pubTime = getResString(R.string.time_years, year);
-                }
+                pubTime = getResString(R.plurals.time_year, year);
             } else if (deltaTime >= MONTH) {
                 int month = (int) (deltaTime / MONTH);
-                if (month == 1) {
-                    pubTime = getResString(R.string.time_month);
-                } else {
-                    pubTime = getResString(R.string.time_months, month);
-                }
+                pubTime = getResString(R.plurals.time_month, month);
             } else if (deltaTime >= WEEK) {
                 int week = (int) (deltaTime / WEEK);
-                if (week == 1) {
-                    pubTime = getResString(R.string.time_week);
-                } else {
-                    pubTime = getResString(R.string.time_weeks, week);
-                }
+                pubTime = getResString(R.plurals.time_week, week);
             } else if (deltaTime >= DAY) {
                 int day = (int) (deltaTime / DAY);
-                if (day == 1) {
-                    pubTime = getResString(R.string.time_day);
-                } else {
-                    pubTime = getResString(R.string.time_days, day);
-                }
+                pubTime = getResString(R.plurals.time_day, day);
             } else if (deltaTime >= HOUR) {
                 int hour = (int) (deltaTime / HOUR);
-                if (hour == 1) {
-                    pubTime = getResString(R.string.time_hour);
-                } else {
-                    pubTime = getResString(R.string.time_hours, hour);
-                }
+                pubTime = getResString(R.plurals.time_hour, hour);
             } else if (deltaTime >= MINUTE) {
                 int minute = (int) (deltaTime / MINUTE);
-                if (minute == 1) {
-                    pubTime = getResString(R.string.time_minute);
-                } else {
-                    pubTime = getResString(R.string.time_minutes, minute);
-                }
+                pubTime = getResString(R.plurals.time_minute, minute);
             } else {
                 int second = (int) (deltaTime / SECOND);
-                if (second <= 1) {
-                    pubTime = getResString(R.string.time_second);
-                } else {
-                    pubTime = getResString(R.string.time_seconds, second);
-                }
+                pubTime = getResString(R.plurals.time_second, second);
             }
         } catch (ParseException e) {
             // no-op
@@ -110,7 +82,7 @@ public class TimeStringHelper {
         return sDateFormat.parse(formattedTime).getTime();
     }
 
-    private static String getResString(@StringRes int strId, Object... args) {
-        return String.format(sResources.getString(strId), args);
+    private static String getResString(@PluralsRes int pluralsId, int value) {
+        return sResources.getQuantityString(pluralsId, value, value);
     }
 }

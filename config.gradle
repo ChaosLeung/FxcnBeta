@@ -14,6 +14,39 @@
  * limitations under the License.
  */
 
+// config for properties
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 ext.UMENG_APPKEY = properties.getProperty('UMENG_APPKEY')
+
+// config for dependencies
+ext {
+    libsVersion = [support: '23.2.0']
+
+    libs = [supportAnnotations: "com.android.support:support-annotations:${libsVersion.support}",
+            recyclerviewV7    : "com.android.support:recyclerview-v7:${libsVersion.support}",
+            cardviewV7        : "com.android.support:cardview-v7:${libsVersion.support}",
+            appcompatV7       : "com.android.support:appcompat-v7:${libsVersion.support}",
+            design            : "com.android.support:design:${libsVersion.support}",
+            supportV4         : "com.android.support:support-v4:${libsVersion.support}"]
+}
+
+// default config for android plugin
+subprojects {
+    project.plugins.whenPluginAdded { plugin ->
+        switch (plugin.class.name) {
+            case 'com.android.build.gradle.AppPlugin':
+            case 'com.android.build.gradle.LibraryPlugin':
+                project.android {
+                    compileSdkVersion 23
+                    buildToolsVersion '23.0.2'
+
+                    defaultConfig {
+                        minSdkVersion 14
+                        targetSdkVersion 23
+                    }
+                }
+                break
+        }
+    }
+}

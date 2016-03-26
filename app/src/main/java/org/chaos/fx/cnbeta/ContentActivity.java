@@ -55,10 +55,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Chaos
@@ -83,21 +82,26 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
 
     private static final Callback<CnBetaApi.Result<String>> NO_OP_CALLBACK = new Callback<CnBetaApi.Result<String>>() {
         @Override
-        public void onResponse(Response<CnBetaApi.Result<String>> response, Retrofit retrofit) {
+        public void onResponse(Call<CnBetaApi.Result<String>> call,
+                               Response<CnBetaApi.Result<String>> response) {
             // no-op
         }
 
         @Override
-        public void onFailure(Throwable t) {
+        public void onFailure(Call<CnBetaApi.Result<String>> call, Throwable t) {
             // no-op
         }
     };
 
-    @Bind(R.id.loading_view) View mLoadingBar;
-    @Bind(R.id.error_layout) View mErrorLayout;
-    @Bind(R.id.error_button) View mRetryButton;
+    @Bind(R.id.loading_view)
+    View mLoadingBar;
+    @Bind(R.id.error_layout)
+    View mErrorLayout;
+    @Bind(R.id.error_button)
+    View mRetryButton;
 
-    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
+    @Bind(R.id.swipe_recycler_view)
+    SwipeLinearRecyclerView mCommentView;
     private CommentAdapter mCommentAdapter;
 
     private HeaderWrapper mHeaderWrapper;
@@ -235,7 +239,8 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
         mCommentCall = CnBetaApiHelper.comments(mSid, page);
         mCommentCall.enqueue(new Callback<CnBetaApi.Result<List<Comment>>>() {
             @Override
-            public void onResponse(Response<CnBetaApi.Result<List<Comment>>> response, Retrofit retrofit) {
+            public void onResponse(Call<CnBetaApi.Result<List<Comment>>> call,
+                                   Response<CnBetaApi.Result<List<Comment>>> response) {
                 List<Comment> result = response.body().result;
                 if (!result.isEmpty()) {
                     // HeaderView 太高时，调用 notifyItemInserted 相关方法
@@ -247,7 +252,7 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<CnBetaApi.Result<List<Comment>>> call, Throwable t) {
                 showSnackBar(R.string.load_articles_failed);
                 mCommentView.setLoading(false);
             }
@@ -311,7 +316,8 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
             contentCall.enqueue(new Callback<CnBetaApi.Result<NewsContent>>() {
                 @SuppressLint("SetTextI18n")
                 @Override
-                public void onResponse(Response<CnBetaApi.Result<NewsContent>> response, Retrofit retrofit) {
+                public void onResponse(Call<CnBetaApi.Result<NewsContent>> call,
+                                       Response<CnBetaApi.Result<NewsContent>> response) {
                     NewsContent newsContent = response.body().result;
 
                     Picasso.with(ContentActivity.this)
@@ -334,7 +340,7 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<CnBetaApi.Result<NewsContent>> call, Throwable t) {
                     mLoadingBar.setVisibility(View.GONE);
                     mErrorLayout.setVisibility(View.VISIBLE);
                 }

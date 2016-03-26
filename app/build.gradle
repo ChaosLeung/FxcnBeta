@@ -16,15 +16,18 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'realm-android'
 
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
         // the latest version of the android-apt plugin
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath "io.realm:realm-gradle-plugin:0.88.2"
     }
 }
 
@@ -61,8 +64,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
 
-    compile 'com.google.dagger:dagger:2.0.1'
-    apt 'com.google.dagger:dagger-compiler:2.0.1'
+    compile 'com.google.dagger:dagger:2.0.2'
+    apt 'com.google.dagger:dagger-compiler:2.0.2'
     provided 'javax.annotation:jsr250-api:1.0'
 
     compile "${libs.supportAnnotations}"
@@ -73,19 +76,17 @@ dependencies {
     compile "${libs.supportV4}"
 
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"
+    compile "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
 
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.6.1'
 
     compile 'com.jakewharton:butterknife:7.0.1'
 
     compile 'org.jsoup:jsoup:1.8.3'
 
     compile 'com.github.ikew0ng:SwipeBackLayout:master-SNAPSHOT'
-
-    compile 'io.realm:realm-android:0.87.0'
 
     compile project(':ThirdPartyLib')
 }

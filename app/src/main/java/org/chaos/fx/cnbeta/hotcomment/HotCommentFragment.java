@@ -37,10 +37,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Chaos
@@ -104,7 +103,8 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
         mCall = CnBetaApiHelper.hotComment();
         mCall.enqueue(new Callback<CnBetaApi.Result<List<HotComment>>>() {
             @Override
-            public void onResponse(Response<CnBetaApi.Result<List<HotComment>>> response, Retrofit retrofit) {
+            public void onResponse(Call<CnBetaApi.Result<List<HotComment>>> call,
+                                   Response<CnBetaApi.Result<List<HotComment>>> response) {
                 List<HotComment> result = response.body().result;
                 if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
                     mHotCommentAdapter.clear();
@@ -116,7 +116,7 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<CnBetaApi.Result<List<HotComment>>> call, Throwable t) {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }

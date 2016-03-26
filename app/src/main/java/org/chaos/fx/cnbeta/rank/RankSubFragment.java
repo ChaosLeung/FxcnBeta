@@ -42,10 +42,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Chaos
@@ -116,7 +115,8 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
         mCall = CnBetaApiHelper.todayRank(mType);
         mCall.enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
             @Override
-            public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
+            public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
+                                   Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
                 List<ArticleSummary> result = response.body().result;
                 if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
                     mArticleAdapter.clear();
@@ -128,7 +128,7 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<CnBetaApi.Result<List<ArticleSummary>>> call, Throwable t) {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }

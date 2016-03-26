@@ -37,10 +37,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Chaos
@@ -48,7 +47,8 @@ import retrofit.Retrofit;
  */
 public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerView.OnRefreshListener {
 
-    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mTop10View;
+    @Bind(R.id.swipe_recycler_view)
+    SwipeLinearRecyclerView mTop10View;
 
     private Top10Adapter mTop10Adapter;
 
@@ -103,7 +103,8 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
         mCall = CnBetaApiHelper.top10();
         mCall.enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
             @Override
-            public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response, Retrofit retrofit) {
+            public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
+                                   Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
                 List<ArticleSummary> result = response.body().result;
                 if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
                     mTop10Adapter.clear();
@@ -115,7 +116,7 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<CnBetaApi.Result<List<ArticleSummary>>> call, Throwable t) {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }

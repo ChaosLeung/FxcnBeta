@@ -21,7 +21,8 @@ ext.UMENG_APPKEY = properties.getProperty('UMENG_APPKEY')
 
 // config for dependencies
 ext {
-    libsVersion = [support: '23.2.0']
+    libsVersion = [support : '23.2.1',
+                   retrofit: '2.0.0']
 
     libs = [supportAnnotations: "com.android.support:support-annotations:${libsVersion.support}",
             recyclerviewV7    : "com.android.support:recyclerview-v7:${libsVersion.support}",

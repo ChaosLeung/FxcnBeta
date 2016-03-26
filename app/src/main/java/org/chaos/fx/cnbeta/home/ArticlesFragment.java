@@ -38,10 +38,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Chaos
@@ -54,7 +53,8 @@ public class ArticlesFragment extends BaseFragment
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
-    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
+    @Bind(R.id.swipe_recycler_view)
+    SwipeLinearRecyclerView mArticlesView;
 
     private ArticleAdapter mArticleAdapter;
 
@@ -163,8 +163,8 @@ public class ArticlesFragment extends BaseFragment
     private class ArticleCallback implements Callback<CnBetaApi.Result<List<ArticleSummary>>> {
 
         @Override
-        public void onResponse(Response<CnBetaApi.Result<List<ArticleSummary>>> response,
-                               Retrofit retrofit) {
+        public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
+                               Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
             List<ArticleSummary> result = response.body().result;
             if (!result.isEmpty()) {
                 if (mArticlesView.isRefreshing()) {
@@ -179,7 +179,7 @@ public class ArticlesFragment extends BaseFragment
         }
 
         @Override
-        public void onFailure(Throwable t) {
+        public void onFailure(Call<CnBetaApi.Result<List<ArticleSummary>>> call, Throwable t) {
             if (isVisible()) {
                 showSnackBar(R.string.load_articles_failed);
             }

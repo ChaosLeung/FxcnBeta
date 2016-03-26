@@ -16,8 +16,12 @@
 
 // config for properties
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-ext.UMENG_APPKEY = properties.getProperty('UMENG_APPKEY')
+File localProperties = project.rootProject.file('local.properties');
+if (localProperties.exists()) {
+    properties.load(localProperties.newDataInputStream())
+}
+def umengKey = properties.getProperty('UMENG_APPKEY')
+ext.UMENG_APPKEY = umengKey != null ? umengKey : ""
 
 // config for dependencies
 ext {

@@ -36,11 +36,35 @@ ext {
             supportV4         : "com.android.support:support-v4:${libsVersion.support}"]
 }
 
+// config for android config
+def versionCode() {
+    def cmd = 'git rev-list HEAD --no-merges --count'
+    cmd.execute().text.trim().toInteger()
+}
+
+def versionName() {  //自动版本名
+    def cmd = 'git describe --tags'
+    def version = cmd.execute().text.trim()
+
+    def pattern = "-(\\d+)-g"
+    def matcher = version =~ pattern
+
+    if (matcher) {
+        version = version.substring(0, matcher.start()) + "-" + version.substring(matcher.end(), version.length())
+    }
+
+    return version
+}
+
 // default config for android plugin
 subprojects {
     project.plugins.whenPluginAdded { plugin ->
         switch (plugin.class.name) {
             case 'com.android.build.gradle.AppPlugin':
+                project.android.applicationVariants.all { variant ->
+                    variant.mergedFlavor.versionCode = versionCode()
+                    variant.mergedFlavor.versionName = versionName()
+                }
             case 'com.android.build.gradle.LibraryPlugin':
                 project.android {
                     compileSdkVersion 23

@@ -83,7 +83,7 @@ dependencies {
 
     compile 'org.jsoup:jsoup:1.8.3'
 
-    compile 'com.github.ikew0ng:SwipeBackLayout:-SNAPSHOT'
+    compile 'com.github.ikew0ng:SwipeBackLayout:master-SNAPSHOT'
 
     compile 'io.realm:realm-android:0.87.0'
 

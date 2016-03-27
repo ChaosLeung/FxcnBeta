@@ -16,6 +16,11 @@
 
 package org.chaos.fx.cnbeta.net;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
+
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
@@ -39,7 +44,19 @@ public class CnBetaApiHelper {
     public static void initialize() {
         sCnBetaApi = new Retrofit.Builder()
                 .baseUrl(CnBetaApi.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(
+                        GsonConverterFactory.create(
+                                new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
+                                    @Override
+                                    public boolean shouldSkipField(FieldAttributes f) {
+                                        return f.getAnnotation(SerializedName.class) == null;
+                                    }
+
+                                    @Override
+                                    public boolean shouldSkipClass(Class<?> clazz) {
+                                        return false;
+                                    }
+                                }).create()))
                 .build()
                 .create(CnBetaApi.class);
     }

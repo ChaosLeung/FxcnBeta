@@ -18,6 +18,8 @@ package org.chaos.fx.cnbeta.net;
 
 import android.support.annotation.StringDef;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
@@ -241,7 +243,13 @@ public interface CnBetaApi {
 
 
     class Result<T> {
+
+        private static final String FIELD_STATUS = "status";
+        private static final String FIELD_RESULT = "result";
+
+        @SerializedName(FIELD_STATUS)
         public String status;
+        @SerializedName(FIELD_RESULT)
         public T result;
     }
 }

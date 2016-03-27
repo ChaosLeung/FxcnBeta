@@ -21,6 +21,9 @@ import android.app.Application;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 /**
  * @author Chaos
  *         2015/11/14.
@@ -31,5 +34,6 @@ public class FxCBApplication extends Application {
         super.onCreate();
         CnBetaApiHelper.initialize();
         TimeStringHelper.initialize(this);
+        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
     }
 }

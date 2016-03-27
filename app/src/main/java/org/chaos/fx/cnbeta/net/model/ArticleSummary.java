@@ -18,11 +18,14 @@ package org.chaos.fx.cnbeta.net.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * @author Chaos
  *         2015/11/01.
  */
-public class ArticleSummary {
+public class ArticleSummary extends RealmObject {
 
     private static final String FIELD_PUBTIME = "pubtime";
     private static final String FIELD_THUMB = "thumb";
@@ -48,6 +51,7 @@ public class ArticleSummary {
     private int mComment;
     @SerializedName(FIELD_SCORE_STORY)
     private int mScoreStory;
+    @PrimaryKey
     @SerializedName(FIELD_SID)
     private int mSid;
     @SerializedName(FIELD_TOPIC_LOGO)

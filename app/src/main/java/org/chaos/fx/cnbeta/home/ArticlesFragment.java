@@ -38,6 +38,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,6 +53,8 @@ public class ArticlesFragment extends BaseFragment
         MainActivity.OnActionBarDoubleClickListener {
 
     private static final String KEY_TOPIC_ID = "topic_id";
+
+    private static final int STORE_MAX_COUNT = 50;
 
     @Bind(R.id.swipe_recycler_view)
     SwipeLinearRecyclerView mArticlesView;
@@ -71,11 +74,14 @@ public class ArticlesFragment extends BaseFragment
         return fragment;
     }
 
+    private Realm mRealm;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setActionBarTitle(R.string.nav_home);
         mTopicId = getArguments().getString(KEY_TOPIC_ID, "null");
+        mRealm = Realm.getDefaultInstance();
     }
 
     @Nullable
@@ -92,15 +98,21 @@ public class ArticlesFragment extends BaseFragment
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
         });
+        mArticleAdapter.addFooterView(
+                LayoutInflater.from(getActivity()).inflate(
+                        R.layout.layout_loading, mArticlesView, false));
         mArticlesView.setAdapter(mArticleAdapter);
 
         mArticlesView.setOnRefreshListener(this);
         mArticlesView.setOnLoadMoreListener(this);
+
+        mArticleAdapter.addAll(0, mRealm.allObjects(ArticleSummary.class));
+
         mArticlesView.post(new Runnable() {
             @Override
             public void run() {
                 mArticlesView.setRefreshing(true);
-                initArticles();
+                onRefresh();
             }
         });
         return rootView;
@@ -123,18 +135,20 @@ public class ArticlesFragment extends BaseFragment
         if (mCall != null) {
             mCall.cancel();
         }
+        int size = mArticleAdapter.listSize();
+        List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
+        mRealm.beginTransaction();
+        mRealm.clear(ArticleSummary.class);
+        mRealm.copyToRealmOrUpdate(storeArticles);
+        mRealm.commitTransaction();
         super.onDestroyView();
-    }
-
-    private void initArticles() {
-        mCall = CnBetaApiHelper.topicArticles(mTopicId);
-        mCall.enqueue(mApiCallback);
     }
 
     @Override
     public void onRefresh() {
-        if (mArticleAdapter.getItemCount() == 1) {
-            initArticles();
+        if (mArticleAdapter.getItemCount() == 0) {
+            mCall = CnBetaApiHelper.topicArticles(mTopicId);
+            mCall.enqueue(mApiCallback);
         } else {
             mCall = CnBetaApiHelper.newArticles(
                     mTopicId,
@@ -145,10 +159,8 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onLoadMore() {
-        if (mArticleAdapter.getFooterView() != null) {
-            mArticleAdapter.getFooterView().setVisibility(View.VISIBLE);
-            mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
-        }
+        mArticleAdapter.getFooterView().setVisibility(View.VISIBLE);
+        mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
         mCall = CnBetaApiHelper.oldArticles(
                 mTopicId,
                 mArticleAdapter.get(mArticleAdapter.getItemCount() - 2).getSid());
@@ -173,11 +185,6 @@ public class ArticlesFragment extends BaseFragment
             if (!result.isEmpty()) {
                 if (mArticlesView.isRefreshing()) {
                     mArticleAdapter.addAll(0, result);
-                    if (mArticleAdapter.getFooterView() == null) {
-                        mArticleAdapter.addFooterView(
-                                LayoutInflater.from(getActivity()).inflate(
-                                        R.layout.layout_loading, mArticlesView, false));
-                    }
                 } else {
                     mArticleAdapter.addAll(response.body().result);
                 }
@@ -198,10 +205,8 @@ public class ArticlesFragment extends BaseFragment
         private void resetStatus() {
             mArticlesView.setRefreshing(false);
             mArticlesView.setLoading(false);
-            if (mArticleAdapter.getFooterView() != null) {
-                mArticleAdapter.getFooterView().setVisibility(View.GONE);
-                mArticleAdapter.notifyItemRemoved(mArticleAdapter.getItemCount());
-            }
+            mArticleAdapter.getFooterView().setVisibility(View.GONE);
+            mArticleAdapter.notifyItemRemoved(mArticleAdapter.getItemCount());
         }
     }
 }

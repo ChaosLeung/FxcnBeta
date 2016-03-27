@@ -144,6 +144,10 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
         return mContext;
     }
 
+    public RecyclerView getBindView() {
+        return mBindView;
+    }
+
     public void addHeaderView(View v) {
         mHeaderView = v;
     }

@@ -26,7 +26,9 @@
     <color name="main_background">#ffffffff</color>
 
     <color name="card_text">#ff212121</color>
+    <color name="card_text_has_read">#ffa1a1a1</color>
     <color name="card_time_text">#ff616161</color>
+    <color name="card_time_text_has_read">#ffc1c1c1</color>
 
     <color name="content_text">@color/card_text</color>
 

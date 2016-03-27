@@ -77,6 +77,8 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
 
+    private int mPreClickPosition;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +95,7 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                mPreClickPosition = position;
                 ArticleSummary summary = mArticleAdapter.get(position);
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
@@ -108,6 +111,12 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mArticleAdapter.notifyItemChanged(mPreClickPosition);
     }
 
     @SuppressLint("WrongConstant")

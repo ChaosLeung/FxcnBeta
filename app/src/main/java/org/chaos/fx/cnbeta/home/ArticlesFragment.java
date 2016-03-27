@@ -75,6 +75,7 @@ public class ArticlesFragment extends BaseFragment
     }
 
     private Realm mRealm;
+    private int mPreClickPosition;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +95,7 @@ public class ArticlesFragment extends BaseFragment
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                mPreClickPosition = position;
                 ArticleSummary summary = mArticleAdapter.get(position);
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
@@ -128,6 +130,7 @@ public class ArticlesFragment extends BaseFragment
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).addOnActionBarDoubleClickListener(this);
+        mArticleAdapter.notifyItemChanged(mPreClickPosition);
     }
 
     @Override

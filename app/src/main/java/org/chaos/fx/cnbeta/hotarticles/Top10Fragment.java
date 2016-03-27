@@ -58,6 +58,8 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
         return new Top10Fragment();
     }
 
+    private int mPreClickPosition;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +76,7 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
         mTop10Adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                mPreClickPosition = position;
                 ArticleSummary summary = mTop10Adapter.get(position);
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
             }
@@ -89,6 +92,12 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTop10Adapter.notifyItemChanged(mPreClickPosition);
     }
 
     @Override

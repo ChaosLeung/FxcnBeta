@@ -29,9 +29,11 @@ import com.squareup.picasso.Picasso;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.net.model.HasReadArticle;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 /**
  * @author Chaos
@@ -39,8 +41,11 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, BaseArticleAdapter.ArticleHolder> {
 
+    private Realm mRealm;
+
     public BaseArticleAdapter(Context context, RecyclerView bindView) {
         super(context, bindView);
+        mRealm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -54,6 +59,13 @@ public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, Bas
         ArticleSummary summary = get(position);
         holder.title.setText(summary.getTitle());
         Picasso.with(getContext()).load(summary.getThumb()).into(holder.image);
+        if (mRealm.where(HasReadArticle.class).equalTo("mSid", summary.getSid()).findFirst() != null) {
+            holder.title.setTextColor(getContext().getResources().getColor(R.color.card_text_has_read));
+            holder.summary.setTextColor(getContext().getResources().getColor(R.color.card_time_text_has_read));
+        } else {
+            holder.title.setTextColor(getContext().getResources().getColor(R.color.card_text));
+            holder.summary.setTextColor(getContext().getResources().getColor(R.color.card_time_text));
+        }
     }
 
     @Override

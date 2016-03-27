@@ -41,6 +41,7 @@ import com.squareup.picasso.Transformation;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.Comment;
+import org.chaos.fx.cnbeta.net.model.HasReadArticle;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
@@ -55,6 +56,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -120,6 +122,15 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
         mLogoLink = getIntent().getStringExtra(KEY_TOPIC_LOGO);
 
         ButterKnife.bind(this);
+
+        if (mSid != -1) {
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            HasReadArticle readArticle = new HasReadArticle();
+            readArticle.setSid(mSid);
+            realm.copyToRealmOrUpdate(readArticle);
+            realm.commitTransaction();
+        }
 
         mCommentAdapter = new CommentAdapter(this, mCommentView.getRecyclerView());
 

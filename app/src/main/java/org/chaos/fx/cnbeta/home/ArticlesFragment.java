@@ -17,9 +17,11 @@
 package org.chaos.fx.cnbeta.home;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +76,16 @@ public class ArticlesFragment extends BaseFragment
         return fragment;
     }
 
+    private static Handler sHandler = new Handler();
+
+    private static final long RESET_ACTION_BAR_TITLE_DELAY_TIME = 3000;
+    private Runnable mResetActionBarTitleRunnable = new Runnable() {
+        @Override
+        public void run() {
+            setActionBarTitle(R.string.nav_home);
+        }
+    };
+
     private Realm mRealm;
     private int mPreClickPosition;
 
@@ -104,6 +116,17 @@ public class ArticlesFragment extends BaseFragment
                 LayoutInflater.from(getActivity()).inflate(
                         R.layout.layout_loading, mArticlesView, false));
         mArticlesView.setAdapter(mArticleAdapter);
+        mArticlesView.getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                float verticalOffset = recyclerView.computeVerticalScrollOffset();
+                if (Math.round(verticalOffset / getResources().getDisplayMetrics().heightPixels) >= 6 && dy <= -180) {
+                    getSupportActionBar().setTitle(R.string.double_click_move_to_top);
+                    sHandler.removeCallbacks(mResetActionBarTitleRunnable);
+                    sHandler.postDelayed(mResetActionBarTitleRunnable, RESET_ACTION_BAR_TITLE_DELAY_TIME);
+                }
+            }
+        });
 
         mArticlesView.setOnRefreshListener(this);
         mArticlesView.setOnLoadMoreListener(this);
@@ -135,6 +158,7 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onDestroyView() {
+        sHandler.removeCallbacks(mResetActionBarTitleRunnable);
         if (mCall != null) {
             mCall.cancel();
         }
@@ -176,6 +200,8 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onActionBarDoubleClick() {
+        sHandler.removeCallbacks(mResetActionBarTitleRunnable);
+        setActionBarTitle(R.string.nav_home);
         mArticlesView.getRecyclerView().scrollToPosition(0);
     }
 

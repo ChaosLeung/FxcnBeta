@@ -56,6 +56,8 @@
     <string name="load_articles_failed">加载失败</string>
     <string name="no_more_comments">没有更多评论</string>
 
+    <string name="double_click_move_to_top">双击可返回顶部</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

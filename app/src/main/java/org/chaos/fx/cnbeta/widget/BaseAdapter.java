@@ -31,11 +31,13 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = Integer.MIN_VALUE;
+    private static final int TYPE_FOOTER = Integer.MIN_VALUE + 1;
 
     private Context mContext;
     private RecyclerView mBindView;
 
     private View mHeaderView;
+    private View mFooterView;
 
     private OnItemClickListener mOnItemClickListener;
 
@@ -56,7 +58,11 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
-            return new HeaderHolder(mHeaderView);
+            return new RecyclerView.ViewHolder(mHeaderView) {
+            };
+        } else if (viewType == TYPE_FOOTER) {
+            return new RecyclerView.ViewHolder(mFooterView) {
+            };
         } else {
             VH holder = onCreateHolderInternal(parent, viewType);
             holder.itemView.setOnClickListener(mOnClickListener);
@@ -66,7 +72,8 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
 
     @Override
     public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
-        if (getItemViewType(position) != TYPE_HEADER) {
+        int type = getItemViewType(position);
+        if (type != TYPE_HEADER && type != TYPE_FOOTER) {
             onBindHolderInternal((VH) holder, mHeaderView == null ? position : position - 1, payloads);
         } else {
             super.onBindViewHolder(holder, position, payloads);
@@ -75,23 +82,30 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
 
     @Override
     public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (getItemViewType(position) != TYPE_HEADER) {
+        int type = getItemViewType(position);
+        if (type != TYPE_HEADER && type != TYPE_FOOTER) {
             onBindHolderInternal((VH) holder, mHeaderView == null ? position : position - 1);
         }
     }
 
     @Override
     public final int getItemViewType(int position) {
-        if (mHeaderView != null && position == 0) {
+        if (position == 0 && mHeaderView != null && mHeaderView.getVisibility() == View.VISIBLE) {
             return TYPE_HEADER;
+        } else if (position == getItemCount() - 1 && mFooterView != null && mFooterView.getVisibility() == View.VISIBLE) {
+            return TYPE_FOOTER;
         }
         return getItemViewTypeInternal(mHeaderView == null ? position : position - 1);
     }
 
     @Override
     public long getItemId(int position) {
-        if (mHeaderView != null && position == 0) {
+        int type = getItemViewType(position);
+        if (type == TYPE_HEADER) {
             return mHeaderView.getId();
+        }
+        if (type == TYPE_FOOTER) {
+            return mFooterView.getId();
         }
         return getItemIdInternal(mHeaderView == null ? position : position - 1);
     }
@@ -99,7 +113,13 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
     @Override
     public final int getItemCount() {
         int itemCount = getItemCountInternal();
-        return mHeaderView != null ? itemCount + 1 : itemCount;
+        if (mHeaderView != null && mHeaderView.getVisibility() == View.VISIBLE) {
+            itemCount++;
+        }
+        if (mFooterView != null && mFooterView.getVisibility() == View.VISIBLE) {
+            itemCount++;
+        }
+        return itemCount;
     }
 
     protected abstract VH onCreateHolderInternal(ViewGroup parent, int viewType);
@@ -128,11 +148,16 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
         mHeaderView = v;
     }
 
-    private class HeaderHolder extends RecyclerView.ViewHolder {
+    public View getHeaderView() {
+        return mHeaderView;
+    }
 
-        public HeaderHolder(View itemView) {
-            super(itemView);
-        }
+    public void addFooterView(View v) {
+        mFooterView = v;
+    }
+
+    public View getFooterView() {
+        return mFooterView;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

@@ -54,6 +54,7 @@
 
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
+    <string name="no_more_comments">没有更多评论</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

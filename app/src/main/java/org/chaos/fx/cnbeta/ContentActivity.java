@@ -122,6 +122,8 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
 
         mHeaderWrapper = new HeaderWrapper();
         mCommentAdapter.addHeaderView(mHeaderWrapper.headerView);
+        mCommentAdapter.addFooterView(
+                getLayoutInflater().inflate(R.layout.layout_loading, mCommentView, false));
         mCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -247,14 +249,16 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                     // 会导致 RecyclerView 跳转到奇怪的位置
                     mCommentAdapter.getList().addAll(result);
                     mCommentAdapter.notifyDataSetChanged();
+                } else {
+                    showSnackBar(R.string.no_more_comments);
                 }
-                mCommentView.setLoading(false);
+                hideProgress();
             }
 
             @Override
             public void onFailure(Call<CnBetaApi.Result<List<Comment>>> call, Throwable t) {
                 showSnackBar(R.string.load_articles_failed);
-                mCommentView.setLoading(false);
+                hideProgress();
             }
         });
     }
@@ -267,9 +271,21 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
     public void onLoadMore() {
         int size = mCommentAdapter.getList().size();
         if (size % 20 == 0) {
+            if (mCommentAdapter.getFooterView() != null) {
+                mCommentAdapter.getFooterView().setVisibility(View.VISIBLE);
+                mCommentAdapter.notifyItemInserted(mCommentAdapter.getItemCount());
+            }
             loadComments(size / 20 + 1);
         } else {
-            mCommentView.setLoading(false);
+            hideProgress();
+        }
+    }
+
+    private void hideProgress() {
+        mCommentView.setLoading(false);
+        if (mCommentAdapter.getFooterView() != null) {
+            mCommentAdapter.getFooterView().setVisibility(View.GONE);
+            mCommentAdapter.notifyItemRemoved(mCommentAdapter.getItemCount());
         }
     }
 

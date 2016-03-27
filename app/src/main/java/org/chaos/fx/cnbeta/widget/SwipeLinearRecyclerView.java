@@ -22,10 +22,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
 
@@ -40,7 +40,6 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
 
     @Bind(R.id.swipe) SwipeRefreshLayout mSwipeLayout;
     @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
-    @Bind(R.id.load_more_progress) ProgressBar mProgressBar;
 
     private OnRefreshListener mOnRefreshListener;
     private OnLoadMoreListener mOnLoadMoreListener;
@@ -69,7 +68,6 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
         mSwipeLayout.setEnabled(false);
         mSwipeLayout.setColorSchemeColors(getContext().getResources().getColor(R.color.colorAccent));
         mSwipeLayout.setOnRefreshListener(this);
-        mProgressBar.setEnabled(false);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST));
 
@@ -92,7 +90,6 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
     public void setLoading(boolean loading) {
         isLoading = loading;
         if (isShowLoadingBar) {
-            mProgressBar.setVisibility(loading ? VISIBLE : GONE);
             mRecyclerView.invalidateItemDecorations();
         }
     }
@@ -116,7 +113,6 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
 
     public void setOnLoadMoreListener(@NonNull OnLoadMoreListener listener) {
         mOnLoadMoreListener = listener;
-        mProgressBar.setEnabled(true);
         RecyclerView.LayoutManager lm = mRecyclerView.getLayoutManager();
         if (lm == null) {
             throw new IllegalStateException("RecyclerView has no LayoutManager");
@@ -127,10 +123,10 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (mOnLoadMoreListener != null && !isRefreshing() && !isLoading()) {
-                        if (llm.findLastVisibleItemPosition() + 1
-                                == llm.getItemCount() && dy > 50) {
+                        if (llm.getItemCount() - llm.getChildCount() <= llm.findFirstVisibleItemPosition() && dy > 0) {
                             setLoading(true);
                             mOnLoadMoreListener.onLoadMore();
+                            Log.d("LoadMore", "loding more");
                         }
                     }
                 }
@@ -147,8 +143,6 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
 
     public void removeOnLoadMoreListener() {
         mOnLoadMoreListener = null;
-        mProgressBar.setVisibility(GONE);
-        mProgressBar.setEnabled(false);
     }
 
     @Override

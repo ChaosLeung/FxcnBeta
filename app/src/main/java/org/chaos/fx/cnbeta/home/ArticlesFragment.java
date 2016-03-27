@@ -133,7 +133,7 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onRefresh() {
-        if (mArticleAdapter.getItemCount() == 0) {
+        if (mArticleAdapter.getItemCount() == 1) {
             initArticles();
         } else {
             mCall = CnBetaApiHelper.newArticles(
@@ -145,9 +145,13 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onLoadMore() {
+        if (mArticleAdapter.getFooterView() != null) {
+            mArticleAdapter.getFooterView().setVisibility(View.VISIBLE);
+            mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
+        }
         mCall = CnBetaApiHelper.oldArticles(
                 mTopicId,
-                mArticleAdapter.get(mArticleAdapter.getItemCount() - 1).getSid());
+                mArticleAdapter.get(mArticleAdapter.getItemCount() - 2).getSid());
         mCall.enqueue(mApiCallback);
     }
 
@@ -169,6 +173,11 @@ public class ArticlesFragment extends BaseFragment
             if (!result.isEmpty()) {
                 if (mArticlesView.isRefreshing()) {
                     mArticleAdapter.addAll(0, result);
+                    if (mArticleAdapter.getFooterView() == null) {
+                        mArticleAdapter.addFooterView(
+                                LayoutInflater.from(getActivity()).inflate(
+                                        R.layout.layout_loading, mArticlesView, false));
+                    }
                 } else {
                     mArticleAdapter.addAll(response.body().result);
                 }
@@ -189,6 +198,10 @@ public class ArticlesFragment extends BaseFragment
         private void resetStatus() {
             mArticlesView.setRefreshing(false);
             mArticlesView.setLoading(false);
+            if (mArticleAdapter.getFooterView() != null) {
+                mArticleAdapter.getFooterView().setVisibility(View.GONE);
+                mArticleAdapter.notifyItemRemoved(mArticleAdapter.getItemCount());
+            }
         }
     }
 }

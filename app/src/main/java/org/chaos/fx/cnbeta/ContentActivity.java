@@ -50,6 +50,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -74,6 +75,8 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
         intent.putExtra(KEY_TOPIC_LOGO, topicLogoLink);
         context.startActivity(intent);
     }
+
+    private static final int ONE_PAGE_COMMENT_COUNT = 20;
 
     private int mSid;
     private String mLogoLink;
@@ -146,7 +149,7 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
         loadContent();
 
         mCommentView.setLoading(true);
-        loadComments(1);
+        onLoadMore();
 
         setupActionBar();
     }
@@ -245,6 +248,11 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                                    Response<CnBetaApi.Result<List<Comment>>> response) {
                 List<Comment> result = response.body().result;
                 if (!result.isEmpty()) {
+                    int currentSize = mCommentAdapter.listSize();
+                    if (currentSize % ONE_PAGE_COMMENT_COUNT != 0) {
+                        mCommentAdapter.removeAll(
+                                new ArrayList<>(mCommentAdapter.subList(currentSize - currentSize % ONE_PAGE_COMMENT_COUNT, currentSize)));
+                    }
                     // HeaderView 太高时，调用 notifyItemInserted 相关方法
                     // 会导致 RecyclerView 跳转到奇怪的位置
                     mCommentAdapter.getList().addAll(result);
@@ -270,20 +278,18 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
     @Override
     public void onLoadMore() {
         int size = mCommentAdapter.getList().size();
-        if (size % 20 == 0) {
-            if (mCommentAdapter.getFooterView() != null) {
-                mCommentAdapter.getFooterView().setVisibility(View.VISIBLE);
-                mCommentAdapter.notifyItemInserted(mCommentAdapter.getItemCount());
-            }
-            loadComments(size / 20 + 1);
+        mCommentAdapter.getFooterView().setVisibility(View.VISIBLE);
+        mCommentAdapter.notifyItemInserted(mCommentAdapter.getItemCount());
+        if (size % ONE_PAGE_COMMENT_COUNT == 0) {
+            loadComments(size / ONE_PAGE_COMMENT_COUNT + 1);
         } else {
-            hideProgress();
+            loadComments(size / ONE_PAGE_COMMENT_COUNT);
         }
     }
 
     private void hideProgress() {
         mCommentView.setLoading(false);
-        if (mCommentAdapter.getFooterView() != null) {
+        if (mCommentAdapter.getFooterView().getVisibility() == View.VISIBLE) {
             mCommentAdapter.getFooterView().setVisibility(View.GONE);
             mCommentAdapter.notifyItemRemoved(mCommentAdapter.getItemCount());
         }

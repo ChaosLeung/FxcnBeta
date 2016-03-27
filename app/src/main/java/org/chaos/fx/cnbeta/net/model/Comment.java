@@ -122,9 +122,7 @@ public class Comment {
         }
         if (o instanceof Comment) {
             Comment c = (Comment) o;
-            if (c.mTid == this.mTid) {
-                return true;
-            }
+            return c.mTid == this.mTid;
         }
         return false;
     }

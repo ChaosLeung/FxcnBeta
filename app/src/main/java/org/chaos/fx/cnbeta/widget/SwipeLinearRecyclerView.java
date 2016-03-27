@@ -22,7 +22,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -123,10 +122,14 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (mOnLoadMoreListener != null && !isRefreshing() && !isLoading()) {
-                        if (llm.getItemCount() - llm.getChildCount() <= llm.findFirstVisibleItemPosition() && dy > 0) {
-                            setLoading(true);
-                            mOnLoadMoreListener.onLoadMore();
-                            Log.d("LoadMore", "loding more");
+                        if (llm.getItemCount() == 1) {
+                            if (recyclerView.findViewHolderForAdapterPosition(0).itemView.getHeight()
+                                    - recyclerView.getHeight() * 6 / 5 <= recyclerView.computeVerticalScrollOffset()) {
+                                onLoadMore();
+                            }
+                        } else if (llm.getItemCount() - llm.getChildCount()
+                                <= llm.findFirstVisibleItemPosition() && dy > 0) {
+                            onLoadMore();
                         }
                     }
                 }
@@ -143,6 +146,11 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
 
     public void removeOnLoadMoreListener() {
         mOnLoadMoreListener = null;
+    }
+
+    private void onLoadMore() {
+        setLoading(true);
+        mOnLoadMoreListener.onLoadMore();
     }
 
     @Override

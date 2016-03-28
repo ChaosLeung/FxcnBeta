@@ -188,6 +188,7 @@ public class ArticlesFragment extends BaseFragment
     public void onLoadMore() {
         mArticleAdapter.getFooterView().setVisibility(View.VISIBLE);
         mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
+        mArticlesView.getRecyclerView().smoothScrollToPosition(mArticleAdapter.getItemCount() - 1);
         mCall = CnBetaApiHelper.oldArticles(
                 mTopicId,
                 mArticleAdapter.get(mArticleAdapter.getItemCount() - 2).getSid());

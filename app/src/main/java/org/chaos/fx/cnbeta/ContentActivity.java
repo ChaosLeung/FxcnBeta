@@ -291,6 +291,7 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
         int size = mCommentAdapter.getList().size();
         mCommentAdapter.getFooterView().setVisibility(View.VISIBLE);
         mCommentAdapter.notifyItemInserted(mCommentAdapter.getItemCount());
+        mCommentView.getRecyclerView().smoothScrollToPosition(mCommentAdapter.getItemCount() - 1);
         if (size % ONE_PAGE_COMMENT_COUNT == 0) {
             loadComments(size / ONE_PAGE_COMMENT_COUNT + 1);
         } else {

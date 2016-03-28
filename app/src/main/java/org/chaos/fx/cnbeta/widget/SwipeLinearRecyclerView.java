@@ -22,6 +22,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -119,19 +120,30 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
         if (lm instanceof LinearLayoutManager) {
             final LinearLayoutManager llm = (LinearLayoutManager) lm;
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+                private long totalDY = 0;
+
                 @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    if (mOnLoadMoreListener != null && !isRefreshing() && !isLoading()) {
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE && mOnLoadMoreListener != null
+                            && !isRefreshing() && !isLoading()) {
                         if (llm.getItemCount() == 1) {
-                            if (recyclerView.findViewHolderForAdapterPosition(0).itemView.getHeight()
-                                    - recyclerView.getHeight() * 6 / 5 <= recyclerView.computeVerticalScrollOffset()) {
+                            View firstView = recyclerView.findViewHolderForAdapterPosition(0).itemView;
+                            if (-firstView.getTop() >= firstView.getHeight() - recyclerView.getHeight()) {
                                 onLoadMore();
                             }
-                        } else if (llm.getItemCount() - llm.getChildCount()
-                                <= llm.findFirstVisibleItemPosition() && dy > 0) {
+                        } else if (llm.getItemCount() - llm.getChildCount() <= llm.findFirstVisibleItemPosition() && totalDY >= 0) {
                             onLoadMore();
                         }
                     }
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        totalDY = 0;
+                    }
+                }
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    totalDY += dy;
                 }
             });
         } else {

@@ -41,6 +41,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -131,7 +133,9 @@ public class ArticlesFragment extends BaseFragment
         mArticlesView.setOnRefreshListener(this);
         mArticlesView.setOnLoadMoreListener(this);
 
-        mArticleAdapter.addAll(0, mRealm.allObjects(ArticleSummary.class));
+        RealmResults<ArticleSummary> results = mRealm.allObjects(ArticleSummary.class);
+        results.sort("mSid", Sort.DESCENDING);
+        mArticleAdapter.addAll(0, results);
 
         mArticlesView.post(new Runnable() {
             @Override
@@ -165,7 +169,7 @@ public class ArticlesFragment extends BaseFragment
         int size = mArticleAdapter.listSize();
         List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
         mRealm.beginTransaction();
-        mRealm.clear(ArticleSummary.class);
+        mRealm.where(ArticleSummary.class).lessThan("mSid", storeArticles.get(storeArticles.size() - 1).getSid()).findAll().clear();
         mRealm.copyToRealmOrUpdate(storeArticles);
         mRealm.commitTransaction();
         super.onDestroyView();

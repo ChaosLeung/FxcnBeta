@@ -17,6 +17,8 @@
 package org.chaos.fx.cnbeta;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.StringDef;
@@ -29,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
 import org.chaos.fx.cnbeta.help.FeedbackActivity;
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
@@ -79,8 +82,35 @@ public class MainActivity extends AppCompatActivity
         });
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.setDrawerListener(toggle);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+
+            private final int originAlpha;
+            private final int originRed;
+            private final int originGreen;
+            private final int originBlue;
+
+            {
+                final int originColor = getResources().getColor(R.color.colorPrimaryDark);
+                originAlpha = Color.alpha(originColor);
+                originRed = Color.red(originColor);
+                originGreen = Color.green(originColor);
+                originBlue = Color.blue(originColor);
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Window window = getWindow();
+                    window.setStatusBarColor(
+                            Color.argb((int) Math.floor(originAlpha * (1 - slideOffset)),
+                                    originRed,
+                                    originGreen,
+                                    originBlue));
+                }
+            }
+        };
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(this);

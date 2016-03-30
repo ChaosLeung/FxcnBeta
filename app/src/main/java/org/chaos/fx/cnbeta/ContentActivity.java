@@ -50,6 +50,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -325,14 +326,18 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
             public Bitmap transform(Bitmap source) {
                 int targetWidth = contentLayout.getWidth();
 
-                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-                int targetHeight = (int) (targetWidth * aspectRatio);
-                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
-                if (result != source) {
-                    // Same bitmap is returned if sizes are the same
-                    source.recycle();
+                if (source.getWidth() > 10) {
+                    double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
+                    int targetHeight = (int) (targetWidth * aspectRatio);
+                    Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
+                    if (result != source) {
+                        // Same bitmap is returned if sizes are the same
+                        source.recycle();
+                    }
+                    return result;
+                } else {
+                    return source;
                 }
-                return result;
             }
 
             @Override
@@ -353,6 +358,12 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                 public void onResponse(Call<CnBetaApi.Result<NewsContent>> call,
                                        Response<CnBetaApi.Result<NewsContent>> response) {
                     NewsContent newsContent = response.body().result;
+                    newsContent.setBodytext(
+                            newsContent.getBodytext()
+                                    .replaceAll("&quot;", "\"")
+                                    .replaceAll("&lt;", "<")
+                                    .replaceAll("&gt;", ">")
+                                    .replaceAll("&nbsp;", " "));
 
                     Picasso.with(ContentActivity.this)
                             .load(TextUtils.isEmpty(mLogoLink)
@@ -367,6 +378,10 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                     source.setText(findTagText(doc));
 
                     doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
+                    Elements textareas = doc.select("textarea");
+                    if (!textareas.isEmpty()) {
+                        textareas.first().remove();
+                    }
                     addViewByNode(doc.body());
 
                     mLoadingBar.setVisibility(View.GONE);

@@ -258,19 +258,23 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
             @Override
             public void onResponse(Call<CnBetaApi.Result<List<Comment>>> call,
                                    Response<CnBetaApi.Result<List<Comment>>> response) {
-                List<Comment> result = response.body().result;
-                if (!result.isEmpty()) {
-                    int currentSize = mCommentAdapter.listSize();
-                    if (currentSize % ONE_PAGE_COMMENT_COUNT != 0) {
-                        mCommentAdapter.removeAll(
-                                new ArrayList<>(mCommentAdapter.subList(currentSize - currentSize % ONE_PAGE_COMMENT_COUNT, currentSize)));
+                if (response.code() == 200) {
+                    List<Comment> result = response.body().result;
+                    if (!result.isEmpty()) {
+                        int currentSize = mCommentAdapter.listSize();
+                        if (currentSize % ONE_PAGE_COMMENT_COUNT != 0) {
+                            mCommentAdapter.removeAll(
+                                    new ArrayList<>(mCommentAdapter.subList(currentSize - currentSize % ONE_PAGE_COMMENT_COUNT, currentSize)));
+                        }
+                        // HeaderView 太高时，调用 notifyItemInserted 相关方法
+                        // 会导致 RecyclerView 跳转到奇怪的位置
+                        mCommentAdapter.getList().addAll(result);
+                        mCommentAdapter.notifyDataSetChanged();
+                    } else {
+                        showSnackBar(R.string.no_more_comments);
                     }
-                    // HeaderView 太高时，调用 notifyItemInserted 相关方法
-                    // 会导致 RecyclerView 跳转到奇怪的位置
-                    mCommentAdapter.getList().addAll(result);
-                    mCommentAdapter.notifyDataSetChanged();
                 } else {
-                    showSnackBar(R.string.no_more_comments);
+                    showSnackBar(R.string.load_articles_failed);
                 }
                 hideProgress();
             }
@@ -357,35 +361,38 @@ public class ContentActivity extends SwipeBackActivity implements SwipeLinearRec
                 @Override
                 public void onResponse(Call<CnBetaApi.Result<NewsContent>> call,
                                        Response<CnBetaApi.Result<NewsContent>> response) {
-                    NewsContent newsContent = response.body().result;
-                    newsContent.setBodytext(
-                            newsContent.getBodytext()
-                                    .replaceAll("&quot;", "\"")
-                                    .replaceAll("&lt;", "<")
-                                    .replaceAll("&gt;", ">")
-                                    .replaceAll("&nbsp;", " "));
+                    if (response.code() == 200) {
+                        NewsContent newsContent = response.body().result;
+                        newsContent.setBodytext(
+                                newsContent.getBodytext()
+                                        .replaceAll("&quot;", "\"")
+                                        .replaceAll("&lt;", "<")
+                                        .replaceAll("&gt;", ">")
+                                        .replaceAll("&nbsp;", " "));
 
-                    Picasso.with(ContentActivity.this)
-                            .load(TextUtils.isEmpty(mLogoLink)
-                                    ? "http://static.cnbetacdn.com" + newsContent.getThumb()
-                                    : mLogoLink)
-                            .into(authorImg);
+                        Picasso.with(ContentActivity.this)
+                                .load(TextUtils.isEmpty(mLogoLink)
+                                        ? "http://static.cnbetacdn.com" + newsContent.getThumb()
+                                        : mLogoLink)
+                                .into(authorImg);
 
-                    title.setText(newsContent.getTitle());
-                    authorAndTime.setText("By " + newsContent.getAid() + "\n" + TimeStringHelper.getTimeString(newsContent.getTime()));
+                        title.setText(newsContent.getTitle());
+                        authorAndTime.setText("By " + newsContent.getAid() + "\n" + TimeStringHelper.getTimeString(newsContent.getTime()));
 
-                    Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
-                    source.setText(findTagText(doc));
+                        Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
+                        source.setText(findTagText(doc));
 
-                    doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
-                    Elements textareas = doc.select("textarea");
-                    if (!textareas.isEmpty()) {
-                        textareas.first().remove();
+                        doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
+                        Elements textareas = doc.select("textarea");
+                        if (!textareas.isEmpty()) {
+                            textareas.first().remove();
+                        }
+                        addViewByNode(doc.body());
+                        mCommentView.setVisibility(View.VISIBLE);
+                    } else {
+                        mErrorLayout.setVisibility(View.VISIBLE);
                     }
-                    addViewByNode(doc.body());
-
                     mLoadingBar.setVisibility(View.GONE);
-                    mCommentView.setVisibility(View.VISIBLE);
                 }
 
                 @Override

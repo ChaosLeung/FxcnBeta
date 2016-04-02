@@ -114,12 +114,16 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
             @Override
             public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
                                    Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
-                List<ArticleSummary> result = response.body().result;
-                if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
-                    mTop10Adapter.clear();
-                    mTop10Adapter.addAll(0, result);
+                if (response.code() == 200) {
+                    List<ArticleSummary> result = response.body().result;
+                    if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
+                        mTop10Adapter.clear();
+                        mTop10Adapter.addAll(0, result);
+                    } else {
+                        showSnackBar(R.string.no_more_articles);
+                    }
                 } else {
-                    showSnackBar(R.string.no_more_articles);
+                    showSnackBar(R.string.load_articles_failed);
                 }
                 mTop10View.setRefreshing(false);
             }

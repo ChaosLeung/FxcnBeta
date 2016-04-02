@@ -105,12 +105,16 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
             @Override
             public void onResponse(Call<CnBetaApi.Result<List<HotComment>>> call,
                                    Response<CnBetaApi.Result<List<HotComment>>> response) {
-                List<HotComment> result = response.body().result;
-                if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
-                    mHotCommentAdapter.clear();
-                    mHotCommentAdapter.addAll(0, result);
+                if (response.code() == 200) {
+                    List<HotComment> result = response.body().result;
+                    if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
+                        mHotCommentAdapter.clear();
+                        mHotCommentAdapter.addAll(0, result);
+                    } else {
+                        showSnackBar(R.string.no_more_articles);
+                    }
                 } else {
-                    showSnackBar(R.string.no_more_articles);
+                    showSnackBar(R.string.load_articles_failed);
                 }
                 mHotCommentView.setRefreshing(false);
             }

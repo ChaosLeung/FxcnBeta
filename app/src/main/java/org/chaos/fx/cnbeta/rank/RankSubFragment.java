@@ -126,12 +126,16 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
             @Override
             public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
                                    Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
-                List<ArticleSummary> result = response.body().result;
-                if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
-                    mArticleAdapter.clear();
-                    mArticleAdapter.addAll(0, result);
+                if (response.code() == 200) {
+                    List<ArticleSummary> result = response.body().result;
+                    if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
+                        mArticleAdapter.clear();
+                        mArticleAdapter.addAll(0, result);
+                    } else {
+                        showSnackBar(R.string.no_more_articles);
+                    }
                 } else {
-                    showSnackBar(R.string.no_more_articles);
+                    showSnackBar(R.string.load_articles_failed);
                 }
                 mArticlesView.setRefreshing(false);
             }

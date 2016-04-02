@@ -168,10 +168,12 @@ public class ArticlesFragment extends BaseFragment
         }
         int size = mArticleAdapter.listSize();
         List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
-        mRealm.beginTransaction();
-        mRealm.where(ArticleSummary.class).lessThan("mSid", storeArticles.get(storeArticles.size() - 1).getSid()).findAll().clear();
-        mRealm.copyToRealmOrUpdate(storeArticles);
-        mRealm.commitTransaction();
+        if (!storeArticles.isEmpty()) {
+            mRealm.beginTransaction();
+            mRealm.where(ArticleSummary.class).lessThan("mSid", storeArticles.get(storeArticles.size() - 1).getSid()).findAll().clear();
+            mRealm.copyToRealmOrUpdate(storeArticles);
+            mRealm.commitTransaction();
+        }
         super.onDestroyView();
     }
 
@@ -215,15 +217,19 @@ public class ArticlesFragment extends BaseFragment
         @Override
         public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
                                Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
-            List<ArticleSummary> result = response.body().result;
-            if (!result.isEmpty()) {
-                if (mArticlesView.isRefreshing()) {
-                    mArticleAdapter.addAll(0, result);
+            if (response.code() == 200) {
+                List<ArticleSummary> result = response.body().result;
+                if (!result.isEmpty()) {
+                    if (mArticlesView.isRefreshing()) {
+                        mArticleAdapter.addAll(0, result);
+                    } else {
+                        mArticleAdapter.addAll(response.body().result);
+                    }
                 } else {
-                    mArticleAdapter.addAll(response.body().result);
+                    showSnackBar(R.string.no_more_articles);
                 }
             } else {
-                showSnackBar(R.string.no_more_articles);
+                showSnackBar(R.string.load_articles_failed);
             }
             resetStatus();
         }

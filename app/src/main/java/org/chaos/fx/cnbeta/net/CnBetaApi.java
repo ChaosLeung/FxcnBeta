@@ -69,7 +69,7 @@ public interface CnBetaApi {
      *
      * @param timestamp 时间戳
      * @param sign      规定顺序的字符串加密后的结果，参考 {@link CnBetaSignUtil#articlesSign(long)}
-     * @return 成功则返回 status 字符串以及文章简略数据，失败直接崩溃 _(:зゝ∠)_
+     * @return 成功则返回 state 字符串以及文章简略数据，失败直接崩溃 _(:зゝ∠)_
      */
     @GET(BASE_PARAMS + "Article.Lists")
     Call<Result<List<ArticleSummary>>> articles(@Query("timestamp") long timestamp,
@@ -153,15 +153,16 @@ public interface CnBetaApi {
                                     @Query("content") String content);
 
     /**
-     * 回复评论
+     * 回复评论 (目前一直返回评论参数错误)
      *
      * @param timestamp 时间戳
      * @param sign      加密字符串
      * @param sid       文章 id
      * @param pid       对应评论的 id
      * @param content   回复内容
-     * @return FIXME 未知，目前一直返回评论参数错误（官方也这尿性……）
+     * @return 操作状态描述
      */
+    @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
     Call<Result<Object>> replyComment(@Query("timestamp") long timestamp,
                                       @Query("sign") String sign,
@@ -170,30 +171,32 @@ public interface CnBetaApi {
                                       @Query("content") String content);
 
     /**
-     * 支持评论
+     * 支持评论 (暂不能用, 虽然返回成功, 但是无效)
      *
      * @param timestamp 时间戳
      * @param sign      加密串
-     * @param sid       评论 id
+     * @param tid       评论 id
      * @return 操作状态描述
      */
+    @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=support&tid=1")
     Call<Result<String>> supportComment(@Query("timestamp") long timestamp,
                                         @Query("sign") String sign,
-                                        @Query("sid") int sid);
+                                        @Query("sid") int tid);
 
     /**
-     * 反对评论
+     * 反对评论 (暂不能用, 虽然返回成功, 但是无效)
      *
      * @param timestamp 时间戳
      * @param sign      加密串
-     * @param sid       评论 id
+     * @param tid       评论 id
      * @return 操作状态描述
      */
+    @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=against&tid=0")
     Call<Result<String>> againstComment(@Query("timestamp") long timestamp,
                                         @Query("sign") String sign,
-                                        @Query("sid") int sid);
+                                        @Query("sid") int tid);
 
     /**
      * 热门评论

@@ -42,6 +42,7 @@
 
     <color name="fb_content_length">#aaaaaa</color>
 
-    <color name="circle_color">#E0E0E0</color>
+    <color name="comment_ic_bg">#EEEEEE</color>
+    <color name="comment_ic_bg_pressed">#E0E0E0</color>
 
 </resources>

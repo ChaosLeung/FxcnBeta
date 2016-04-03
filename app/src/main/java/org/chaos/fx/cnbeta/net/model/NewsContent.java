@@ -42,7 +42,7 @@ public class NewsContent {
     private static final String FIELD_RATINGS = "ratings";
     private static final String FIELD_ISHOME = "ishome";
     private static final String FIELD_BODYTEXT = "bodytext";
-    private static final String FIELD_STATUS = "status";
+    private static final String FIELD_STATUS = "state";
     private static final String FIELD_BAD = "bad";
     private static final String FIELD_SCORE_STORY = "score_story";
     private static final String FIELD_LISTORDER = "listorder";
@@ -443,7 +443,7 @@ public class NewsContent {
                 ", rating = " + mRating +
                 ", ishome = " + mIshome +
                 ", bodytext = " + mBodytext +
-                ", status = " + mStatus +
+                ", state = " + mStatus +
                 ", bad = " + mBad +
                 ", scoreStory = " + mScoreStory +
                 ", listorder = " + mListorder +

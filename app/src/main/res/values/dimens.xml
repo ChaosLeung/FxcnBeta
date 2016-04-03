@@ -53,4 +53,6 @@
     <dimen name="fb_edit_padding">8dp</dimen>
     <dimen name="fb_text">16sp</dimen>
 
+    <dimen name="comment_ic_padding">5dp</dimen>
+
 </resources>

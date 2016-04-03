@@ -25,15 +25,25 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
+import org.chaos.fx.cnbeta.net.model.WebComment;
+
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Chaos
@@ -41,6 +51,8 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
  */
 public class ContentActivity extends SwipeBackActivity implements
         ContentFragment.OnShowCommentListener {
+
+    private static final String TAG = "ContentActivity";
 
     private static final String KEY_SID = "sid";
     private static final String KEY_TOPIC_LOGO = "topic_logo";
@@ -54,6 +66,9 @@ public class ContentActivity extends SwipeBackActivity implements
 
     private int mSid;
     private String mLogoLink;
+
+    private String mSN;
+    private WebComment mWebComment;
 
     @Bind(R.id.pager)
     ViewPager mViewPager;
@@ -81,6 +96,8 @@ public class ContentActivity extends SwipeBackActivity implements
 
         setupActionBar();
         setupViewPager();
+
+        requestArticleHtml();
     }
 
     private void setupActionBar() {
@@ -121,11 +138,56 @@ public class ContentActivity extends SwipeBackActivity implements
         mViewPager.setCurrentItem(1, true);
     }
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private void requestArticleHtml() {
+        CnBetaApiHelper.getArticleHtml(mSid).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        String html = response.body().string();
+                        mSN = CnBetaApiHelper.getSNFromArticleBody(html);
+                        requestCommentJson();
+                    } catch (IOException e) {
+                        Log.e(TAG, "IOException throws when getting article html", e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG, "request article html string failed", t);
+            }
+        });
+    }
+
+    private void requestCommentJson() {
+        CnBetaApiHelper.getCommentJson(mSid, mSN).enqueue(new Callback<WebApi.Result<WebComment>>() {
+            @Override
+            public void onResponse(Call<WebApi.Result<WebComment>> call, Response<WebApi.Result<WebComment>> response) {
+                if (response.isSuccessful()) {
+                    mWebComment = response.body().result;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WebApi.Result<WebComment>> call, Throwable t) {
+                Log.e(TAG, "request web comment failed", t);
+            }
+        });
+    }
+
+    String getToken() {
+        if (mWebComment == null) {
+            return null;
+        }
+        return mWebComment.getToken();
+    }
+
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] contentTitles = new String[]{getString(R.string.content), getString(R.string.comment)};
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

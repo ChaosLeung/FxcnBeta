@@ -20,15 +20,22 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import com.squareup.picasso.OkHttp3Downloader;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.net.model.Topic;
+import org.chaos.fx.cnbeta.net.model.WebCaptcha;
+import org.chaos.fx.cnbeta.net.model.WebComment;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -40,6 +47,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CnBetaApiHelper {
 
     private static CnBetaApi sCnBetaApi;
+    private static WebApi sWebApi;
+
+    private static OkHttp3Downloader sCookieDownloader;
 
     public static void initialize() {
         sCnBetaApi = new Retrofit.Builder()
@@ -59,6 +69,21 @@ public class CnBetaApiHelper {
                                 }).create()))
                 .build()
                 .create(CnBetaApi.class);
+
+        OkHttpClient okHttpClient = CnBetaHttpClientProvider.newCnBetaHttpClient();
+
+        sWebApi = new Retrofit.Builder()
+                .baseUrl(WebApi.HOST_URL)
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(WebApi.class);
+
+        sCookieDownloader = new OkHttp3Downloader(okHttpClient);
+    }
+
+    public static OkHttp3Downloader okHttp3Downloader() {
+        return sCookieDownloader;
     }
 
     public static Call<CnBetaApi.Result<List<ArticleSummary>>> articles() {
@@ -101,6 +126,14 @@ public class CnBetaApiHelper {
                 sid);
     }
 
+    /**
+     * 获取评论列表
+     *
+     * Note: 如果评论已关闭, 获取的列表必为空
+     *
+     * @param sid  文章 id
+     * @param page 页
+     */
     public static Call<CnBetaApi.Result<List<Comment>>> comments(int sid,
                                                                  int page) {
         long timestamp = System.currentTimeMillis();
@@ -121,6 +154,7 @@ public class CnBetaApiHelper {
                 content);
     }
 
+    @Deprecated
     public static Call<CnBetaApi.Result<Object>> replyComment(int sid,
                                                               int pid,
                                                               String content) {
@@ -133,20 +167,22 @@ public class CnBetaApiHelper {
                 content);
     }
 
-    public static Call<CnBetaApi.Result<String>> supportComment(int sid) {
+    @Deprecated
+    public static Call<CnBetaApi.Result<String>> supportComment(int tid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.supportComment(
                 timestamp,
-                CnBetaSignUtil.supportCommentSign(timestamp, sid),
-                sid);
+                CnBetaSignUtil.supportCommentSign(timestamp, tid),
+                tid);
     }
 
-    public static Call<CnBetaApi.Result<String>> againstComment(int sid) {
+    @Deprecated
+    public static Call<CnBetaApi.Result<String>> againstComment(int tid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.againstComment(
                 timestamp,
-                CnBetaSignUtil.againstCommentSign(timestamp, sid),
-                sid);
+                CnBetaSignUtil.againstCommentSign(timestamp, tid),
+                tid);
     }
 
     public static Call<CnBetaApi.Result<List<HotComment>>> hotComment() {
@@ -170,5 +206,52 @@ public class CnBetaApiHelper {
     public static Call<CnBetaApi.Result<List<Topic>>> topics() {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
+    }
+
+    public static final Pattern SN_PATTERN = Pattern.compile("SN:\"(.{5})\"");
+
+    public static String getSNFromArticleBody(String s) {
+        Matcher matcher = SN_PATTERN.matcher(s);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
+    }
+
+    public static Call<ResponseBody> getArticleHtml(int sid) {
+        return sWebApi.getArticleHtml(sid);
+    }
+
+    /**
+     * 获取网页版的评论内容
+     *
+     * Note: 可以使用该 API 获取到 token
+     *
+     * @param sid 文章 id
+     * @param sn  每篇文章的 sn 码
+     */
+    public static Call<WebApi.Result<WebComment>> getCommentJson(int sid, String sn) {
+        return sWebApi.getCommentJson("1," + sid + "," + sn);
+    }
+
+    public static Call<WebCaptcha> getCaptchaDataUrl(String token) {
+        return sWebApi.getCaptchaDataUrl(token, System.currentTimeMillis());
+    }
+
+    public static Call<WebApi.Result> addComment(String token, String content, String captcha, int sid) {
+        return replyComment(token, content, captcha, sid, 0);
+    }
+
+    public static Call<WebApi.Result> replyComment(String token, String content, String captcha, int sid, int pid) {
+        return sWebApi.addComment(token, "publish", content, captcha, sid, pid);
+    }
+
+    public static Call<WebApi.Result> supportComment(String token, int sid, int tid) {
+        return sWebApi.opForComment(token, "support", sid, tid);
+    }
+
+    public static Call<WebApi.Result> againstComment(String token, int sid, int tid) {
+        return sWebApi.opForComment(token, "against", sid, tid);
     }
 }

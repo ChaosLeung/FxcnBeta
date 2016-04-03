@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
@@ -42,9 +43,35 @@ public class CommentAdapter extends ListAdapter<Comment, CommentAdapter.ViewHold
         super(context, bindView);
     }
 
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (getBindView() != null && mOnItemChildClickListener != null) {
+                View childView;
+                switch (v.getId()) {
+                    case R.id.support:
+                    case R.id.against:
+                    case R.id.reply:
+                        childView = (View) v.getParent();
+                        break;
+                    default:
+                        childView = v;
+                        break;
+                }
+                mOnItemChildClickListener.onItemChildClick(v, getBindView().getChildAdapterPosition(childView));
+            }
+        }
+    };
+
+    private OnItemChildClickListener mOnItemChildClickListener;
+
     @Override
     public ViewHolder onCreateHolderInternal(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.article_comment_item, parent, false));
+        ViewHolder holder = new ViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.article_comment_item, parent, false));
+        holder.support.setOnClickListener(mOnClickListener);
+        holder.against.setOnClickListener(mOnClickListener);
+        holder.reply.setOnClickListener(mOnClickListener);
+        return holder;
     }
 
     @Override
@@ -55,6 +82,8 @@ public class CommentAdapter extends ListAdapter<Comment, CommentAdapter.ViewHold
         holder.username.setText(TextUtils.isEmpty(c.getUsername())
                 ? getContext().getString(R.string.anonymous) : c.getUsername());
         holder.replyComment.setVisibility(View.GONE);
+        holder.support.setText(Integer.toString(c.getSupport()));
+        holder.against.setText(Integer.toString(c.getAgainst()));
         if (c.getPid() > 0) {
             Comment replyComment = new Comment();
             replyComment.setTid(c.getPid());
@@ -71,16 +100,31 @@ public class CommentAdapter extends ListAdapter<Comment, CommentAdapter.ViewHold
         return getList().size();
     }
 
+    public void setOnItemChildClickListener(OnItemChildClickListener listener) {
+        mOnItemChildClickListener = listener;
+    }
+
+    public void removeOnItemChildClickListener() {
+        mOnItemChildClickListener = null;
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.comment) TextView comment;
         @Bind(R.id.username) TextView username;
         @Bind(R.id.reply_comment) TextView replyComment;
         @Bind(R.id.time) TextView time;
+        @Bind(R.id.support) TextView support;
+        @Bind(R.id.against) TextView against;
+        @Bind(R.id.reply) ImageButton reply;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnItemChildClickListener {
+        void onItemChildClick(View v, int position);
     }
 }

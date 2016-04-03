@@ -15,17 +15,11 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/support"
-        android:title="@string/comment_menu_support" />
-
-    <item
-        android:id="@+id/against"
-        android:title="@string/comment_menu_against" />
-
-    <item
-        android:id="@+id/reply"
-        android:visible="false"
-        android:title="@string/comment_menu_reply" />
+        android:id="@+id/add_comment"
+        android:icon="@drawable/ic_add_white_36dp"
+        android:title="@string/add_comment"
+        app:showAsAction="ifRoom" />
 </menu>

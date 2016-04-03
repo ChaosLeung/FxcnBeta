@@ -24,46 +24,91 @@
 
     <TextView
         android:id="@+id/username"
+        style="@style/CommentItemText.Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        style="@style/CommentItemText.Username"
         tools:text="username" />
 
     <TextView
         android:id="@+id/time"
+        style="@style/CommentItemText.Time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/username"
-        android:layout_toEndOf="@+id/username"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_toEndOf="@+id/username"
+        android:layout_toRightOf="@+id/username"
         android:gravity="end"
-        style="@style/CommentItemText.Time"
         tools:text="1 hour ago" />
 
     <TextView
         android:id="@+id/reply_comment"
+        style="@style/CommentItemText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/username"
         android:layout_alignStart="@+id/username"
         android:layout_below="@+id/username"
         android:layout_marginTop="@dimen/card_inner_content_half_padding"
-        style="@style/CommentItemText"
-        android:padding="@dimen/card_inner_content_half_padding"
         android:background="@color/reply_comment"
+        android:padding="@dimen/card_inner_content_half_padding"
         tools:text="reply comment string here" />
 
     <TextView
         android:id="@+id/comment"
+        style="@style/CommentItemText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/username"
         android:layout_alignStart="@+id/username"
         android:layout_below="@+id/reply_comment"
         android:layout_marginTop="@dimen/card_inner_content_half_padding"
-        style="@style/CommentItemText"
         tools:text="comment string here" />
+
+    <TextView
+        android:id="@+id/support"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/comment"
+        android:layout_marginTop="@dimen/card_inner_content_half_padding"
+        android:clickable="true"
+        android:drawableLeft="@drawable/comment_ic_exposure_plus_1_grey_600"
+        android:drawablePadding="@dimen/card_inner_content_half_padding"
+        android:drawableStart="@drawable/comment_ic_exposure_plus_1_grey_600"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/article_item_text_time"
+        tools:text="123" />
+
+    <TextView
+        android:id="@+id/against"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/support"
+        android:layout_below="@id/comment"
+        android:layout_marginLeft="@dimen/card_inner_content_half_padding"
+        android:layout_marginStart="@dimen/card_inner_content_padding"
+        android:layout_toEndOf="@+id/support"
+        android:layout_toRightOf="@+id/support"
+        android:clickable="true"
+        android:drawableLeft="@drawable/comment_ic_exposure_neg_1_grey_600"
+        android:drawablePadding="@dimen/card_inner_content_half_padding"
+        android:drawableStart="@drawable/comment_ic_exposure_neg_1_grey_600"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/article_item_text_time"
+        tools:text="123" />
+
+    <ImageButton
+        android:id="@+id/reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/support"
+        android:layout_below="@id/comment"
+        android:background="@null"
+        android:src="@drawable/comment_ic_reply_grey_600" />
 </RelativeLayout>

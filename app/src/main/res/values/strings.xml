@@ -96,6 +96,12 @@
     <string name="comment_menu_against">反对</string>
     <string name="comment_menu_reply">回复评论</string>
     <string name="comment_menu_title">评论选项</string>
+    <string name="hint_captcha">输入验证码</string>
+    <string name="hint_comment">评论正文</string>
+    <string name="error_captcha_should_not_empty">验证码不能为空</string>
+    <string name="error_comment_should_not_empty">评论不能为空</string>
+    <string name="add_comment_succeed">评论成功，请稍候刷新查看</string>
+    <string name="add_comment_failed_format">评论失败，%s</string>
 
     <string name="fb_name_hint">姓名 (可选)</string>
     <string name="fb_contact_hint">QQ 或 Email (可选)</string>
@@ -105,4 +111,10 @@
     <string name="feedback_content_should_not_empty">反馈内容不能为空</string>
     <string name="sent">已发送，感谢您的反馈</string>
     <string name="fb_feedback_max_length">200</string>
+    <string name="open_in_browser">用浏览器打开</string>
+
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="add_comment">添加评论</string>
+
 </resources>

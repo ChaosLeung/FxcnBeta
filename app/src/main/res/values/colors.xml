@@ -42,4 +42,6 @@
 
     <color name="fb_content_length">#aaaaaa</color>
 
+    <color name="circle_color">#E0E0E0</color>
+
 </resources>

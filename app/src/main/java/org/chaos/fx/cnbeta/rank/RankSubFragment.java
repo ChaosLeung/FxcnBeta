@@ -28,7 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chaos.fx.cnbeta.ContentActivity;
+import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;

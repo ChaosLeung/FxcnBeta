@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Chaos
+ * Copyright 2016 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta;
+package org.chaos.fx.cnbeta.details;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.ListAdapter;

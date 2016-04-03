@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015 Chaos
+  ~ Copyright 2016 Chaos
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
   ~ limitations under the License.
   -->
 
-<org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipe_recycler_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/comment"
+        android:icon="@drawable/ic_comment_white_24dp"
+        android:title="@string/comment"
+        app:showAsAction="always" />
+</menu>

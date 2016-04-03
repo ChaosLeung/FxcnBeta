@@ -53,7 +53,7 @@
         tools:text="The Washington Post" />
 
     <TextView
-        android:id="@+id/author_and_time"
+        android:id="@+id/author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/source"
@@ -69,5 +69,5 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:layout_marginTop="24dp"
-        android:layout_below="@id/author_and_time" />
+        android:layout_below="@id/author" />
 </RelativeLayout>

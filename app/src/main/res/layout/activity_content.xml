@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015 Chaos
+  ~ Copyright 2016 Chaos
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,19 +22,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="org.chaos.fx.cnbeta.ContentActivity">
+    tools:context=".details.ContentActivity">
 
     <include layout="@layout/layout_app_bar" />
 
-    <org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView
-        android:id="@+id/swipe_recycler_view"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/main_background"
-        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <include layout="@layout/layout_loading" />
-
-    <include layout="@layout/layout_error" />
 </android.support.design.widget.CoordinatorLayout>

@@ -21,5 +21,11 @@
         android:id="@+id/comment"
         android:icon="@drawable/ic_comment_white_24dp"
         android:title="@string/comment"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/open_in_browser"
+        android:icon="@drawable/ic_open_in_browser_white_24dp"
+        android:title="@string/open_in_browser"
+        app:showAsAction="never" />
 </menu>

@@ -18,7 +18,9 @@ package org.chaos.fx.cnbeta.details;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -46,6 +48,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
+
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -180,9 +184,14 @@ public class ContentFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.comment) {
-            mOnShowCommentListener.onShowComment();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.comment:
+                mOnShowCommentListener.onShowComment();
+                return true;
+            case R.id.open_in_browser:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
+                        String.format(Locale.getDefault(), "http://www.cnbeta.com/articles/%d.htm", mSid))));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

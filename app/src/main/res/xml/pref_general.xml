@@ -45,5 +45,15 @@
             android:key="version_name"
             android:summary="@string/info_default"
             android:title="@string/version_name" />
+
+        <org.chaos.fx.cnbeta.preferences.DialogPreference
+            android:dialogIcon="@null"
+            android:dialogLayout="@layout/layout_release_note"
+            android:dialogMessage="@null"
+            android:dialogTitle="@null"
+            android:key="release_note"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/update_log" />
     </android.support.v7.preference.PreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>

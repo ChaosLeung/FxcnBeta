@@ -57,7 +57,7 @@ public class CommentFragment extends BaseFragment implements
 
     private static final String TAG = "CommentFragment";
 
-    private static final int ONE_PAGE_COMMENT_COUNT = 20;
+    private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
     private static final String KEY_SID = "sid";
 

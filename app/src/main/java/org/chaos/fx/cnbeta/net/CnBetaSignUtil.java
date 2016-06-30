@@ -67,7 +67,7 @@ public class CnBetaSignUtil {
      */
     public static String commentsSign(long timestamp, int sid, int page) {
         return generateDigestStr("app_key=10000&format=json&method=Article.Comment&page=" + page +
-                "&pageSize=20&sid=" + sid + "&timestamp=" + timestamp + "&v=1.0&mpuffgvbvbttn3Rc");
+                "&pageSize=10&sid=" + sid + "&timestamp=" + timestamp + "&v=1.0&mpuffgvbvbttn3Rc");
     }
 
     public static String addCommentSign(long timestamp, int sid, String content) {

@@ -131,7 +131,7 @@ public interface CnBetaApi {
                                              @Query("sign") String sign,
                                              @Query("sid") int sid);
 
-    @GET(BASE_PARAMS + "Article.Comment&pageSize=20")
+    @GET(BASE_PARAMS + "Article.Comment&pageSize=10")
     Call<Result<List<Comment>>> comments(@Query("timestamp") long timestamp,
                                          @Query("sign") String sign,
                                          @Query("sid") int sid,

@@ -46,16 +46,12 @@ android {
 
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
-        exclude "lib/arm64-v8a/librealm-jni.so"
-        exclude "lib/armeabi-v7a/librealm-jni.so"
-        exclude "lib/mips/librealm-jni.so"
-        exclude "lib/x86/librealm-jni.so"
-        exclude "lib/x86_64/librealm-jni.so"
     }
 
     lintOptions {
         lintConfig file("lint.xml")
     }
+    buildToolsVersion '24'
 }
 
 dependencies {

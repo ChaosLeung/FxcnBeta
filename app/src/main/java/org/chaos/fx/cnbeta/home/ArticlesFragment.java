@@ -26,10 +26,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.MainActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -69,6 +69,8 @@ public class ArticlesFragment extends BaseFragment
 
     private ArticleCallback mApiCallback = new ArticleCallback();
     private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
+
+    private volatile boolean initialized = false;
 
     public static ArticlesFragment newInstance(String topicId) {
         ArticlesFragment fragment = new ArticlesFragment();
@@ -145,7 +147,8 @@ public class ArticlesFragment extends BaseFragment
             @Override
             public void run() {
                 mArticlesView.setRefreshing(true);
-                onRefresh();
+                mCall = CnBetaApiHelper.articles();
+                mCall.enqueue(mApiCallback);
             }
         });
         return rootView;
@@ -225,7 +228,15 @@ public class ArticlesFragment extends BaseFragment
                 List<ArticleSummary> result = response.body().result;
                 if (!result.isEmpty()) {
                     if (mArticlesView.isRefreshing()) {
-                        mArticleAdapter.addAll(0, result);
+                        synchronized (this) {
+                            if (!initialized) {
+                                initialized = true;
+                                mArticleAdapter.clear();
+                            }
+                        }
+                        mArticleAdapter.getList().addAll(0, result);
+                        mArticleAdapter.notifyDataSetChanged();
+                        mArticlesView.getRecyclerView().scrollToPosition(0);
                     } else {
                         mArticleAdapter.addAll(response.body().result);
                     }

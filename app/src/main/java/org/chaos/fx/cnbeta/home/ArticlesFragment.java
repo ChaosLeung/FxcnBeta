@@ -122,7 +122,11 @@ public class ArticlesFragment extends BaseFragment
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 float verticalOffset = recyclerView.computeVerticalScrollOffset();
-                if (Math.round(verticalOffset / getResources().getDisplayMetrics().heightPixels) >= 6 && dy <= -180) {
+                float heightRatio = verticalOffset / getResources().getDisplayMetrics().heightPixels;
+                if (heightRatio <= 0.3f) {
+                    sHandler.post(mResetActionBarTitleRunnable);
+                }
+                if (Math.round(heightRatio) >= 6 && dy <= -180) {
                     getSupportActionBar().setTitle(R.string.double_click_move_to_top);
                     sHandler.removeCallbacks(mResetActionBarTitleRunnable);
                     sHandler.postDelayed(mResetActionBarTitleRunnable, RESET_ACTION_BAR_TITLE_DELAY_TIME);

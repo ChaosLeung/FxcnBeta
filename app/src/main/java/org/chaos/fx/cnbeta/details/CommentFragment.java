@@ -148,11 +148,7 @@ public class CommentFragment extends BaseFragment implements
         mCommentAdapter.getFooterView().setVisibility(View.VISIBLE);
         mCommentAdapter.notifyItemInserted(mCommentAdapter.getItemCount());
         mCommentView.getRecyclerView().smoothScrollToPosition(mCommentAdapter.getItemCount() - 1);
-        if (size % ONE_PAGE_COMMENT_COUNT == 0) {
-            loadComments(size / ONE_PAGE_COMMENT_COUNT + 1);
-        } else {
-            loadComments(size / ONE_PAGE_COMMENT_COUNT);
-        }
+        loadComments(size / ONE_PAGE_COMMENT_COUNT + 1);
     }
 
     private void loadComments(int page) {
@@ -164,11 +160,12 @@ public class CommentFragment extends BaseFragment implements
                                        Response<CnBetaApi.Result<List<Comment>>> response) {
                     if (response.code() == 200) {
                         List<Comment> result = response.body().result;
-                        if (!result.isEmpty()) {
-                            int currentSize = mCommentAdapter.listSize();
-                            if (currentSize % ONE_PAGE_COMMENT_COUNT != 0) {
+                        int currentSize = mCommentAdapter.listSize();
+                        int modOfSize = currentSize % ONE_PAGE_COMMENT_COUNT;
+                        if (!result.isEmpty() && modOfSize != result.size()) {
+                            if (modOfSize != 0) {
                                 mCommentAdapter.removeAll(
-                                        new ArrayList<>(mCommentAdapter.subList(currentSize - currentSize % ONE_PAGE_COMMENT_COUNT, currentSize)));
+                                        new ArrayList<>(mCommentAdapter.subList(currentSize - modOfSize, currentSize)));
                             }
                             // HeaderView 太高时，调用 notifyItemInserted 相关方法
                             // 会导致 RecyclerView 跳转到奇怪的位置

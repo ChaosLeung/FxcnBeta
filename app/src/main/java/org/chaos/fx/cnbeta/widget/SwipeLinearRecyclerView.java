@@ -22,7 +22,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -161,8 +160,10 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
     }
 
     private void onLoadMore() {
-        setLoading(true);
-        mOnLoadMoreListener.onLoadMore();
+        if (!isLoading) {
+            setLoading(true);
+            mOnLoadMoreListener.onLoadMore();
+        }
     }
 
     @Override

@@ -32,7 +32,7 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
-import org.chaos.fx.cnbeta.net.model.WebComment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 import java.io.IOException;
 
@@ -71,7 +71,7 @@ public class ContentActivity extends SwipeBackActivity implements
     private int mSid;
     private String mLogoLink;
 
-    private WebComment mWebComment;
+    private WebCommentResult mWebCommentResult;
 
     @Bind(R.id.pager)
     ViewPager mViewPager;
@@ -163,17 +163,17 @@ public class ContentActivity extends SwipeBackActivity implements
                         }
                     }
                 })
-                .flatMap(new Func1<String, Observable<WebApi.Result<WebComment>>>() {
+                .flatMap(new Func1<String, Observable<WebApi.Result<WebCommentResult>>>() {
                     @Override
-                    public Observable<WebApi.Result<WebComment>> call(String sn) {
+                    public Observable<WebApi.Result<WebCommentResult>> call(String sn) {
                         return CnBetaApiHelper.getCommentJson(mSid, sn);
                     }
                 })
-                .map(new Func1<WebApi.Result<WebComment>, WebComment>() {
+                .map(new Func1<WebApi.Result<WebCommentResult>, WebCommentResult>() {
                     @Override
-                    public WebComment call(WebApi.Result<WebComment> webCommentResult) {
-                        if (webCommentResult.isSuccess()) {
-                            return webCommentResult.result;
+                    public WebCommentResult call(WebApi.Result<WebCommentResult> result) {
+                        if (result.isSuccess()) {
+                            return result.result;
                         } else {
                             throw new RequestFailedException();
                         }
@@ -181,7 +181,7 @@ public class ContentActivity extends SwipeBackActivity implements
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .retry(5)
-                .subscribe(new Subscriber<WebComment>() {
+                .subscribe(new Subscriber<WebCommentResult>() {
                     @Override
                     public void onCompleted() {
                     }
@@ -191,17 +191,17 @@ public class ContentActivity extends SwipeBackActivity implements
                     }
 
                     @Override
-                    public void onNext(WebComment webComment) {
-                        mWebComment = webComment;
+                    public void onNext(WebCommentResult result) {
+                        mWebCommentResult = result;
                     }
                 });
     }
 
     String getToken() {
-        if (mWebComment == null) {
+        if (mWebCommentResult == null) {
             return null;
         }
-        return mWebComment.getToken();
+        return mWebCommentResult.getToken();
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {

@@ -24,21 +24,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public class HotComment {
 
-    private static final String FIELD_USERNAME = "username";
-    private static final String FIELD_SUBJECT = "subject";
-    private static final String FIELD_CID = "cid";
-    private static final String FIELD_COMMENT = "comment";
-    private static final String FIELD_SID = "sid";
-
-    @SerializedName(FIELD_USERNAME)
+    @SerializedName("username")
     private String mUsername;
-    @SerializedName(FIELD_SUBJECT)
+    @SerializedName("subject")
     private String mSubject;
-    @SerializedName(FIELD_CID)
+    @SerializedName("cid")
     private int mCid;
-    @SerializedName(FIELD_COMMENT)
+    @SerializedName("comment")
     private String mComment;
-    @SerializedName(FIELD_SID)
+    @SerializedName("sid")
     private int mSid;
 
     public void setUsername(String username) {

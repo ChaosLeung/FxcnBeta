@@ -24,15 +24,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Topic {
 
-    private static final String FIELD_VALUE = "value";
-    private static final String FIELD_TYPE = "type";
-    private static final String FIELD_NAME = "name";
-
-    @SerializedName(FIELD_VALUE)
+    @SerializedName("value")
     private int mValue;
-    @SerializedName(FIELD_TYPE)
+    @SerializedName("type")
     private String mType;
-    @SerializedName(FIELD_NAME)
+    @SerializedName("name")
     private String mName;
 
     public void setValue(int value) {

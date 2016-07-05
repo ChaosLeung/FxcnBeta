@@ -28,7 +28,7 @@ import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.net.model.Topic;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
-import org.chaos.fx.cnbeta.net.model.WebComment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -234,7 +234,7 @@ public class CnBetaApiHelper {
      * @param sid 文章 id
      * @param sn  每篇文章的 sn 码
      */
-    public static Observable<WebApi.Result<WebComment>> getCommentJson(int sid, String sn) {
+    public static Observable<WebApi.Result<WebCommentResult>> getCommentJson(int sid, String sn) {
         return sWebApi.getCommentJson("1," + sid + "," + sn);
     }
 

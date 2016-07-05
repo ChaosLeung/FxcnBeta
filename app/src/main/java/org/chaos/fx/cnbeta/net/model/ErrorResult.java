@@ -24,12 +24,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ErrorResult {
 
-    private static final String FIELD_ERROR_CODE = "error_code";
-    private static final String FIELD_ERROR_MSG = "error_msg";
-
-    @SerializedName(FIELD_ERROR_CODE)
+    @SerializedName("error_code")
     private int mErrorCode;
-    @SerializedName(FIELD_ERROR_MSG)
+    @SerializedName("error_msg")
     private String mErrorMsg;
 
     @Override

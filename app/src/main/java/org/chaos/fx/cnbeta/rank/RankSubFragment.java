@@ -191,7 +191,7 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
             ArticleSummary summary = get(position);
             String subText = "";
             if (CnBetaApi.TYPE_COUNTER.equals(mType)) {
-                subText = TimeStringHelper.getTimeString(summary.getPubtime());
+                subText = TimeStringHelper.getTimeString(summary.getPublishTime());
             } else if (CnBetaApi.TYPE_DIG.equals(mType)) {
                 subText = getSubText(R.string.read_count, summary.getCounter());
             } else if (CnBetaApi.TYPE_COMMENTS.equals(mType)) {

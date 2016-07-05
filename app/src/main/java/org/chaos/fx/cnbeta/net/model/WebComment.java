@@ -16,54 +16,102 @@
 
 package org.chaos.fx.cnbeta.net.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * @author Chaos
+ *         7/5/16
+ */
 public class WebComment {
 
-    @SerializedName("comment_num")
-    @Expose
-    private Integer commentNum;
-    @SerializedName("open")
-    @Expose
-    private Integer open;// 评论是否已关闭
-    @SerializedName("token")
-    @Expose
-    private String token;
+    @SerializedName("tid")
+    private int tid;
+    @SerializedName("pid")
+    private int pid;
     @SerializedName("sid")
-    @Expose
-    private String sid;
+    private int sid;
+    @SerializedName("date")
+    private String date;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("host_name")
+    private String address;
+    @SerializedName("comment")
+    private String comment;
+    @SerializedName("score")
+    private int supportCount;
+    @SerializedName("reason")
+    private int againstCount;
 
-    public Integer getCommentNum() {
-        return commentNum;
+    public int getTid() {
+        return tid;
     }
 
-    public void setCommentNum(Integer commentNum) {
-        this.commentNum = commentNum;
+    public void setTid(int tid) {
+        this.tid = tid;
     }
 
-    public Integer getOpen() {
-        return open;
+    public int getPid() {
+        return pid;
     }
 
-    public void setOpen(Integer open) {
-        this.open = open;
+    public void setPid(int pid) {
+        this.pid = pid;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getSid() {
+    public int getSid() {
         return sid;
     }
 
-    public void setSid(String sid) {
+    public void setSid(int sid) {
         this.sid = sid;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public int getSupportCount() {
+        return supportCount;
+    }
+
+    public void setSupportCount(int supportCount) {
+        this.supportCount = supportCount;
+    }
+
+    public int getAgainstCount() {
+        return againstCount;
+    }
+
+    public void setAgainstCount(int againstCount) {
+        this.againstCount = againstCount;
+    }
 }

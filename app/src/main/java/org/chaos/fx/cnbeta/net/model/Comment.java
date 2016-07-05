@@ -24,28 +24,19 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Comment {
 
-    private static final String FIELD_USERNAME = "username";
-    private static final String FIELD_PID = "pid";
-    private static final String FIELD_CREATED_TIME = "created_time";
-    private static final String FIELD_SUPPORT = "support";
-    private static final String FIELD_AGAINST = "against";
-    private static final String FIELD_CONTENT = "content";
-    private static final String FIELD_TID = "tid";
-
-
-    @SerializedName(FIELD_USERNAME)
+    @SerializedName("username")
     private String mUsername;
-    @SerializedName(FIELD_PID)
+    @SerializedName("pid")
     private int mPid;
-    @SerializedName(FIELD_CREATED_TIME)
+    @SerializedName("created_time")
     private String mCreatedTime;
-    @SerializedName(FIELD_SUPPORT)
+    @SerializedName("support")
     private int mSupport;
-    @SerializedName(FIELD_AGAINST)
+    @SerializedName("against")
     private int mAgainst;
-    @SerializedName(FIELD_CONTENT)
+    @SerializedName("content")
     private String mContent;
-    @SerializedName(FIELD_TID)
+    @SerializedName("tid")
     private int mTid;
 
     public void setUsername(String username) {

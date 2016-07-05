@@ -20,47 +20,48 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Chaos
- *         4/2/16
+ *         7/5/16
  */
-public class WebCaptcha {
+public class WebReply {
 
-    @SerializedName("hash1")
-    private int hash1;
-    @SerializedName("hash2")
-    private int hash2;
-    @SerializedName("url")
-    private String url;
+    @SerializedName("tid")
+    private String tid;
+    @SerializedName("pid")
+    private String pid;
+    @SerializedName("sid")
+    private String sid;
+    @SerializedName("parent")
+    private String parent;
 
-    public int getHash1() {
-        return hash1;
+    public String getTid() {
+        return tid;
     }
 
-    public void setHash1(int hash1) {
-        this.hash1 = hash1;
+    public void setTid(String tid) {
+        this.tid = tid;
     }
 
-    public int getHash2() {
-        return hash2;
+    public String getPid() {
+        return pid;
     }
 
-    public void setHash2(int hash2) {
-        this.hash2 = hash2;
+    public void setPid(String pid) {
+        this.pid = pid;
     }
 
-    public String getUrl() {
-        return url;
+    public String getSid() {
+        return sid;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 
-    @Override
-    public String toString() {
-        return "WebCaptcha{" +
-                "hash1=" + hash1 +
-                ", hash2=" + hash2 +
-                ", url='" + url + '\'' +
-                '}';
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

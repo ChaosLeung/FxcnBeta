@@ -227,8 +227,8 @@ public class ContentFragment extends BaseFragment {
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void onNext(NewsContent newsContent) {
-                        newsContent.setBodytext(
-                                newsContent.getBodytext()
+                        newsContent.setBodyText(
+                                newsContent.getBodyText()
                                         .replaceAll("&quot;", "\"")
                                         .replaceAll("&lt;", "<")
                                         .replaceAll("&gt;", ">")
@@ -241,14 +241,14 @@ public class ContentFragment extends BaseFragment {
                                 .into(authorImg);
 
                         title.setText(newsContent.getTitle());
-                        author.setText("By " + newsContent.getAid());
+                        author.setText("By " + newsContent.getAuthor());
                         time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
-                        commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getComment()));
+                        commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getCommentCount()));
 
                         Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
                         source.setText(findTagText(doc));
 
-                        doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
+                        doc = Jsoup.parseBodyFragment(newsContent.getHomeText() + newsContent.getBodyText());
                         Elements textareas = doc.select("textarea");
                         if (!textareas.isEmpty()) {
                             textareas.first().remove();

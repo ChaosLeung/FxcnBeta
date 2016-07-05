@@ -210,19 +210,18 @@ public class ArticlesFragment extends BaseFragment
     }
 
     private void doRequest(Observable<CnBetaApi.Result<List<ArticleSummary>>> observable) {
-        final ArticleSubscriber subscriber = new ArticleSubscriber();
         mSubscription = observable.subscribeOn(Schedulers.io())
                 .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
                     public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
                         if (!listResult.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return listResult.result;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new ArticleSubscriber());
     }
 
     private void showSnackBar(@StringRes int strId) {

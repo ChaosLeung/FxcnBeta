@@ -45,6 +45,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -149,34 +150,17 @@ public class ContentActivity extends SwipeBackActivity implements
     }
 
     private void requestArticleHtml() {
-        final Subscriber<WebComment> subscriber = new Subscriber<WebComment>() {
-            @Override
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(WebComment webComment) {
-                mWebComment = webComment;
-            }
-        };
         mArticleSubscription = CnBetaApiHelper.getArticleHtml(mSid)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<ResponseBody, String>() {
                     @Override
                     public String call(ResponseBody responseBody) {
-                        String sn = null;
                         try {
                             String html = responseBody.string();
-                            sn = CnBetaApiHelper.getSNFromArticleBody(html);
+                            return CnBetaApiHelper.getSNFromArticleBody(html);
                         } catch (IOException e) {
-                            subscriber.onError(e);
+                            throw Exceptions.propagate(e);
                         }
-                        return sn;
                     }
                 })
                 .flatMap(new Func1<String, Observable<WebApi.Result<WebComment>>>() {
@@ -191,14 +175,26 @@ public class ContentActivity extends SwipeBackActivity implements
                         if (webCommentResult.isSuccess()) {
                             return webCommentResult.result;
                         } else {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
-                        return null;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .retry(5)
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<WebComment>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(WebComment webComment) {
+                        mWebComment = webComment;
+                    }
+                });
     }
 
     String getToken() {

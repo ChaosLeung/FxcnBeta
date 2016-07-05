@@ -103,43 +103,42 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
     }
 
     private void loadHotComments() {
-        final Subscriber<List<HotComment>> subscriber = new Subscriber<List<HotComment>>() {
-            @Override
-            public void onCompleted() {
-                mHotCommentView.setRefreshing(false);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (isVisible()) {
-                    showSnackBar(R.string.load_articles_failed);
-                }
-                mHotCommentView.setRefreshing(false);
-            }
-
-            @Override
-            public void onNext(List<HotComment> result) {
-                if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
-                    mHotCommentAdapter.clear();
-                    mHotCommentAdapter.addAll(0, result);
-                } else {
-                    showSnackBar(R.string.no_more_articles);
-                }
-            }
-        };
         mSubscription = CnBetaApiHelper.hotComment()
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<CnBetaApi.Result<List<HotComment>>, List<HotComment>>() {
                     @Override
                     public List<HotComment> call(CnBetaApi.Result<List<HotComment>> listResult) {
                         if (!listResult.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return listResult.result;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<List<HotComment>>() {
+                    @Override
+                    public void onCompleted() {
+                        mHotCommentView.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (isVisible()) {
+                            showSnackBar(R.string.load_articles_failed);
+                        }
+                        mHotCommentView.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onNext(List<HotComment> result) {
+                        if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
+                            mHotCommentAdapter.clear();
+                            mHotCommentAdapter.addAll(0, result);
+                        } else {
+                            showSnackBar(R.string.no_more_articles);
+                        }
+                    }
+                });
     }
 
     private void showSnackBar(@StringRes int strId) {

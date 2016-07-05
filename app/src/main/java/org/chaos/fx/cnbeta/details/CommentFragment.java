@@ -203,7 +203,7 @@ public class CommentFragment extends BaseFragment implements
                     @Override
                     public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
                         if (!listResult.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return listResult.result;
                     }
@@ -240,7 +240,7 @@ public class CommentFragment extends BaseFragment implements
                     @Override
                     public WebApi.Result call(WebApi.Result result) {
                         if (!result.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return result;
                     }
@@ -273,7 +273,7 @@ public class CommentFragment extends BaseFragment implements
                     @Override
                     public WebApi.Result call(WebApi.Result result) {
                         if (!result.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return result;
                     }
@@ -322,21 +322,6 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void publishComment(String content, String captcha, int pid) {
-        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
-            @Override
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                showSnackBar(String.format(getString(R.string.add_comment_failed_format), e.getMessage()));
-            }
-
-            @Override
-            public void onNext(WebApi.Result o) {
-                showSnackBar(R.string.add_comment_succeed);
-            }
-        };
         mReplySubscription = CnBetaApiHelper.replyComment(getToken(), content, captcha, mSid, pid)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<WebApi.Result, WebApi.Result>() {
@@ -345,13 +330,26 @@ public class CommentFragment extends BaseFragment implements
                         if (result.isSuccess()) {
                             return result;
                         } else {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
-                        return null;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<WebApi.Result>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        showSnackBar(String.format(getString(R.string.add_comment_failed_format), e.getMessage()));
+                    }
+
+                    @Override
+                    public void onNext(WebApi.Result o) {
+                        showSnackBar(R.string.add_comment_succeed);
+                    }
+                });
     }
 
     private void hideProgress() {

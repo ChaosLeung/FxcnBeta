@@ -200,63 +200,62 @@ public class ContentFragment extends BaseFragment {
     }
 
     private void loadContent() {
-        final Subscriber<NewsContent> subscriber = new Subscriber<NewsContent>() {
-            @Override
-            public void onCompleted() {
-                mLoadingBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                mErrorLayout.setVisibility(View.VISIBLE);
-                mLoadingBar.setVisibility(View.GONE);
-            }
-
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onNext(NewsContent newsContent) {
-                newsContent.setBodytext(
-                        newsContent.getBodytext()
-                                .replaceAll("&quot;", "\"")
-                                .replaceAll("&lt;", "<")
-                                .replaceAll("&gt;", ">")
-                                .replaceAll("&nbsp;", " "));
-
-                Picasso.with(getActivity())
-                        .load(TextUtils.isEmpty(mLogoLink)
-                                ? "http://static.cnbetacdn.com" + newsContent.getThumb()
-                                : mLogoLink)
-                        .into(authorImg);
-
-                title.setText(newsContent.getTitle());
-                author.setText("By " + newsContent.getAid());
-                time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
-                commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getComment()));
-
-                Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
-                source.setText(findTagText(doc));
-
-                doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
-                Elements textareas = doc.select("textarea");
-                if (!textareas.isEmpty()) {
-                    textareas.first().remove();
-                }
-                addViewByNode(doc.body());
-            }
-        };
         mContentSubscription = CnBetaApiHelper.articleContent(mSid)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<CnBetaApi.Result<NewsContent>, NewsContent>() {
                     @Override
                     public NewsContent call(CnBetaApi.Result<NewsContent> newsContentResult) {
                         if (!newsContentResult.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return newsContentResult.result;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<NewsContent>() {
+                    @Override
+                    public void onCompleted() {
+                        mLoadingBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mErrorLayout.setVisibility(View.VISIBLE);
+                        mLoadingBar.setVisibility(View.GONE);
+                    }
+
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onNext(NewsContent newsContent) {
+                        newsContent.setBodytext(
+                                newsContent.getBodytext()
+                                        .replaceAll("&quot;", "\"")
+                                        .replaceAll("&lt;", "<")
+                                        .replaceAll("&gt;", ">")
+                                        .replaceAll("&nbsp;", " "));
+
+                        Picasso.with(getActivity())
+                                .load(TextUtils.isEmpty(mLogoLink)
+                                        ? "http://static.cnbetacdn.com" + newsContent.getThumb()
+                                        : mLogoLink)
+                                .into(authorImg);
+
+                        title.setText(newsContent.getTitle());
+                        author.setText("By " + newsContent.getAid());
+                        time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
+                        commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getComment()));
+
+                        Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
+                        source.setText(findTagText(doc));
+
+                        doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
+                        Elements textareas = doc.select("textarea");
+                        if (!textareas.isEmpty()) {
+                            textareas.first().remove();
+                        }
+                        addViewByNode(doc.body());
+                    }
+                });
     }
 
     private String findTagText(Node node) {

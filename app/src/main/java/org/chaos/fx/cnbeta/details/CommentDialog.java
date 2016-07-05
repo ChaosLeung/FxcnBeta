@@ -123,40 +123,39 @@ public class CommentDialog extends DialogFragment {
     }
 
     private void flashCaptcha() {
-        final Subscriber<String> subscriber = new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Toast.makeText(getActivity(), R.string.failed_to_get_captcha, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNext(String captchaUrl) {
-                new Picasso.Builder(getActivity())
-                        .downloader(CnBetaApiHelper.okHttp3Downloader())
-                        .build()
-                        .load(WebApi.HOST_URL + captchaUrl)
-                        .into(mCaptchaView);
-            }
-        };
         mCaptchaSubscription = CnBetaApiHelper.getCaptchaDataUrl(((ContentActivity) getActivity()).getToken())
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<WebCaptcha, String>() {
                     @Override
                     public String call(WebCaptcha webCaptcha) {
                         if (TextUtils.isEmpty(webCaptcha.getUrl())) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return webCaptcha.getUrl();
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .retry(5)
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getActivity(), R.string.failed_to_get_captcha, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(String captchaUrl) {
+                        new Picasso.Builder(getActivity())
+                                .downloader(CnBetaApiHelper.okHttp3Downloader())
+                                .build()
+                                .load(WebApi.HOST_URL + captchaUrl)
+                                .into(mCaptchaView);
+                    }
+                });
     }
 
     public void setPositiveListener(DialogInterface.OnClickListener l) {

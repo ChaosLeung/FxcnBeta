@@ -124,43 +124,42 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     @SuppressLint("WrongConstant")
     private void initArticles() {
-        final Subscriber<List<ArticleSummary>> subscriber = new Subscriber<List<ArticleSummary>>() {
-            @Override
-            public void onCompleted() {
-                mArticlesView.setRefreshing(false);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (isVisible()) {
-                    showSnackBar(R.string.load_articles_failed);
-                }
-                mArticlesView.setRefreshing(false);
-            }
-
-            @Override
-            public void onNext(List<ArticleSummary> result) {
-                if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
-                    mArticleAdapter.clear();
-                    mArticleAdapter.addAll(0, result);
-                } else {
-                    showSnackBar(R.string.no_more_articles);
-                }
-            }
-        };
         mSubscription = CnBetaApiHelper.todayRank(mType)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
                     public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
-                        if (!listResult.isSuccess()){
-                            subscriber.onError(new RequestFailedException());
+                        if (!listResult.isSuccess()) {
+                            throw new RequestFailedException();
                         }
                         return listResult.result;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<List<ArticleSummary>>() {
+                    @Override
+                    public void onCompleted() {
+                        mArticlesView.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (isVisible()) {
+                            showSnackBar(R.string.load_articles_failed);
+                        }
+                        mArticlesView.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onNext(List<ArticleSummary> result) {
+                        if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
+                            mArticleAdapter.clear();
+                            mArticleAdapter.addAll(0, result);
+                        } else {
+                            showSnackBar(R.string.no_more_articles);
+                        }
+                    }
+                });
     }
 
     @Override

@@ -112,7 +112,7 @@ public class CnBetaApiHelper {
     }
 
     public static Observable<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(String topicId,
-                                                                           int endSid) {
+                                                                                 int endSid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.oldArticles(
                 timestamp,
@@ -138,7 +138,7 @@ public class CnBetaApiHelper {
      * @param page 页
      */
     public static Observable<CnBetaApi.Result<List<Comment>>> comments(int sid,
-                                                                 int page) {
+                                                                       int page) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.comments(
                 timestamp,
@@ -148,7 +148,7 @@ public class CnBetaApiHelper {
     }
 
     public static Observable<CnBetaApi.Result<Object>> addComment(int sid,
-                                                            String content) {
+                                                                  String content) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.addComment(
                 timestamp,
@@ -159,8 +159,8 @@ public class CnBetaApiHelper {
 
     @Deprecated
     public static Observable<CnBetaApi.Result<Object>> replyComment(int sid,
-                                                              int pid,
-                                                              String content) {
+                                                                    int pid,
+                                                                    String content) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.replyComment(
                 timestamp,

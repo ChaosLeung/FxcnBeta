@@ -112,43 +112,42 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
     }
 
     private void loadTop10Articles() {
-        final Subscriber<List<ArticleSummary>> subscriber = new Subscriber<List<ArticleSummary>>() {
-            @Override
-            public void onCompleted() {
-                mTop10View.setRefreshing(false);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (isVisible()) {
-                    showSnackBar(R.string.load_articles_failed);
-                }
-                mTop10View.setRefreshing(false);
-            }
-
-            @Override
-            public void onNext(List<ArticleSummary> result) {
-                if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
-                    mTop10Adapter.clear();
-                    mTop10Adapter.addAll(0, result);
-                } else {
-                    showSnackBar(R.string.no_more_articles);
-                }
-            }
-        };
         mSubscription = CnBetaApiHelper.top10()
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
                     public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
-                        if (!listResult.isSuccess()){
-                            subscriber.onError(new RequestFailedException());
+                        if (!listResult.isSuccess()) {
+                            throw new RequestFailedException();
                         }
                         return listResult.result;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<List<ArticleSummary>>() {
+                    @Override
+                    public void onCompleted() {
+                        mTop10View.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (isVisible()) {
+                            showSnackBar(R.string.load_articles_failed);
+                        }
+                        mTop10View.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onNext(List<ArticleSummary> result) {
+                        if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
+                            mTop10Adapter.clear();
+                            mTop10Adapter.addAll(0, result);
+                        } else {
+                            showSnackBar(R.string.no_more_articles);
+                        }
+                    }
+                });
     }
 
     private void showSnackBar(@StringRes int strId) {

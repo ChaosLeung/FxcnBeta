@@ -81,7 +81,7 @@ public interface WebApi {
         public T result;
 
         public boolean isSuccess() {
-            return state.equals("success");
+            return "success".equals(state);
         }
 
         @Override

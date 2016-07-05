@@ -28,10 +28,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
@@ -42,9 +43,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -75,7 +78,7 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     private RankSubAdapter mArticleAdapter;
 
-    private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
+    private Subscription mSubscription;
 
     private int mPreClickPosition;
 
@@ -121,41 +124,51 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     @SuppressLint("WrongConstant")
     private void initArticles() {
-        mCall = CnBetaApiHelper.todayRank(mType);
-        mCall.enqueue(new Callback<CnBetaApi.Result<List<ArticleSummary>>>() {
+        final Subscriber<List<ArticleSummary>> subscriber = new Subscriber<List<ArticleSummary>>() {
             @Override
-            public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
-                                   Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
-                if (response.code() == 200) {
-                    List<ArticleSummary> result = response.body().result;
-                    if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
-                        mArticleAdapter.clear();
-                        mArticleAdapter.addAll(0, result);
-                    } else {
-                        showSnackBar(R.string.no_more_articles);
-                    }
-                } else {
-                    showSnackBar(R.string.load_articles_failed);
-                }
+            public void onCompleted() {
                 mArticlesView.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(Call<CnBetaApi.Result<List<ArticleSummary>>> call, Throwable t) {
+            public void onError(Throwable e) {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }
                 mArticlesView.setRefreshing(false);
             }
-        });
+
+            @Override
+            public void onNext(List<ArticleSummary> result) {
+                if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
+                    mArticleAdapter.clear();
+                    mArticleAdapter.addAll(0, result);
+                } else {
+                    showSnackBar(R.string.no_more_articles);
+                }
+            }
+        };
+        mSubscription = CnBetaApiHelper.todayRank(mType)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
+                    @Override
+                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
+                        if (!listResult.isSuccess()){
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return listResult.result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     @Override
     public void onDestroyView() {
-        if (mCall != null) {
-            mCall.cancel();
-        }
         super.onDestroyView();
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
     }
 
     private void showSnackBar(@StringRes int strId) {

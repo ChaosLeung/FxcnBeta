@@ -25,12 +25,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
 import org.chaos.fx.cnbeta.net.model.WebComment;
 
@@ -41,9 +41,12 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -67,13 +70,14 @@ public class ContentActivity extends SwipeBackActivity implements
     private int mSid;
     private String mLogoLink;
 
-    private String mSN;
     private WebComment mWebComment;
 
     @Bind(R.id.pager)
     ViewPager mViewPager;
 
     private SectionsPagerAdapter mPagerAdapter;
+
+    private Subscription mArticleSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +102,12 @@ public class ContentActivity extends SwipeBackActivity implements
         setupViewPager();
 
         requestArticleHtml();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mArticleSubscription.unsubscribe();
     }
 
     private void setupActionBar() {
@@ -139,41 +149,56 @@ public class ContentActivity extends SwipeBackActivity implements
     }
 
     private void requestArticleHtml() {
-        CnBetaApiHelper.getArticleHtml(mSid).enqueue(new Callback<ResponseBody>() {
+        final Subscriber<WebComment> subscriber = new Subscriber<WebComment>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        String html = response.body().string();
-                        mSN = CnBetaApiHelper.getSNFromArticleBody(html);
-                        requestCommentJson();
-                    } catch (IOException e) {
-                        Log.e(TAG, "IOException throws when getting article html", e);
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(WebComment webComment) {
+                mWebComment = webComment;
+            }
+        };
+        mArticleSubscription = CnBetaApiHelper.getArticleHtml(mSid)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<ResponseBody, String>() {
+                    @Override
+                    public String call(ResponseBody responseBody) {
+                        String sn = null;
+                        try {
+                            String html = responseBody.string();
+                            sn = CnBetaApiHelper.getSNFromArticleBody(html);
+                        } catch (IOException e) {
+                            subscriber.onError(e);
+                        }
+                        return sn;
                     }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, "request article html string failed", t);
-            }
-        });
-    }
-
-    private void requestCommentJson() {
-        CnBetaApiHelper.getCommentJson(mSid, mSN).enqueue(new Callback<WebApi.Result<WebComment>>() {
-            @Override
-            public void onResponse(Call<WebApi.Result<WebComment>> call, Response<WebApi.Result<WebComment>> response) {
-                if (response.isSuccessful()) {
-                    mWebComment = response.body().result;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WebApi.Result<WebComment>> call, Throwable t) {
-                Log.e(TAG, "request web comment failed", t);
-            }
-        });
+                })
+                .flatMap(new Func1<String, Observable<WebApi.Result<WebComment>>>() {
+                    @Override
+                    public Observable<WebApi.Result<WebComment>> call(String sn) {
+                        return CnBetaApiHelper.getCommentJson(mSid, sn);
+                    }
+                })
+                .map(new Func1<WebApi.Result<WebComment>, WebComment>() {
+                    @Override
+                    public WebComment call(WebApi.Result<WebComment> webCommentResult) {
+                        if (webCommentResult.isSuccess()) {
+                            return webCommentResult.result;
+                        } else {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return null;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .retry(5)
+                .subscribe(subscriber);
     }
 
     String getToken() {

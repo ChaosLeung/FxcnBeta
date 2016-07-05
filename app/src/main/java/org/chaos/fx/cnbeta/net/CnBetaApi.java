@@ -30,9 +30,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import rx.Observable;
 
 
 /**
@@ -72,8 +72,8 @@ public interface CnBetaApi {
      * @return 成功则返回 state 字符串以及文章简略数据，失败直接崩溃 _(:зゝ∠)_
      */
     @GET(BASE_PARAMS + "Article.Lists")
-    Call<Result<List<ArticleSummary>>> articles(@Query("timestamp") long timestamp,
-                                                @Query("sign") String sign);
+    Observable<Result<List<ArticleSummary>>> articles(@Query("timestamp") long timestamp,
+                                                      @Query("sign") String sign);
 
     /**
      * 话题相关文章
@@ -84,9 +84,9 @@ public interface CnBetaApi {
      * @return 文章列表
      */
     @GET(BASE_PARAMS + "Article.Lists")
-    Call<Result<List<ArticleSummary>>> topicArticles(@Query("timestamp") long timestamp,
-                                                     @Query("sign") String sign,
-                                                     @Query("topicid") String topicId);
+    Observable<Result<List<ArticleSummary>>> topicArticles(@Query("timestamp") long timestamp,
+                                                           @Query("sign") String sign,
+                                                           @Query("topicid") String topicId);
 
     /**
      * 最新文章
@@ -98,10 +98,10 @@ public interface CnBetaApi {
      * @return 文章列表
      */
     @GET(BASE_PARAMS + "Article.Lists")
-    Call<Result<List<ArticleSummary>>> newArticles(@Query("timestamp") long timestamp,
-                                                   @Query("sign") String sign,
-                                                   @Query("topicid") String topicId,
-                                                   @Query("start_sid") int startSid);
+    Observable<Result<List<ArticleSummary>>> newArticles(@Query("timestamp") long timestamp,
+                                                         @Query("sign") String sign,
+                                                         @Query("topicid") String topicId,
+                                                         @Query("start_sid") int startSid);
 
     /**
      * 最新文章
@@ -113,10 +113,10 @@ public interface CnBetaApi {
      * @return 文章列表
      */
     @GET(BASE_PARAMS + "Article.Lists")
-    Call<Result<List<ArticleSummary>>> oldArticles(@Query("timestamp") long timestamp,
-                                                   @Query("sign") String sign,
-                                                   @Query("topicid") String topicId,
-                                                   @Query("end_sid") int endSid);
+    Observable<Result<List<ArticleSummary>>> oldArticles(@Query("timestamp") long timestamp,
+                                                         @Query("sign") String sign,
+                                                         @Query("topicid") String topicId,
+                                                         @Query("end_sid") int endSid);
 
     /**
      * 文章详情
@@ -127,15 +127,24 @@ public interface CnBetaApi {
      * @return 成功则返回文章详细数据
      */
     @GET(BASE_PARAMS + "Article.NewsContent")
-    Call<Result<NewsContent>> articleContent(@Query("timestamp") long timestamp,
-                                             @Query("sign") String sign,
-                                             @Query("sid") int sid);
+    Observable<Result<NewsContent>> articleContent(@Query("timestamp") long timestamp,
+                                                   @Query("sign") String sign,
+                                                   @Query("sid") int sid);
 
+    /**
+     * 文章评论, 一次最多只能请求10条, 返回的数据顺序为从旧到新
+     *
+     * @param timestamp 时间戳
+     * @param sign      加密字符串
+     * @param sid       文章 id
+     * @param page      页数
+     * @return 成功则返回详细评论数据 (包含点赞/反对数量)
+     */
     @GET(BASE_PARAMS + "Article.Comment&pageSize=10")
-    Call<Result<List<Comment>>> comments(@Query("timestamp") long timestamp,
-                                         @Query("sign") String sign,
-                                         @Query("sid") int sid,
-                                         @Query("page") int page);
+    Observable<Result<List<Comment>>> comments(@Query("timestamp") long timestamp,
+                                               @Query("sign") String sign,
+                                               @Query("sid") int sid,
+                                               @Query("page") int page);
 
     /**
      * 评论
@@ -147,10 +156,10 @@ public interface CnBetaApi {
      * @return FIXME 未知，目前一直返回评论参数错误（官方也这尿性……）
      */
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
-    Call<Result<Object>> addComment(@Query("timestamp") long timestamp,
-                                    @Query("sign") String sign,
-                                    @Query("sid") int sid,
-                                    @Query("content") String content);
+    Observable<Result<Object>> addComment(@Query("timestamp") long timestamp,
+                                          @Query("sign") String sign,
+                                          @Query("sid") int sid,
+                                          @Query("content") String content);
 
     /**
      * 回复评论 (目前一直返回评论参数错误)
@@ -164,11 +173,11 @@ public interface CnBetaApi {
      */
     @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
-    Call<Result<Object>> replyComment(@Query("timestamp") long timestamp,
-                                      @Query("sign") String sign,
-                                      @Query("sid") int sid,
-                                      @Query("pid") int pid,
-                                      @Query("content") String content);
+    Observable<Result<Object>> replyComment(@Query("timestamp") long timestamp,
+                                            @Query("sign") String sign,
+                                            @Query("sid") int sid,
+                                            @Query("pid") int pid,
+                                            @Query("content") String content);
 
     /**
      * 支持评论 (暂不能用, 虽然返回成功, 但是无效)
@@ -180,9 +189,9 @@ public interface CnBetaApi {
      */
     @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=support&tid=1")
-    Call<Result<String>> supportComment(@Query("timestamp") long timestamp,
-                                        @Query("sign") String sign,
-                                        @Query("sid") int tid);
+    Observable<Result<String>> supportComment(@Query("timestamp") long timestamp,
+                                              @Query("sign") String sign,
+                                              @Query("sid") int tid);
 
     /**
      * 反对评论 (暂不能用, 虽然返回成功, 但是无效)
@@ -194,9 +203,9 @@ public interface CnBetaApi {
      */
     @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=against&tid=0")
-    Call<Result<String>> againstComment(@Query("timestamp") long timestamp,
-                                        @Query("sign") String sign,
-                                        @Query("sid") int tid);
+    Observable<Result<String>> againstComment(@Query("timestamp") long timestamp,
+                                              @Query("sign") String sign,
+                                              @Query("sid") int tid);
 
     /**
      * 热门评论
@@ -206,8 +215,8 @@ public interface CnBetaApi {
      * @return 热门评论列表
      */
     @GET(BASE_PARAMS + "Article.RecommendComment")
-    Call<Result<List<HotComment>>> hotComment(@Query("timestamp") long timestamp,
-                                              @Query("sign") String sign);
+    Observable<Result<List<HotComment>>> hotComment(@Query("timestamp") long timestamp,
+                                                    @Query("sign") String sign);
 
     /**
      * 今日排行
@@ -218,9 +227,9 @@ public interface CnBetaApi {
      * @return 文章列表
      */
     @GET(BASE_PARAMS + "Article.TodayRank")
-    Call<Result<List<ArticleSummary>>> todayRank(@Query("timestamp") long timestamp,
-                                                 @Query("sign") String sign,
-                                                 @Query("type") String type);
+    Observable<Result<List<ArticleSummary>>> todayRank(@Query("timestamp") long timestamp,
+                                                       @Query("sign") String sign,
+                                                       @Query("type") String type);
 
     /**
      * 本月 Top 10
@@ -230,8 +239,8 @@ public interface CnBetaApi {
      * @return 成功则返回本月热度最高的10篇文章
      */
     @GET(BASE_PARAMS + "Article.Top10")
-    Call<Result<List<ArticleSummary>>> top10(@Query("timestamp") long timestamp,
-                                             @Query("sign") String sign);
+    Observable<Result<List<ArticleSummary>>> top10(@Query("timestamp") long timestamp,
+                                                   @Query("sign") String sign);
 
     /**
      * 文章主题
@@ -241,8 +250,8 @@ public interface CnBetaApi {
      * @return 成功则返回文章主题列表
      */
     @GET(BASE_PARAMS + "Article.NavList")
-    Call<Result<List<Topic>>> topics(@Query("timestamp") long timestamp,
-                                     @Query("sign") String sign);
+    Observable<Result<List<Topic>>> topics(@Query("timestamp") long timestamp,
+                                           @Query("sign") String sign);
 
 
     class Result<T> {
@@ -254,5 +263,9 @@ public interface CnBetaApi {
         public String status;
         @SerializedName(FIELD_RESULT)
         public T result;
+
+        public boolean isSuccess() {
+            return status.equals("success");
+        }
     }
 }

@@ -102,6 +102,8 @@
     <string name="error_comment_should_not_empty">评论不能为空</string>
     <string name="add_comment_succeed">评论成功，请稍候刷新查看</string>
     <string name="add_comment_failed_format">评论失败，%s</string>
+    <string name="failed_to_get_captcha">获取验证码失败</string>
+    <string name="operation_failed">操作失败</string>
 
     <string name="fb_name_hint">姓名 (可选)</string>
     <string name="fb_contact_hint">QQ 或 Email (可选)</string>

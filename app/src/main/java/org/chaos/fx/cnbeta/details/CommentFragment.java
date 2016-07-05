@@ -22,7 +22,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +35,7 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
@@ -44,9 +44,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -78,8 +80,10 @@ public class CommentFragment extends BaseFragment implements
     SwipeLinearRecyclerView mCommentView;
     private CommentAdapter mCommentAdapter;
 
-    private Call<CnBetaApi.Result<List<Comment>>> mCommentCall;
-    private Callback<CnBetaApi.Result<List<Comment>>> mCommentCallback;
+    private Subscription mCommentSubscription;
+    private Subscription mSupportSubscription;
+    private Subscription mAgainstSubscription;
+    private Subscription mReplySubscription;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,8 +134,17 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mCommentCall != null) {
-            mCommentCall.cancel();
+        if (mSupportSubscription != null) {
+            mSupportSubscription.unsubscribe();
+        }
+        if (mAgainstSubscription != null) {
+            mAgainstSubscription.unsubscribe();
+        }
+        if (mCommentSubscription != null) {
+            mCommentSubscription.unsubscribe();
+        }
+        if (mReplySubscription != null) {
+            mReplySubscription.unsubscribe();
         }
     }
 
@@ -152,44 +165,51 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void loadComments(int page) {
-        mCommentCall = CnBetaApiHelper.comments(mSid, page);
-        if (mCommentCallback == null) {
-            mCommentCallback = new Callback<CnBetaApi.Result<List<Comment>>>() {
-                @Override
-                public void onResponse(Call<CnBetaApi.Result<List<Comment>>> call,
-                                       Response<CnBetaApi.Result<List<Comment>>> response) {
-                    if (response.code() == 200) {
-                        List<Comment> result = response.body().result;
-                        int currentSize = mCommentAdapter.listSize();
-                        int modOfSize = currentSize % ONE_PAGE_COMMENT_COUNT;
-                        if (!result.isEmpty() && modOfSize != result.size()) {
-                            if (modOfSize != 0) {
-                                mCommentAdapter.removeAll(
-                                        new ArrayList<>(mCommentAdapter.subList(currentSize - modOfSize, currentSize)));
-                            }
-                            // HeaderView 太高时，调用 notifyItemInserted 相关方法
-                            // 会导致 RecyclerView 跳转到奇怪的位置
-                            mCommentAdapter.getList().addAll(result);
-                            mCommentAdapter.notifyDataSetChanged();
-                        } else {
-                            showSnackBar(R.string.no_more_comments);
-                        }
-                    } else {
-                        showSnackBar(R.string.load_articles_failed);
-                    }
-                    hideProgress();
-                    hideOrShowTip();
-                }
+        final Subscriber<List<Comment>> subscriber = new Subscriber<List<Comment>>() {
+            @Override
+            public void onCompleted() {
+                hideProgress();
+                hideOrShowTip();
+            }
 
-                @Override
-                public void onFailure(Call<CnBetaApi.Result<List<Comment>>> call, Throwable t) {
-                    showSnackBar(R.string.load_articles_failed);
-                    hideProgress();
-                    hideOrShowTip();
+            @Override
+            public void onError(Throwable e) {
+                showSnackBar(R.string.load_articles_failed);
+                hideProgress();
+                hideOrShowTip();
+            }
+
+            @Override
+            public void onNext(List<Comment> result) {
+                int currentSize = mCommentAdapter.listSize();
+                int modOfSize = currentSize % ONE_PAGE_COMMENT_COUNT;
+                if (!result.isEmpty() && modOfSize != result.size()) {
+                    if (modOfSize != 0) {
+                        mCommentAdapter.removeAll(
+                                new ArrayList<>(mCommentAdapter.subList(currentSize - modOfSize, currentSize)));
+                    }
+                    // HeaderView 太高时，调用 notifyItemInserted 相关方法
+                    // 会导致 RecyclerView 跳转到奇怪的位置
+                    mCommentAdapter.getList().addAll(result);
+                    mCommentAdapter.notifyDataSetChanged();
+                } else {
+                    showSnackBar(R.string.no_more_comments);
                 }
-            };
-        }
-        mCommentCall.enqueue(mCommentCallback);
+            }
+        };
+        mCommentSubscription = CnBetaApiHelper.comments(mSid, page)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
+                    @Override
+                    public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
+                        if (!listResult.isSuccess()) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return listResult.result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private String getToken() {
@@ -197,37 +217,69 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void support(final Comment c) {
-        CnBetaApiHelper.supportComment(getToken(), mSid, c.getTid()).enqueue(new Callback<WebApi.Result>() {
+        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
             @Override
-            public void onResponse(Call<WebApi.Result> call, Response<WebApi.Result> response) {
-                if (response.isSuccessful()) {
-                    c.setSupport(c.getSupport() + 1);
-                    mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
-                }
+            public void onCompleted() {
+
             }
 
             @Override
-            public void onFailure(Call<WebApi.Result> call, Throwable t) {
-                Log.e(TAG, "onFailure#supportComment: ", t);
+            public void onError(Throwable e) {
+                showSnackBar(R.string.operation_failed);
             }
-        });
+
+            @Override
+            public void onNext(WebApi.Result result) {
+                c.setSupport(c.getSupport() + 1);
+                mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
+            }
+        };
+        mSupportSubscription = CnBetaApiHelper.supportComment(getToken(), mSid, c.getTid())
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<WebApi.Result, WebApi.Result>() {
+                    @Override
+                    public WebApi.Result call(WebApi.Result result) {
+                        if (!result.isSuccess()) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private void against(final Comment c) {
-        CnBetaApiHelper.againstComment(getToken(), mSid, c.getTid()).enqueue(new Callback<WebApi.Result>() {
+        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
             @Override
-            public void onResponse(Call<WebApi.Result> call, Response<WebApi.Result> response) {
-                if (response.isSuccessful()) {
-                    c.setAgainst(c.getAgainst() + 1);
-                    mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
-                }
+            public void onCompleted() {
+
             }
 
             @Override
-            public void onFailure(Call<WebApi.Result> call, Throwable t) {
-                Log.e(TAG, "onFailure#againstComment: ", t);
+            public void onError(Throwable e) {
+                showSnackBar(R.string.operation_failed);
             }
-        });
+
+            @Override
+            public void onNext(WebApi.Result result) {
+                c.setAgainst(c.getAgainst() + 1);
+                mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
+            }
+        };
+        mAgainstSubscription = CnBetaApiHelper.againstComment(getToken(), mSid, c.getTid())
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<WebApi.Result, WebApi.Result>() {
+                    @Override
+                    public WebApi.Result call(WebApi.Result result) {
+                        if (!result.isSuccess()) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private void replyComment(final Comment c) {
@@ -270,24 +322,36 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void publishComment(String content, String captcha, int pid) {
-        CnBetaApiHelper.replyComment(getToken(), content, captcha, mSid, pid)
-                .enqueue(new Callback<WebApi.Result>() {
-                    @Override
-                    public void onResponse(Call<WebApi.Result> call, Response<WebApi.Result> response) {
-                        if (response.isSuccessful()) {
-                            if (response.body().isSuccess()) {
-                                showSnackBar(R.string.add_comment_succeed);
-                            } else {
-                                showSnackBar(String.format(getString(R.string.add_comment_failed_format), response.body().error));
-                            }
-                        }
-                    }
+        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
+            @Override
+            public void onCompleted() {
+            }
 
+            @Override
+            public void onError(Throwable e) {
+                showSnackBar(String.format(getString(R.string.add_comment_failed_format), e.getMessage()));
+            }
+
+            @Override
+            public void onNext(WebApi.Result o) {
+                showSnackBar(R.string.add_comment_succeed);
+            }
+        };
+        mReplySubscription = CnBetaApiHelper.replyComment(getToken(), content, captcha, mSid, pid)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<WebApi.Result, WebApi.Result>() {
                     @Override
-                    public void onFailure(Call<WebApi.Result> call, Throwable t) {
-                        Log.e(TAG, "onFailure#replyComment: ", t);
+                    public WebApi.Result call(WebApi.Result result) {
+                        if (result.isSuccess()) {
+                            return result;
+                        } else {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return null;
                     }
-                });
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private void hideProgress() {

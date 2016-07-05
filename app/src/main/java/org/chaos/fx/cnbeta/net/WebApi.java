@@ -22,13 +22,13 @@ import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 import org.chaos.fx.cnbeta.net.model.WebComment;
 
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import rx.Observable;
 
 /**
  * @author Chaos
@@ -38,31 +38,31 @@ public interface WebApi {
     String HOST_URL = "http://www.cnbeta.com";
 
     @GET("/articles/{sid}.htm")
-    Call<ResponseBody> getArticleHtml(@Path("sid") int sid);
+    Observable<ResponseBody> getArticleHtml(@Path("sid") int sid);
 
     @GET("/captcha.htm?refresh=1")
-    Call<WebCaptcha> getCaptchaDataUrl(@Query("csrf_token") String token,
-                                       @Query("_") long timestamp);
+    Observable<WebCaptcha> getCaptchaDataUrl(@Query("csrf_token") String token,
+                                             @Query("_") long timestamp);
 
     @FormUrlEncoded
     @POST("/cmt")
-    Call<Result<WebComment>> getCommentJson(@Field("op") String op);
+    Observable<Result<WebComment>> getCommentJson(@Field("op") String op);
 
     @FormUrlEncoded
     @POST("/comment")
-    Call<Result> addComment(@Field("csrf_token") String token,
-                            @Field("op") String op,
-                            @Field("content") String content,
-                            @Field("seccode") String captcha,
-                            @Field("sid") int sid,
-                            @Field("pid") int pid);
+    Observable<Result> addComment(@Field("csrf_token") String token,
+                                  @Field("op") String op,
+                                  @Field("content") String content,
+                                  @Field("seccode") String captcha,
+                                  @Field("sid") int sid,
+                                  @Field("pid") int pid);
 
     @FormUrlEncoded
     @POST("/comment")
-    Call<Result> opForComment(@Field("csrf_token") String token,
-                                @Field("op") String op,
-                                @Field("sid") int sid,
-                                @Field("tid") int tid);
+    Observable<Result> opForComment(@Field("csrf_token") String token,
+                                    @Field("op") String op,
+                                    @Field("sid") int sid,
+                                    @Field("tid") int tid);
 
     class Result<T> {
 
@@ -80,7 +80,7 @@ public interface WebApi {
         @SerializedName(FIELD_RESULT)
         public T result;
 
-        public boolean isSuccess(){
+        public boolean isSuccess() {
             return state.equals("success");
         }
 

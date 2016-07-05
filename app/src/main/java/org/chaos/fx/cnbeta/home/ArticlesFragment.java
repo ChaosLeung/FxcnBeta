@@ -32,6 +32,7 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -43,9 +44,12 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -67,8 +71,7 @@ public class ArticlesFragment extends BaseFragment
 
     private String mTopicId;
 
-    private ArticleCallback mApiCallback = new ArticleCallback();
-    private Call<CnBetaApi.Result<List<ArticleSummary>>> mCall;
+    private Subscription mSubscription;
 
     private volatile boolean initialized = false;
 
@@ -147,8 +150,7 @@ public class ArticlesFragment extends BaseFragment
             @Override
             public void run() {
                 mArticlesView.setRefreshing(true);
-                mCall = CnBetaApiHelper.articles();
-                mCall.enqueue(mApiCallback);
+                doRequest(CnBetaApiHelper.articles());
             }
         });
         return rootView;
@@ -169,9 +171,10 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onDestroyView() {
+        super.onDestroyView();
         sHandler.removeCallbacks(mResetActionBarTitleRunnable);
-        if (mCall != null) {
-            mCall.cancel();
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
         }
         int size = mArticleAdapter.listSize();
         List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
@@ -181,20 +184,19 @@ public class ArticlesFragment extends BaseFragment
             mRealm.copyToRealmOrUpdate(storeArticles);
             mRealm.commitTransaction();
         }
-        super.onDestroyView();
     }
 
     @Override
     public void onRefresh() {
+        Observable<CnBetaApi.Result<List<ArticleSummary>>> observable;
         if (mArticleAdapter.getItemCount() == 0) {
-            mCall = CnBetaApiHelper.topicArticles(mTopicId);
-            mCall.enqueue(mApiCallback);
+            observable = CnBetaApiHelper.topicArticles(mTopicId);
         } else {
-            mCall = CnBetaApiHelper.newArticles(
+            observable = CnBetaApiHelper.newArticles(
                     mTopicId,
                     mArticleAdapter.get(0).getSid());
-            mCall.enqueue(mApiCallback);
         }
+        doRequest(observable);
     }
 
     @Override
@@ -202,10 +204,25 @@ public class ArticlesFragment extends BaseFragment
         mArticleAdapter.getFooterView().setVisibility(View.VISIBLE);
         mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
         mArticlesView.getRecyclerView().smoothScrollToPosition(mArticleAdapter.getItemCount() - 1);
-        mCall = CnBetaApiHelper.oldArticles(
+        doRequest(CnBetaApiHelper.oldArticles(
                 mTopicId,
-                mArticleAdapter.get(mArticleAdapter.getItemCount() - 2).getSid());
-        mCall.enqueue(mApiCallback);
+                mArticleAdapter.get(mArticleAdapter.getItemCount() - 2).getSid()));
+    }
+
+    private void doRequest(Observable<CnBetaApi.Result<List<ArticleSummary>>> observable) {
+        final ArticleSubscriber subscriber = new ArticleSubscriber();
+        mSubscription = observable.subscribeOn(Schedulers.io())
+                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
+                    @Override
+                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
+                        if (!listResult.isSuccess()) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return listResult.result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -219,42 +236,40 @@ public class ArticlesFragment extends BaseFragment
         mArticlesView.getRecyclerView().scrollToPosition(0);
     }
 
-    private class ArticleCallback implements Callback<CnBetaApi.Result<List<ArticleSummary>>> {
+    private class ArticleSubscriber extends Subscriber<List<ArticleSummary>> {
 
         @Override
-        public void onResponse(Call<CnBetaApi.Result<List<ArticleSummary>>> call,
-                               Response<CnBetaApi.Result<List<ArticleSummary>>> response) {
-            if (response.code() == 200) {
-                List<ArticleSummary> result = response.body().result;
-                if (!result.isEmpty()) {
-                    if (mArticlesView.isRefreshing()) {
-                        synchronized (this) {
-                            if (!initialized) {
-                                initialized = true;
-                                mArticleAdapter.clear();
-                            }
-                        }
-                        mArticleAdapter.getList().addAll(0, result);
-                        mArticleAdapter.notifyDataSetChanged();
-                        mArticlesView.getRecyclerView().scrollToPosition(0);
-                    } else {
-                        mArticleAdapter.addAll(response.body().result);
-                    }
-                } else {
-                    showSnackBar(R.string.no_more_articles);
-                }
-            } else {
+        public void onCompleted() {
+            resetStatus();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (isVisible()) {
                 showSnackBar(R.string.load_articles_failed);
             }
             resetStatus();
         }
 
         @Override
-        public void onFailure(Call<CnBetaApi.Result<List<ArticleSummary>>> call, Throwable t) {
-            if (isVisible()) {
-                showSnackBar(R.string.load_articles_failed);
+        public void onNext(List<ArticleSummary> result) {
+            if (!result.isEmpty()) {
+                if (mArticlesView.isRefreshing()) {
+                    synchronized (this) {
+                        if (!initialized) {
+                            initialized = true;
+                            mArticleAdapter.clear();
+                        }
+                    }
+                    mArticleAdapter.getList().addAll(0, result);
+                    mArticleAdapter.notifyDataSetChanged();
+                    mArticlesView.getRecyclerView().scrollToPosition(0);
+                } else {
+                    mArticleAdapter.addAll(result);
+                }
+            } else {
+                showSnackBar(R.string.no_more_articles);
             }
-            resetStatus();
         }
 
         private void resetStatus() {

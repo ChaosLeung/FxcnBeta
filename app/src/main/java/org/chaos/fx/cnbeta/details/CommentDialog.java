@@ -23,23 +23,28 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -75,11 +80,14 @@ public class CommentDialog extends DialogFragment {
                 case android.R.id.button2://Negative
                     dismiss();
                     break;
+                case R.id.captcha:
+                    flashCaptcha();
+                    break;
             }
         }
     };
 
-    private Call<WebCaptcha> mCaptchaCall;
+    private Subscription mCaptchaSubscription;
 
     @NonNull
     @Override
@@ -95,24 +103,10 @@ public class CommentDialog extends DialogFragment {
 
         ButterKnife.bind(this, view);
 
-        mCaptchaCall = CnBetaApiHelper.getCaptchaDataUrl(((ContentActivity) getActivity()).getToken());
-        mCaptchaCall.enqueue(new Callback<WebCaptcha>() {
-            @Override
-            public void onResponse(Call<WebCaptcha> call, final Response<WebCaptcha> response) {
-                if (response.isSuccessful()) {
-                    new Picasso.Builder(getActivity())
-                            .downloader(CnBetaApiHelper.okHttp3Downloader())
-                            .build()
-                            .load(WebApi.HOST_URL + response.body().getUrl())
-                            .into(mCaptchaView);
-                }
-            }
+        mCaptchaView.setOnClickListener(mButtonClickListener);
 
-            @Override
-            public void onFailure(Call<WebCaptcha> call, Throwable t) {
+        flashCaptcha();
 
-            }
-        });
         return dialog;
     }
 
@@ -125,7 +119,44 @@ public class CommentDialog extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mCaptchaCall.cancel();
+        mCaptchaSubscription.unsubscribe();
+    }
+
+    private void flashCaptcha() {
+        final Subscriber<String> subscriber = new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Toast.makeText(getActivity(), R.string.failed_to_get_captcha, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNext(String captchaUrl) {
+                new Picasso.Builder(getActivity())
+                        .downloader(CnBetaApiHelper.okHttp3Downloader())
+                        .build()
+                        .load(WebApi.HOST_URL + captchaUrl)
+                        .into(mCaptchaView);
+            }
+        };
+        mCaptchaSubscription = CnBetaApiHelper.getCaptchaDataUrl(((ContentActivity) getActivity()).getToken())
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<WebCaptcha, String>() {
+                    @Override
+                    public String call(WebCaptcha webCaptcha) {
+                        if (TextUtils.isEmpty(webCaptcha.getUrl())) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return webCaptcha.getUrl();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .retry(5)
+                .subscribe(subscriber);
     }
 
     public void setPositiveListener(DialogInterface.OnClickListener l) {

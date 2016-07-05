@@ -72,6 +72,10 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"
     compile "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
+    compile "com.squareup.retrofit2:adapter-rxjava:${libsVersion.retrofit}"
+
+    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxandroid:1.2.1'
 
     compile 'com.google.code.gson:gson:2.6.1'
 

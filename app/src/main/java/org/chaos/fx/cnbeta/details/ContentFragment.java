@@ -41,6 +41,7 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.jsoup.Jsoup;
@@ -53,9 +54,11 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -94,7 +97,7 @@ public class ContentFragment extends BaseFragment {
     @Bind(R.id.error_button)
     View mRetryButton;
 
-    private Call<CnBetaApi.Result<NewsContent>> mContentCall;
+    private Subscription mContentSubscription;
 
     private Transformation transformation = new Transformation() {
         @Override
@@ -165,8 +168,8 @@ public class ContentFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mContentCall != null) {
-            mContentCall.cancel();
+        if (mContentSubscription != null) {
+            mContentSubscription.unsubscribe();
         }
     }
 
@@ -197,53 +200,63 @@ public class ContentFragment extends BaseFragment {
     }
 
     private void loadContent() {
-        mContentCall = CnBetaApiHelper.articleContent(mSid);
-        mContentCall.enqueue(new Callback<CnBetaApi.Result<NewsContent>>() {
+        final Subscriber<NewsContent> subscriber = new Subscriber<NewsContent>() {
+            @Override
+            public void onCompleted() {
+                mLoadingBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mErrorLayout.setVisibility(View.VISIBLE);
+                mLoadingBar.setVisibility(View.GONE);
+            }
+
             @SuppressLint("SetTextI18n")
             @Override
-            public void onResponse(Call<CnBetaApi.Result<NewsContent>> call,
-                                   Response<CnBetaApi.Result<NewsContent>> response) {
-                if (response.code() == 200) {
-                    NewsContent newsContent = response.body().result;
-                    newsContent.setBodytext(
-                            newsContent.getBodytext()
-                                    .replaceAll("&quot;", "\"")
-                                    .replaceAll("&lt;", "<")
-                                    .replaceAll("&gt;", ">")
-                                    .replaceAll("&nbsp;", " "));
+            public void onNext(NewsContent newsContent) {
+                newsContent.setBodytext(
+                        newsContent.getBodytext()
+                                .replaceAll("&quot;", "\"")
+                                .replaceAll("&lt;", "<")
+                                .replaceAll("&gt;", ">")
+                                .replaceAll("&nbsp;", " "));
 
-                    Picasso.with(getActivity())
-                            .load(TextUtils.isEmpty(mLogoLink)
-                                    ? "http://static.cnbetacdn.com" + newsContent.getThumb()
-                                    : mLogoLink)
-                            .into(authorImg);
+                Picasso.with(getActivity())
+                        .load(TextUtils.isEmpty(mLogoLink)
+                                ? "http://static.cnbetacdn.com" + newsContent.getThumb()
+                                : mLogoLink)
+                        .into(authorImg);
 
-                    title.setText(newsContent.getTitle());
-                    author.setText("By " + newsContent.getAid());
-                    time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
-                    commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getComment()));
+                title.setText(newsContent.getTitle());
+                author.setText("By " + newsContent.getAid());
+                time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
+                commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getComment()));
 
-                    Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
-                    source.setText(findTagText(doc));
+                Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
+                source.setText(findTagText(doc));
 
-                    doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
-                    Elements textareas = doc.select("textarea");
-                    if (!textareas.isEmpty()) {
-                        textareas.first().remove();
-                    }
-                    addViewByNode(doc.body());
-                } else {
-                    mErrorLayout.setVisibility(View.VISIBLE);
+                doc = Jsoup.parseBodyFragment(newsContent.getHometext() + newsContent.getBodytext());
+                Elements textareas = doc.select("textarea");
+                if (!textareas.isEmpty()) {
+                    textareas.first().remove();
                 }
-                mLoadingBar.setVisibility(View.GONE);
+                addViewByNode(doc.body());
             }
-
-            @Override
-            public void onFailure(Call<CnBetaApi.Result<NewsContent>> call, Throwable t) {
-                mLoadingBar.setVisibility(View.GONE);
-                mErrorLayout.setVisibility(View.VISIBLE);
-            }
-        });
+        };
+        mContentSubscription = CnBetaApiHelper.articleContent(mSid)
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<CnBetaApi.Result<NewsContent>, NewsContent>() {
+                    @Override
+                    public NewsContent call(CnBetaApi.Result<NewsContent> newsContentResult) {
+                        if (!newsContentResult.isSuccess()) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return newsContentResult.result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private String findTagText(Node node) {

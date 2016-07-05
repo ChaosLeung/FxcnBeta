@@ -24,11 +24,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -37,9 +38,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -55,7 +58,7 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
 
     private HotCommentAdapter mHotCommentAdapter;
 
-    private Call<CnBetaApi.Result<List<HotComment>>> mCall;
+    private Subscription mSubscription;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,40 +96,50 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
 
     @Override
     public void onDestroyView() {
-        if (mCall != null) {
-            mCall.cancel();
-        }
         super.onDestroyView();
+        if (mSubscription != null) {
+            mSubscription.unsubscribe();
+        }
     }
 
     private void loadHotComments() {
-        mCall = CnBetaApiHelper.hotComment();
-        mCall.enqueue(new Callback<CnBetaApi.Result<List<HotComment>>>() {
+        final Subscriber<List<HotComment>> subscriber = new Subscriber<List<HotComment>>() {
             @Override
-            public void onResponse(Call<CnBetaApi.Result<List<HotComment>>> call,
-                                   Response<CnBetaApi.Result<List<HotComment>>> response) {
-                if (response.code() == 200) {
-                    List<HotComment> result = response.body().result;
-                    if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
-                        mHotCommentAdapter.clear();
-                        mHotCommentAdapter.addAll(0, result);
-                    } else {
-                        showSnackBar(R.string.no_more_articles);
-                    }
-                } else {
-                    showSnackBar(R.string.load_articles_failed);
-                }
+            public void onCompleted() {
                 mHotCommentView.setRefreshing(false);
             }
 
             @Override
-            public void onFailure(Call<CnBetaApi.Result<List<HotComment>>> call, Throwable t) {
+            public void onError(Throwable e) {
                 if (isVisible()) {
                     showSnackBar(R.string.load_articles_failed);
                 }
                 mHotCommentView.setRefreshing(false);
             }
-        });
+
+            @Override
+            public void onNext(List<HotComment> result) {
+                if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
+                    mHotCommentAdapter.clear();
+                    mHotCommentAdapter.addAll(0, result);
+                } else {
+                    showSnackBar(R.string.no_more_articles);
+                }
+            }
+        };
+        mSubscription = CnBetaApiHelper.hotComment()
+                .subscribeOn(Schedulers.io())
+                .map(new Func1<CnBetaApi.Result<List<HotComment>>, List<HotComment>>() {
+                    @Override
+                    public List<HotComment> call(CnBetaApi.Result<List<HotComment>> listResult) {
+                        if (!listResult.isSuccess()) {
+                            subscriber.onError(new RequestFailedException());
+                        }
+                        return listResult.result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
     }
 
     private void showSnackBar(@StringRes int strId) {

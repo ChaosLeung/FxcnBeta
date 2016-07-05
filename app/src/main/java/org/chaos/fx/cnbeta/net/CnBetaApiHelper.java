@@ -36,9 +36,10 @@ import java.util.regex.Pattern;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
 
 /**
  * @author Chaos
@@ -67,6 +68,7 @@ public class CnBetaApiHelper {
                                         return false;
                                     }
                                 }).create()))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
                 .create(CnBetaApi.class);
 
@@ -76,6 +78,7 @@ public class CnBetaApiHelper {
                 .baseUrl(WebApi.HOST_URL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
                 .create(WebApi.class);
 
@@ -86,12 +89,12 @@ public class CnBetaApiHelper {
         return sCookieDownloader;
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> articles() {
+    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> articles() {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.articles(timestamp, CnBetaSignUtil.articlesSign(timestamp));
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(String topicId) {
+    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(String topicId) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.topicArticles(
                 timestamp,
@@ -99,7 +102,7 @@ public class CnBetaApiHelper {
                 topicId);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> newArticles(String topicId, int startSid) {
+    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> newArticles(String topicId, int startSid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.newArticles(
                 timestamp,
@@ -108,7 +111,7 @@ public class CnBetaApiHelper {
                 startSid);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(String topicId,
+    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(String topicId,
                                                                            int endSid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.oldArticles(
@@ -118,7 +121,7 @@ public class CnBetaApiHelper {
                 endSid);
     }
 
-    public static Call<CnBetaApi.Result<NewsContent>> articleContent(int sid) {
+    public static Observable<CnBetaApi.Result<NewsContent>> articleContent(int sid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.articleContent(
                 timestamp,
@@ -134,7 +137,7 @@ public class CnBetaApiHelper {
      * @param sid  文章 id
      * @param page 页
      */
-    public static Call<CnBetaApi.Result<List<Comment>>> comments(int sid,
+    public static Observable<CnBetaApi.Result<List<Comment>>> comments(int sid,
                                                                  int page) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.comments(
@@ -144,7 +147,7 @@ public class CnBetaApiHelper {
                 page);
     }
 
-    public static Call<CnBetaApi.Result<Object>> addComment(int sid,
+    public static Observable<CnBetaApi.Result<Object>> addComment(int sid,
                                                             String content) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.addComment(
@@ -155,7 +158,7 @@ public class CnBetaApiHelper {
     }
 
     @Deprecated
-    public static Call<CnBetaApi.Result<Object>> replyComment(int sid,
+    public static Observable<CnBetaApi.Result<Object>> replyComment(int sid,
                                                               int pid,
                                                               String content) {
         long timestamp = System.currentTimeMillis();
@@ -168,7 +171,7 @@ public class CnBetaApiHelper {
     }
 
     @Deprecated
-    public static Call<CnBetaApi.Result<String>> supportComment(int tid) {
+    public static Observable<CnBetaApi.Result<String>> supportComment(int tid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.supportComment(
                 timestamp,
@@ -177,7 +180,7 @@ public class CnBetaApiHelper {
     }
 
     @Deprecated
-    public static Call<CnBetaApi.Result<String>> againstComment(int tid) {
+    public static Observable<CnBetaApi.Result<String>> againstComment(int tid) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.againstComment(
                 timestamp,
@@ -185,12 +188,12 @@ public class CnBetaApiHelper {
                 tid);
     }
 
-    public static Call<CnBetaApi.Result<List<HotComment>>> hotComment() {
+    public static Observable<CnBetaApi.Result<List<HotComment>>> hotComment() {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> todayRank(@CnBetaApi.RankType String type) {
+    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> todayRank(@CnBetaApi.RankType String type) {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.todayRank(
                 timestamp,
@@ -198,12 +201,12 @@ public class CnBetaApiHelper {
                 type);
     }
 
-    public static Call<CnBetaApi.Result<List<ArticleSummary>>> top10() {
+    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> top10() {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.top10(timestamp, CnBetaSignUtil.top10Sign(timestamp));
     }
 
-    public static Call<CnBetaApi.Result<List<Topic>>> topics() {
+    public static Observable<CnBetaApi.Result<List<Topic>>> topics() {
         long timestamp = System.currentTimeMillis();
         return sCnBetaApi.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
     }
@@ -219,7 +222,7 @@ public class CnBetaApiHelper {
         }
     }
 
-    public static Call<ResponseBody> getArticleHtml(int sid) {
+    public static Observable<ResponseBody> getArticleHtml(int sid) {
         return sWebApi.getArticleHtml(sid);
     }
 
@@ -231,27 +234,27 @@ public class CnBetaApiHelper {
      * @param sid 文章 id
      * @param sn  每篇文章的 sn 码
      */
-    public static Call<WebApi.Result<WebComment>> getCommentJson(int sid, String sn) {
+    public static Observable<WebApi.Result<WebComment>> getCommentJson(int sid, String sn) {
         return sWebApi.getCommentJson("1," + sid + "," + sn);
     }
 
-    public static Call<WebCaptcha> getCaptchaDataUrl(String token) {
+    public static Observable<WebCaptcha> getCaptchaDataUrl(String token) {
         return sWebApi.getCaptchaDataUrl(token, System.currentTimeMillis());
     }
 
-    public static Call<WebApi.Result> addComment(String token, String content, String captcha, int sid) {
+    public static Observable<WebApi.Result> addComment(String token, String content, String captcha, int sid) {
         return replyComment(token, content, captcha, sid, 0);
     }
 
-    public static Call<WebApi.Result> replyComment(String token, String content, String captcha, int sid, int pid) {
+    public static Observable<WebApi.Result> replyComment(String token, String content, String captcha, int sid, int pid) {
         return sWebApi.addComment(token, "publish", content, captcha, sid, pid);
     }
 
-    public static Call<WebApi.Result> supportComment(String token, int sid, int tid) {
+    public static Observable<WebApi.Result> supportComment(String token, int sid, int tid) {
         return sWebApi.opForComment(token, "support", sid, tid);
     }
 
-    public static Call<WebApi.Result> againstComment(String token, int sid, int tid) {
+    public static Observable<WebApi.Result> againstComment(String token, int sid, int tid) {
         return sWebApi.opForComment(token, "against", sid, tid);
     }
 }

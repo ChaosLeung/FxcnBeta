@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/captcha_text"
         android:layout_alignTop="@+id/captcha_text"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitXY" />
 
     <EditText
         android:id="@+id/captcha_text"

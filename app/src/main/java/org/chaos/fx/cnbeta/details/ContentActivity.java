@@ -26,18 +26,21 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
-import org.chaos.fx.cnbeta.net.model.WebComment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 import okhttp3.ResponseBody;
@@ -45,6 +48,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -70,10 +74,13 @@ public class ContentActivity extends SwipeBackActivity implements
     private int mSid;
     private String mLogoLink;
 
-    private WebComment mWebComment;
+    private String mHtmlBody;
+    private WebCommentResult mWebCommentResult;
 
-    @Bind(R.id.pager)
-    ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
+
+    @Bind(R.id.error_layout) View mErrorLayout;
+    @Bind(R.id.loading_view) ProgressBar mLoadingView;
 
     private SectionsPagerAdapter mPagerAdapter;
 
@@ -99,7 +106,6 @@ public class ContentActivity extends SwipeBackActivity implements
         }
 
         setupActionBar();
-        setupViewPager();
 
         requestArticleHtml();
     }
@@ -148,64 +154,67 @@ public class ContentActivity extends SwipeBackActivity implements
         mViewPager.setCurrentItem(1, true);
     }
 
-    private void requestArticleHtml() {
-        final Subscriber<WebComment> subscriber = new Subscriber<WebComment>() {
-            @Override
-            public void onCompleted() {
-            }
+    @OnClick(R.id.error_button)
+    public void requestArticleHtml() {
+        mLoadingView.setVisibility(View.VISIBLE);
+        mErrorLayout.setVisibility(View.GONE);
 
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(WebComment webComment) {
-                mWebComment = webComment;
-            }
-        };
         mArticleSubscription = CnBetaApiHelper.getArticleHtml(mSid)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<ResponseBody, String>() {
                     @Override
                     public String call(ResponseBody responseBody) {
-                        String sn = null;
                         try {
-                            String html = responseBody.string();
-                            sn = CnBetaApiHelper.getSNFromArticleBody(html);
+                            mHtmlBody = responseBody.string();
+                            return CnBetaApiHelper.getSNFromArticleBody(mHtmlBody);
                         } catch (IOException e) {
-                            subscriber.onError(e);
+                            throw Exceptions.propagate(e);
                         }
-                        return sn;
                     }
                 })
-                .flatMap(new Func1<String, Observable<WebApi.Result<WebComment>>>() {
+                .flatMap(new Func1<String, Observable<WebApi.Result<WebCommentResult>>>() {
                     @Override
-                    public Observable<WebApi.Result<WebComment>> call(String sn) {
+                    public Observable<WebApi.Result<WebCommentResult>> call(String sn) {
                         return CnBetaApiHelper.getCommentJson(mSid, sn);
                     }
                 })
-                .map(new Func1<WebApi.Result<WebComment>, WebComment>() {
+                .map(new Func1<WebApi.Result<WebCommentResult>, WebCommentResult>() {
                     @Override
-                    public WebComment call(WebApi.Result<WebComment> webCommentResult) {
-                        if (webCommentResult.isSuccess()) {
-                            return webCommentResult.result;
+                    public WebCommentResult call(WebApi.Result<WebCommentResult> result) {
+                        if (result.isSuccess()) {
+                            return result.result;
                         } else {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
-                        return null;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .retry(5)
-                .subscribe(subscriber);
+                .retry(3)
+                .subscribe(new Subscriber<WebCommentResult>() {
+                    @Override
+                    public void onCompleted() {
+                        mLoadingView.setVisibility(View.GONE);
+                        setupViewPager();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mLoadingView.setVisibility(View.GONE);
+                        mErrorLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onNext(WebCommentResult result) {
+                        mWebCommentResult = result;
+                    }
+                });
     }
 
     String getToken() {
-        if (mWebComment == null) {
+        if (mWebCommentResult == null) {
             return null;
         }
-        return mWebComment.getToken();
+        return mWebCommentResult.getToken();
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -220,9 +229,9 @@ public class ContentActivity extends SwipeBackActivity implements
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return ContentFragment.newInstance(mSid, mLogoLink);
+                    return ContentFragment.newInstance(mSid, mLogoLink, mHtmlBody, mWebCommentResult.getCommentCount());
                 case 1:
-                    return CommentFragment.newInstance(mSid);
+                    return CommentFragment.newInstance(mSid, mWebCommentResult);
             }
             return new Fragment();
         }

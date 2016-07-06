@@ -27,54 +27,32 @@ import io.realm.annotations.PrimaryKey;
  */
 public class ArticleSummary extends RealmObject {
 
-    private static final String FIELD_PUBTIME = "pubtime";
-    private static final String FIELD_THUMB = "thumb";
-    private static final String FIELD_SCORE = "score";
-    private static final String FIELD_COMMENTS = "comments";
-    private static final String FIELD_SCORE_STORY = "score_story";
-    private static final String FIELD_SID = "sid";
-    private static final String FIELD_TOPIC_LOGO = "topic_logo";
-    private static final String FIELD_RATINGS_STORY = "ratings_story";
-    private static final String FIELD_SUMMARY = "summary";
-    private static final String FIELD_TOPIC = "topic";
-    private static final String FIELD_TITLE = "title";
-    private static final String FIELD_COUNTER = "counter";
-    private static final String FIELD_RATINGS = "ratings";
-
-    @SerializedName(FIELD_PUBTIME)
-    private String mPubtime;
-    @SerializedName(FIELD_THUMB)
+    @SerializedName("pubtime")
+    private String mPublishTime;
+    @SerializedName("thumb")
     private String mThumb;
-    @SerializedName(FIELD_SCORE)
-    private int mScore;
-    @SerializedName(FIELD_COMMENTS)
+    @SerializedName("comments")
     private int mComment;
-    @SerializedName(FIELD_SCORE_STORY)
-    private int mScoreStory;
     @PrimaryKey
-    @SerializedName(FIELD_SID)
+    @SerializedName("sid")
     private int mSid;
-    @SerializedName(FIELD_TOPIC_LOGO)
+    @SerializedName("topic_logo")
     private String mTopicLogo;
-    @SerializedName(FIELD_RATINGS_STORY)
-    private int mRatingsStory;
-    @SerializedName(FIELD_SUMMARY)
+    @SerializedName("summary")
     private String mSummary;
-    @SerializedName(FIELD_TOPIC)
+    @SerializedName("topic")
     private int mTopic;
-    @SerializedName(FIELD_TITLE)
+    @SerializedName("title")
     private String mTitle;
-    @SerializedName(FIELD_COUNTER)
+    @SerializedName("counter")
     private int mCounter;
-    @SerializedName(FIELD_RATINGS)
-    private int mRating;
 
-    public void setPubtime(String pubtime) {
-        mPubtime = pubtime;
+    public void setPublishTime(String publishTime) {
+        mPublishTime = publishTime;
     }
 
-    public String getPubtime() {
-        return mPubtime;
+    public String getPublishTime() {
+        return mPublishTime;
     }
 
     public void setThumb(String thumb) {
@@ -85,28 +63,12 @@ public class ArticleSummary extends RealmObject {
         return mThumb;
     }
 
-    public void setScore(int score) {
-        mScore = score;
-    }
-
-    public int getScore() {
-        return mScore;
-    }
-
     public void setComment(int comment) {
         mComment = comment;
     }
 
     public int getComment() {
         return mComment;
-    }
-
-    public void setScoreStory(int scoreStory) {
-        mScoreStory = scoreStory;
-    }
-
-    public int getScoreStory() {
-        return mScoreStory;
     }
 
     public void setSid(int sid) {
@@ -123,14 +85,6 @@ public class ArticleSummary extends RealmObject {
 
     public String getTopicLogo() {
         return mTopicLogo;
-    }
-
-    public void setRatingsStory(int ratingsStory) {
-        mRatingsStory = ratingsStory;
-    }
-
-    public int getRatingsStory() {
-        return mRatingsStory;
     }
 
     public void setSummary(String summary) {
@@ -165,29 +119,19 @@ public class ArticleSummary extends RealmObject {
         return mCounter;
     }
 
-    public void setRating(int rating) {
-        mRating = rating;
-    }
-
-    public int getRating() {
-        return mRating;
-    }
-
     @Override
     public String toString() {
-        return "pubtime = " + mPubtime +
-                ", thumb = " + mThumb +
-                ", score = " + mScore +
-                ", comment = " + mComment +
-                ", scoreStory = " + mScoreStory +
-                ", sid = " + mSid +
-                ", topicLogo = " + mTopicLogo +
-                ", ratingsStory = " + mRatingsStory +
-                ", summary = " + mSummary +
-                ", topic = " + mTopic +
-                ", title = " + mTitle +
-                ", counter = " + mCounter +
-                ", rating = " + mRating;
+        return "ArticleSummary{" +
+                "mPublishTime='" + mPublishTime + '\'' +
+                ", mThumb='" + mThumb + '\'' +
+                ", mComment=" + mComment +
+                ", mSid=" + mSid +
+                ", mTopicLogo='" + mTopicLogo + '\'' +
+                ", mSummary='" + mSummary + '\'' +
+                ", mTopic=" + mTopic +
+                ", mTitle='" + mTitle + '\'' +
+                ", mCounter=" + mCounter +
+                '}';
     }
 
     @Override

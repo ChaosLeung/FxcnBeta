@@ -19,7 +19,7 @@ package org.chaos.fx.cnbeta.net;
 import com.google.gson.annotations.SerializedName;
 
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
-import org.chaos.fx.cnbeta.net.model.WebComment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
@@ -46,7 +46,7 @@ public interface WebApi {
 
     @FormUrlEncoded
     @POST("/cmt")
-    Observable<Result<WebComment>> getCommentJson(@Field("op") String op);
+    Observable<Result<WebCommentResult>> getCommentJson(@Field("op") String op);
 
     @FormUrlEncoded
     @POST("/comment")
@@ -81,7 +81,7 @@ public interface WebApi {
         public T result;
 
         public boolean isSuccess() {
-            return state.equals("success");
+            return "success".equals(state);
         }
 
         @Override

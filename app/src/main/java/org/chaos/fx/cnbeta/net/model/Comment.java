@@ -16,36 +16,30 @@
 
 package org.chaos.fx.cnbeta.net.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Chaos
  *         2015/11/03.
  */
-public class Comment {
+public class Comment implements Parcelable {
 
-    private static final String FIELD_USERNAME = "username";
-    private static final String FIELD_PID = "pid";
-    private static final String FIELD_CREATED_TIME = "created_time";
-    private static final String FIELD_SUPPORT = "support";
-    private static final String FIELD_AGAINST = "against";
-    private static final String FIELD_CONTENT = "content";
-    private static final String FIELD_TID = "tid";
-
-
-    @SerializedName(FIELD_USERNAME)
+    @SerializedName("username")
     private String mUsername;
-    @SerializedName(FIELD_PID)
+    @SerializedName("pid")
     private int mPid;
-    @SerializedName(FIELD_CREATED_TIME)
+    @SerializedName("created_time")
     private String mCreatedTime;
-    @SerializedName(FIELD_SUPPORT)
+    @SerializedName("support")
     private int mSupport;
-    @SerializedName(FIELD_AGAINST)
+    @SerializedName("against")
     private int mAgainst;
-    @SerializedName(FIELD_CONTENT)
+    @SerializedName("content")
     private String mContent;
-    @SerializedName(FIELD_TID)
+    @SerializedName("tid")
     private int mTid;
 
     public void setUsername(String username) {
@@ -126,4 +120,45 @@ public class Comment {
         }
         return false;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mUsername);
+        dest.writeInt(this.mPid);
+        dest.writeString(this.mCreatedTime);
+        dest.writeInt(this.mSupport);
+        dest.writeInt(this.mAgainst);
+        dest.writeString(this.mContent);
+        dest.writeInt(this.mTid);
+    }
+
+    public Comment() {
+    }
+
+    protected Comment(Parcel in) {
+        this.mUsername = in.readString();
+        this.mPid = in.readInt();
+        this.mCreatedTime = in.readString();
+        this.mSupport = in.readInt();
+        this.mAgainst = in.readInt();
+        this.mContent = in.readString();
+        this.mTid = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Comment> CREATOR = new Parcelable.Creator<Comment>() {
+        @Override
+        public Comment createFromParcel(Parcel source) {
+            return new Comment(source);
+        }
+
+        @Override
+        public Comment[] newArray(int size) {
+            return new Comment[size];
+        }
+    };
 }

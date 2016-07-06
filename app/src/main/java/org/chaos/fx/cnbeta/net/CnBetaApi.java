@@ -265,7 +265,7 @@ public interface CnBetaApi {
         public T result;
 
         public boolean isSuccess() {
-            return status.equals("success");
+            return "success".equals(status);
         }
     }
 }

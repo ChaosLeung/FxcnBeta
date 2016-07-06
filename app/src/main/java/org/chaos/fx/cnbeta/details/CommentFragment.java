@@ -37,6 +37,8 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.Comment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.util.ModelUitl;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.ArrayList;
@@ -62,16 +64,19 @@ public class CommentFragment extends BaseFragment implements
     private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
     private static final String KEY_SID = "sid";
+    private static final String KEY_COMMENTS = "comments";
 
-    public static CommentFragment newInstance(int sid) {
+    public static CommentFragment newInstance(int sid, WebCommentResult result) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
+        args.putParcelableArrayList(KEY_COMMENTS, ModelUitl.toCommentList(result));
         CommentFragment fragment = new CommentFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     private int mSid;
+    private ArrayList<Comment> mComments;
 
     @Bind(R.id.no_content)
     TextView mNoContentTipView;
@@ -104,6 +109,7 @@ public class CommentFragment extends BaseFragment implements
         ButterKnife.bind(this, view);
 
         mSid = getArguments().getInt(KEY_SID);
+        mComments = getArguments().getParcelableArrayList(KEY_COMMENTS);
 
         mCommentAdapter = new CommentAdapter(getActivity(), mCommentView.getRecyclerView());
         mCommentAdapter.addFooterView(
@@ -125,10 +131,10 @@ public class CommentFragment extends BaseFragment implements
                 }
             }
         });
+        mCommentAdapter.addAll(mComments);
         mCommentView.setAdapter(mCommentAdapter);
         mCommentView.setOnLoadMoreListener(this);
         mCommentView.setShowLoadingBar(false);
-        onLoadMore();
     }
 
     @Override
@@ -203,7 +209,7 @@ public class CommentFragment extends BaseFragment implements
                     @Override
                     public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
                         if (!listResult.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return listResult.result;
                     }
@@ -240,7 +246,7 @@ public class CommentFragment extends BaseFragment implements
                     @Override
                     public WebApi.Result call(WebApi.Result result) {
                         if (!result.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return result;
                     }
@@ -273,7 +279,7 @@ public class CommentFragment extends BaseFragment implements
                     @Override
                     public WebApi.Result call(WebApi.Result result) {
                         if (!result.isSuccess()) {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
                         return result;
                     }
@@ -322,21 +328,6 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void publishComment(String content, String captcha, int pid) {
-        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
-            @Override
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                showSnackBar(String.format(getString(R.string.add_comment_failed_format), e.getMessage()));
-            }
-
-            @Override
-            public void onNext(WebApi.Result o) {
-                showSnackBar(R.string.add_comment_succeed);
-            }
-        };
         mReplySubscription = CnBetaApiHelper.replyComment(getToken(), content, captcha, mSid, pid)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<WebApi.Result, WebApi.Result>() {
@@ -345,13 +336,26 @@ public class CommentFragment extends BaseFragment implements
                         if (result.isSuccess()) {
                             return result;
                         } else {
-                            subscriber.onError(new RequestFailedException());
+                            throw new RequestFailedException();
                         }
-                        return null;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<WebApi.Result>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        showSnackBar(String.format(getString(R.string.add_comment_failed_format), e.getMessage()));
+                    }
+
+                    @Override
+                    public void onNext(WebApi.Result o) {
+                        showSnackBar(R.string.add_comment_succeed);
+                    }
+                });
     }
 
     private void hideProgress() {

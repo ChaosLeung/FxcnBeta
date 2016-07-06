@@ -135,7 +135,7 @@ public class CommentDialog extends DialogFragment {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .retry(5)
+                .retry(3)
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {

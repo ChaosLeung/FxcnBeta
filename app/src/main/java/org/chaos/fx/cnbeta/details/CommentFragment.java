@@ -37,6 +37,8 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.Comment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.util.ModelUitl;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.ArrayList;
@@ -62,16 +64,19 @@ public class CommentFragment extends BaseFragment implements
     private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
     private static final String KEY_SID = "sid";
+    private static final String KEY_COMMENTS = "comments";
 
-    public static CommentFragment newInstance(int sid) {
+    public static CommentFragment newInstance(int sid, WebCommentResult result) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
+        args.putParcelableArrayList(KEY_COMMENTS, ModelUitl.toCommentList(result));
         CommentFragment fragment = new CommentFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     private int mSid;
+    private ArrayList<Comment> mComments;
 
     @Bind(R.id.no_content)
     TextView mNoContentTipView;
@@ -104,6 +109,7 @@ public class CommentFragment extends BaseFragment implements
         ButterKnife.bind(this, view);
 
         mSid = getArguments().getInt(KEY_SID);
+        mComments = getArguments().getParcelableArrayList(KEY_COMMENTS);
 
         mCommentAdapter = new CommentAdapter(getActivity(), mCommentView.getRecyclerView());
         mCommentAdapter.addFooterView(
@@ -125,10 +131,10 @@ public class CommentFragment extends BaseFragment implements
                 }
             }
         });
+        mCommentAdapter.addAll(mComments);
         mCommentView.setAdapter(mCommentAdapter);
         mCommentView.setOnLoadMoreListener(this);
         mCommentView.setShowLoadingBar(false);
-        onLoadMore();
     }
 
     @Override

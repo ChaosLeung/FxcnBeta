@@ -21,92 +21,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:textSize="30sp"
+            tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future" />
+
+        <ImageView
+            android:id="@+id/author_image"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_below="@+id/title"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="16dp"
+            tools:background="#000" />
+
+        <TextView
+            android:id="@+id/source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/author_image"
+            android:layout_toEndOf="@+id/author_image"
+            android:layout_toRightOf="@+id/author_image"
+            android:textColor="@color/content_text"
+            tools:text="The Washington Post" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/author_image"
+            android:singleLine="true"
+            tools:text="3 hours ago" />
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/source"
+            android:layout_toEndOf="@+id/author_image"
+            android:layout_toRightOf="@+id/author_image"
+            android:singleLine="true"
+            tools:text="Sean Sullivan and Katie Zezima" />
+
+        <LinearLayout
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/author"
+            android:layout_marginTop="24dp"
             android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:orientation="vertical" />
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:textSize="30sp"
-                tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future" />
-
-            <ImageView
-                android:id="@+id/author_image"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_below="@+id/title"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="16dp"
-                tools:background="#000" />
-
-            <TextView
-                android:id="@+id/source"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/author_image"
-                android:layout_toEndOf="@+id/author_image"
-                android:layout_toRightOf="@+id/author_image"
-                android:textColor="@color/content_text"
-                tools:text="The Washington Post" />
-
-            <TextView
-                android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/author_image"
-                android:singleLine="true"
-                tools:text="3 hours ago" />
-
-            <TextView
-                android:id="@+id/author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/source"
-                android:layout_toEndOf="@+id/author_image"
-                android:layout_toRightOf="@+id/author_image"
-                android:singleLine="true"
-                tools:text="Sean Sullivan and Katie Zezima" />
-
-            <LinearLayout
-                android:id="@+id/content_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/author"
-                android:layout_marginTop="24dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical" />
-
-            <TextView
-                android:id="@+id/comment_count"
-                style="@style/ArticleContentText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/content_layout"
-                android:layout_marginTop="24dp"
-                android:textColor="@color/card_time_text"
-                tools:text="12 条评论" />
-        </RelativeLayout>
-
-        <include layout="@layout/layout_loading" />
-
-        <include layout="@layout/layout_error" />
-    </FrameLayout>
+        <TextView
+            android:id="@+id/comment_count"
+            style="@style/ArticleContentText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/content_layout"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/card_time_text"
+            tools:text="12 条评论" />
+    </RelativeLayout>
 </ScrollView>

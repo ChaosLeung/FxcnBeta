@@ -39,13 +39,11 @@ import com.squareup.picasso.Transformation;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
@@ -54,9 +52,10 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscriber;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -68,11 +67,15 @@ public class ContentFragment extends BaseFragment {
 
     private static final String KEY_SID = "sid";
     private static final String KEY_TOPIC_LOGO = "topic_logo";
+    private static final String KEY_HTML_CONTENT = "html_content";
+    private static final String KEY_COMMENT_COUNT = "comment_count";
 
-    public static ContentFragment newInstance(int sid, String topicLogoLink) {
+    public static ContentFragment newInstance(int sid, String topicLogoLink, String htmlBody, int commentCount) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
         args.putString(KEY_TOPIC_LOGO, topicLogoLink);
+        args.putString(KEY_HTML_CONTENT, htmlBody);
+        args.putInt(KEY_COMMENT_COUNT, commentCount);
         ContentFragment fragment = new ContentFragment();
         fragment.setArguments(args);
         return fragment;
@@ -80,22 +83,17 @@ public class ContentFragment extends BaseFragment {
 
     private int mSid;
     private String mLogoLink;
+    private String mHtmlContent;
+    private int mCommentCount;
 
     @Bind(R.id.title) TextView title;
     @Bind(R.id.source) TextView source;
     @Bind(R.id.author) TextView author;
     @Bind(R.id.time) TextView time;
-    @Bind(R.id.comment_count) TextView commentCount;
+    @Bind(R.id.comment_count) TextView commentCountView;
     @Bind(R.id.author_image) ImageView authorImg;
 
     @Bind(R.id.content_layout) LinearLayout contentLayout;
-
-    @Bind(R.id.loading_view)
-    View mLoadingBar;
-    @Bind(R.id.error_layout)
-    View mErrorLayout;
-    @Bind(R.id.error_button)
-    View mRetryButton;
 
     private Subscription mContentSubscription;
 
@@ -147,15 +145,10 @@ public class ContentFragment extends BaseFragment {
 
         mSid = getArguments().getInt(KEY_SID);
         mLogoLink = getArguments().getString(KEY_TOPIC_LOGO);
+        mHtmlContent = getArguments().getString(KEY_HTML_CONTENT);
+        mCommentCount = getArguments().getInt(KEY_COMMENT_COUNT);
 
-
-        mRetryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadContent();
-            }
-        });
-        commentCount.setOnClickListener(new View.OnClickListener() {
+        commentCountView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnShowCommentListener.onShowComment();
@@ -200,62 +193,75 @@ public class ContentFragment extends BaseFragment {
     }
 
     private void loadContent() {
-        mContentSubscription = CnBetaApiHelper.articleContent(mSid)
+        mContentSubscription = Observable.just(mHtmlContent)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<NewsContent>, NewsContent>() {
+                .map(new Func1<String, NewsContent>() {
                     @Override
-                    public NewsContent call(CnBetaApi.Result<NewsContent> newsContentResult) {
-                        if (!newsContentResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return newsContentResult.result;
+                    public NewsContent call(String html) {
+                        NewsContent newsContent = parseHtmlContent(html);
+                        newsContent.setCommentCount(mCommentCount);
+                        return newsContent;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<NewsContent>() {
+                .subscribe(new Action1<NewsContent>() {
                     @Override
-                    public void onCompleted() {
-                        mLoadingBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mErrorLayout.setVisibility(View.VISIBLE);
-                        mLoadingBar.setVisibility(View.GONE);
-                    }
-
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onNext(NewsContent newsContent) {
-                        newsContent.setBodyText(
-                                newsContent.getBodyText()
-                                        .replaceAll("&quot;", "\"")
-                                        .replaceAll("&lt;", "<")
-                                        .replaceAll("&gt;", ">")
-                                        .replaceAll("&nbsp;", " "));
-
-                        Picasso.with(getActivity())
-                                .load(TextUtils.isEmpty(mLogoLink)
-                                        ? "http://static.cnbetacdn.com" + newsContent.getThumb()
-                                        : mLogoLink)
-                                .into(authorImg);
-
-                        title.setText(newsContent.getTitle());
-                        author.setText("By " + newsContent.getAuthor());
-                        time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
-                        commentCount.setText(String.format(getString(R.string.content_comment_count), newsContent.getCommentCount()));
-
-                        Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
-                        source.setText(findTagText(doc));
-
-                        doc = Jsoup.parseBodyFragment(newsContent.getHomeText() + newsContent.getBodyText());
-                        Elements textareas = doc.select("textarea");
-                        if (!textareas.isEmpty()) {
-                            textareas.first().remove();
-                        }
-                        addViewByNode(doc.body());
+                    public void call(NewsContent newsContent) {
+                        parseNewsContent(newsContent);
                     }
                 });
+    }
+
+    private NewsContent parseHtmlContent(String html) {
+        Element body = Jsoup.parse(html).body();
+        String title = body.getElementById("news_title").text();
+        String source = body.select("span.where > a").text();
+        String time = body.select("span.date").text();
+        String homeText = body.select("div.introduction > p").text();
+        String thumb = body.select("a > img[title]").attr("src").replace("http://static.cnbetacdn.com", "");
+        String bodyText = body.getElementsByClass("content").html();
+        String author = body.getElementsByClass("author").text();
+        author = author.substring(6, author.length() - 1);
+        NewsContent newsContent = new NewsContent();
+        newsContent.setTitle(title);
+        newsContent.setTime(time);
+        newsContent.setHomeText(homeText);
+        newsContent.setBodyText(bodyText);
+        newsContent.setThumb(thumb);
+        newsContent.setSource(source);
+        newsContent.setAuthor(author);
+        return newsContent;
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void parseNewsContent(NewsContent newsContent) {
+        newsContent.setBodyText(
+                newsContent.getBodyText()
+                        .replaceAll("&quot;", "\"")
+                        .replaceAll("&lt;", "<")
+                        .replaceAll("&gt;", ">")
+                        .replaceAll("&nbsp;", " "));
+
+        Picasso.with(getActivity())
+                .load(TextUtils.isEmpty(mLogoLink)
+                        ? "http://static.cnbetacdn.com" + newsContent.getThumb()
+                        : mLogoLink)
+                .into(authorImg);
+
+        title.setText(newsContent.getTitle());
+        author.setText("By " + newsContent.getAuthor());
+        time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
+        commentCountView.setText(String.format(getString(R.string.content_comment_count), newsContent.getCommentCount()));
+
+        Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
+        source.setText(findTagText(doc));
+
+        doc = Jsoup.parseBodyFragment(newsContent.getHomeText() + newsContent.getBodyText());
+        Elements textareas = doc.select("textarea");
+        if (!textareas.isEmpty()) {
+            textareas.first().remove();
+        }
+        addViewByNode(doc.body());
     }
 
     private String findTagText(Node node) {

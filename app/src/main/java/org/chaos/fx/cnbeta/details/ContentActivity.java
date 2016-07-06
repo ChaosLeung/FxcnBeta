@@ -26,6 +26,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
@@ -38,6 +40,7 @@ import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 import okhttp3.ResponseBody;
@@ -71,10 +74,13 @@ public class ContentActivity extends SwipeBackActivity implements
     private int mSid;
     private String mLogoLink;
 
+    private String mHtmlBody;
     private WebCommentResult mWebCommentResult;
 
-    @Bind(R.id.pager)
-    ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
+
+    @Bind(R.id.error_layout) View mErrorLayout;
+    @Bind(R.id.loading_view) ProgressBar mLoadingView;
 
     private SectionsPagerAdapter mPagerAdapter;
 
@@ -100,7 +106,6 @@ public class ContentActivity extends SwipeBackActivity implements
         }
 
         setupActionBar();
-        setupViewPager();
 
         requestArticleHtml();
     }
@@ -149,15 +154,19 @@ public class ContentActivity extends SwipeBackActivity implements
         mViewPager.setCurrentItem(1, true);
     }
 
-    private void requestArticleHtml() {
+    @OnClick(R.id.error_button)
+    public void requestArticleHtml() {
+        mLoadingView.setVisibility(View.VISIBLE);
+        mErrorLayout.setVisibility(View.GONE);
+
         mArticleSubscription = CnBetaApiHelper.getArticleHtml(mSid)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<ResponseBody, String>() {
                     @Override
                     public String call(ResponseBody responseBody) {
                         try {
-                            String html = responseBody.string();
-                            return CnBetaApiHelper.getSNFromArticleBody(html);
+                            mHtmlBody = responseBody.string();
+                            return CnBetaApiHelper.getSNFromArticleBody(mHtmlBody);
                         } catch (IOException e) {
                             throw Exceptions.propagate(e);
                         }
@@ -180,14 +189,18 @@ public class ContentActivity extends SwipeBackActivity implements
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .retry(5)
+                .retry(3)
                 .subscribe(new Subscriber<WebCommentResult>() {
                     @Override
                     public void onCompleted() {
+                        mLoadingView.setVisibility(View.GONE);
+                        setupViewPager();
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        mLoadingView.setVisibility(View.GONE);
+                        mErrorLayout.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -216,9 +229,9 @@ public class ContentActivity extends SwipeBackActivity implements
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return ContentFragment.newInstance(mSid, mLogoLink);
+                    return ContentFragment.newInstance(mSid, mLogoLink, mHtmlBody, mWebCommentResult.getCommentCount());
                 case 1:
-                    return CommentFragment.newInstance(mSid);
+                    return CommentFragment.newInstance(mSid, mWebCommentResult);
             }
             return new Fragment();
         }

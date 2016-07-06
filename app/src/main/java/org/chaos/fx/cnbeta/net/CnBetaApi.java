@@ -21,6 +21,7 @@ import android.support.annotation.StringDef;
 import com.google.gson.annotations.SerializedName;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
@@ -145,6 +146,18 @@ public interface CnBetaApi {
                                                @Query("sign") String sign,
                                                @Query("sid") int sid,
                                                @Query("page") int page);
+
+    /**
+     * 获取已关闭评论的文章的评论列表 (只有简单数据, 不包含评论之间的关系, 即无回复概念)
+     *
+     * @param timestamp 时间戳
+     * @param sign      加密字符串
+     * @return 成功则返回评论数据
+     */
+    @GET(BASE_PARAMS + "phone.Comment")
+    Observable<List<ClosedComment>> closedComments(@Query("timestamp") long timestamp,
+                                                   @Query("sign") String sign,
+                                                   @Query("article") int article);
 
     /**
      * 评论

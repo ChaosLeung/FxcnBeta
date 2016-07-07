@@ -192,6 +192,12 @@ public class ContentFragment extends BaseFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    public void updateCommentCount(int count) {
+        if (commentCountView != null && isVisible()) {
+            commentCountView.setText(String.format(getString(R.string.content_comment_count), count));
+        }
+    }
+
     private void loadContent() {
         mContentSubscription = Observable.just(mHtmlContent)
                 .subscribeOn(Schedulers.io())

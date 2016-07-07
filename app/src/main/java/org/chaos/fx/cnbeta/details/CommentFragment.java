@@ -16,6 +16,7 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,10 +33,10 @@ import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
+import org.chaos.fx.cnbeta.net.exception.RequestRateLimitingException;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import org.chaos.fx.cnbeta.util.ModelUitl;
@@ -57,11 +58,7 @@ import rx.schedulers.Schedulers;
  *         4/2/16
  */
 public class CommentFragment extends BaseFragment implements
-        SwipeLinearRecyclerView.OnLoadMoreListener {
-
-    private static final String TAG = "CommentFragment";
-
-    private static final int ONE_PAGE_COMMENT_COUNT = 10;
+        SwipeLinearRecyclerView.OnRefreshListener {
 
     private static final String KEY_SID = "sid";
     private static final String KEY_COMMENTS = "comments";
@@ -77,12 +74,11 @@ public class CommentFragment extends BaseFragment implements
 
     private int mSid;
     private ArrayList<Comment> mComments;
+    private OnCommentUpdateListener mOnCommentUpdateListener;
 
-    @Bind(R.id.no_content)
-    TextView mNoContentTipView;
+    @Bind(R.id.no_content) TextView mNoContentTipView;
 
-    @Bind(R.id.swipe_recycler_view)
-    SwipeLinearRecyclerView mCommentView;
+    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
     private CommentAdapter mCommentAdapter;
 
     private Subscription mCommentSubscription;
@@ -91,9 +87,10 @@ public class CommentFragment extends BaseFragment implements
     private Subscription mReplySubscription;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
         setHasOptionsMenu(true);
+        mOnCommentUpdateListener = (OnCommentUpdateListener) activity;
     }
 
     @Nullable
@@ -133,8 +130,8 @@ public class CommentFragment extends BaseFragment implements
         });
         mCommentAdapter.addAll(mComments);
         mCommentView.setAdapter(mCommentAdapter);
-        mCommentView.setOnLoadMoreListener(this);
-        mCommentView.setShowLoadingBar(false);
+        mCommentView.setOnRefreshListener(this);
+        hideOrShowTip();
     }
 
     @Override
@@ -161,61 +158,41 @@ public class CommentFragment extends BaseFragment implements
         }
     }
 
+
     @Override
-    public void onLoadMore() {
-        int size = mCommentAdapter.getList().size();
-        mCommentAdapter.getFooterView().setVisibility(View.VISIBLE);
-        mCommentAdapter.notifyItemInserted(mCommentAdapter.getItemCount());
-        mCommentView.getRecyclerView().smoothScrollToPosition(mCommentAdapter.getItemCount() - 1);
-        loadComments(size / ONE_PAGE_COMMENT_COUNT + 1);
+    public void onRefresh() {
+        refreshComments();
     }
 
-    private void loadComments(int page) {
-        final Subscriber<List<Comment>> subscriber = new Subscriber<List<Comment>>() {
-            @Override
-            public void onCompleted() {
-                hideProgress();
-                hideOrShowTip();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                showSnackBar(R.string.load_articles_failed);
-                hideProgress();
-                hideOrShowTip();
-            }
-
-            @Override
-            public void onNext(List<Comment> result) {
-                int currentSize = mCommentAdapter.listSize();
-                int modOfSize = currentSize % ONE_PAGE_COMMENT_COUNT;
-                if (!result.isEmpty() && modOfSize != result.size()) {
-                    if (modOfSize != 0) {
-                        mCommentAdapter.removeAll(
-                                new ArrayList<>(mCommentAdapter.subList(currentSize - modOfSize, currentSize)));
-                    }
-                    // HeaderView 太高时，调用 notifyItemInserted 相关方法
-                    // 会导致 RecyclerView 跳转到奇怪的位置
-                    mCommentAdapter.getList().addAll(result);
-                    mCommentAdapter.notifyDataSetChanged();
-                } else {
-                    showSnackBar(R.string.no_more_comments);
-                }
-            }
-        };
-        mCommentSubscription = CnBetaApiHelper.comments(mSid, page)
+    private void refreshComments() {
+        mCommentSubscription = CnBetaApiHelper.getComment(mSid)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
-                    @Override
-                    public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<List<Comment>>() {
+                    @Override
+                    public void onCompleted() {
+                        hideProgress();
+                        hideOrShowTip();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof RequestRateLimitingException) {
+                            showSnackBar(R.string.request_rate_limiting);
+                        } else {
+                            showSnackBar(R.string.load_articles_failed);
+                        }
+                        hideProgress();
+                        hideOrShowTip();
+                    }
+
+                    @Override
+                    public void onNext(List<Comment> comments) {
+                        mCommentAdapter.clear();
+                        mCommentAdapter.addAll(comments);
+                        mOnCommentUpdateListener.onCommentUpdated(comments.size());
+                    }
+                });
     }
 
     private String getToken() {
@@ -223,25 +200,7 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void support(final Comment c) {
-        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                showSnackBar(R.string.operation_failed);
-            }
-
-            @Override
-            public void onNext(WebApi.Result result) {
-                c.setSupport(c.getSupport() + 1);
-                mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
-            }
-        };
         mSupportSubscription = CnBetaApiHelper.supportComment(getToken(), mSid, c.getTid())
-                .subscribeOn(Schedulers.io())
                 .map(new Func1<WebApi.Result, WebApi.Result>() {
                     @Override
                     public WebApi.Result call(WebApi.Result result) {
@@ -251,8 +210,25 @@ public class CommentFragment extends BaseFragment implements
                         return result;
                     }
                 })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(new Subscriber<WebApi.Result>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        showSnackBar(R.string.operation_failed);
+                    }
+
+                    @Override
+                    public void onNext(WebApi.Result result) {
+                        c.setSupport(c.getSupport() + 1);
+                        mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
+                    }
+                });
     }
 
     private void against(final Comment c) {
@@ -359,11 +335,7 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void hideProgress() {
-        mCommentView.setLoading(false);
-        if (mCommentAdapter.getFooterView().getVisibility() == View.VISIBLE) {
-            mCommentAdapter.getFooterView().setVisibility(View.GONE);
-            mCommentAdapter.notifyItemRemoved(mCommentAdapter.getItemCount());
-        }
+        mCommentView.setRefreshing(false);
     }
 
     private void hideOrShowTip() {
@@ -390,5 +362,9 @@ public class CommentFragment extends BaseFragment implements
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public interface OnCommentUpdateListener {
+        void onCommentUpdated(int count);
     }
 }

@@ -23,6 +23,7 @@ import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Chaos
@@ -44,7 +45,11 @@ public class ModelUitl {
 
     public static ArrayList<Comment> toCommentList(WebCommentResult result) {
         ArrayList<Comment> comments = new ArrayList<>();
-        Collection<WebComment> webComments = result.getComments().values();
+        Map<String, WebComment> commentMap = result.getComments();
+        if (commentMap == null) {
+            return comments;
+        }
+        Collection<WebComment> webComments = commentMap.values();
         Iterator<WebComment> wci = webComments.iterator();
         for (int i = 0; i < webComments.size() && wci.hasNext(); i++) {
             comments.add(toComment(wci.next()));

@@ -84,6 +84,10 @@ public interface WebApi {
             return "success".equals(state);
         }
 
+        public boolean isRestricted() {
+            return "busy".equals(error);
+        }
+
         @Override
         public String toString() {
             return "Result{" +

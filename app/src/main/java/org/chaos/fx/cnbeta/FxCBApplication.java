@@ -20,6 +20,7 @@ import android.app.Application;
 
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -35,5 +36,6 @@ public class FxCBApplication extends Application {
         CnBetaApiHelper.initialize();
         TimeStringHelper.initialize(this);
         Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
+        WXApiProvider.initialize(this);
     }
 }

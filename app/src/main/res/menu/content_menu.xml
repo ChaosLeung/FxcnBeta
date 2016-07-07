@@ -24,6 +24,24 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/wechat_friends"
+                android:title="@string/wechat_friends"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/wechat_timeline"
+                android:title="@string/wechat_timeline"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/open_in_browser"
         android:icon="@drawable/ic_open_in_browser_white_24dp"
         android:title="@string/open_in_browser"

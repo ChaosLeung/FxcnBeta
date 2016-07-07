@@ -23,6 +23,9 @@ if (localProperties.exists()) {
 def umengKey = properties.getProperty('UMENG_APPKEY')
 ext.UMENG_APPKEY = umengKey != null ? umengKey : ""
 
+def wechatAppId = properties.getProperty('WECHAT_APPID')
+ext.WECHAT_APPID = wechatAppId != null ? wechatAppId : ""
+
 // config for dependencies
 ext {
     libsVersion = [support : '24.0.0',
@@ -34,7 +37,7 @@ ext {
             appcompatV7       : "com.android.support:appcompat-v7:${libsVersion.support}",
             design            : "com.android.support:design:${libsVersion.support}",
             supportV4         : "com.android.support:support-v4:${libsVersion.support}",
-            preferenceV7     : "com.android.support:preference-v7:${libsVersion.support}"]
+            preferenceV7      : "com.android.support:preference-v7:${libsVersion.support}"]
 }
 
 // config for android config

@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,6 +42,7 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -124,6 +126,8 @@ public class ContentFragment extends BaseFragment {
 
     private OnShowCommentListener mOnShowCommentListener;
 
+    private NewsContent mNewsContent;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -184,12 +188,25 @@ public class ContentFragment extends BaseFragment {
             case R.id.comment:
                 mOnShowCommentListener.onShowComment();
                 return true;
+            case R.id.wechat_friends:
+                shareUrlToWechat(false);
+                return true;
+            case R.id.wechat_timeline:
+                shareUrlToWechat(true);
+                return true;
             case R.id.open_in_browser:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                         String.format(Locale.getDefault(), "http://www.cnbeta.com/articles/%d.htm", mSid))));
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void shareUrlToWechat(boolean toTimeline) {
+        WXApiProvider.shareUrl(String.format(Locale.getDefault(), "http://m.cnbeta.com/view_%d.htm", mSid),
+                mNewsContent.getTitle(),
+                Jsoup.parseBodyFragment(mNewsContent.getHomeText()).text(),
+                ((BitmapDrawable) authorImg.getDrawable()).getBitmap(), toTimeline);
     }
 
     public void updateCommentCount(int count) {
@@ -213,6 +230,7 @@ public class ContentFragment extends BaseFragment {
                 .subscribe(new Action1<NewsContent>() {
                     @Override
                     public void call(NewsContent newsContent) {
+                        mNewsContent = newsContent;
                         parseNewsContent(newsContent);
                     }
                 });

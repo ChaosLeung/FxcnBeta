@@ -137,7 +137,7 @@ public class CnBetaApiHelper {
 
     /**
      * 获取评论列表
-     * <p/>
+     *
      * Note: 如果评论已关闭, 获取的列表必为空
      *
      * @param sid  文章 id
@@ -234,7 +234,7 @@ public class CnBetaApiHelper {
 
     /**
      * 获取网页版的评论内容
-     * <p/>
+     *
      * Note: 可以使用该 API 获取到 token
      *
      * @param sid 文章 id

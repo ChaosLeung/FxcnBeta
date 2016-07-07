@@ -131,6 +131,7 @@ public class CommentFragment extends BaseFragment implements
         mCommentAdapter.addAll(mComments);
         mCommentView.setAdapter(mCommentAdapter);
         mCommentView.setOnRefreshListener(this);
+        hideOrShowTip();
     }
 
     @Override

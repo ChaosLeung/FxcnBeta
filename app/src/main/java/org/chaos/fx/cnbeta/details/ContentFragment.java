@@ -239,7 +239,8 @@ public class ContentFragment extends BaseFragment {
     private NewsContent parseHtmlContent(String html) {
         Element body = Jsoup.parse(html).body();
         String title = body.getElementById("news_title").text();
-        String source = body.select("span.where > a").text();
+        String source = body.select("span.where").text();
+        source = source.substring(3, source.length());
         String time = body.select("span.date").text();
         String homeText = body.select("div.introduction > p").text();
         String thumb = body.select("a > img[title]").attr("src").replace("http://static.cnbetacdn.com", "");

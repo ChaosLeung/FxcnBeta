@@ -158,7 +158,6 @@ public class CommentFragment extends BaseFragment implements
         }
     }
 
-
     @Override
     public void onRefresh() {
         refreshComments();

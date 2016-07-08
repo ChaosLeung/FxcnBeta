@@ -33,10 +33,10 @@ import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
-import org.chaos.fx.cnbeta.net.exception.RequestRateLimitingException;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import org.chaos.fx.cnbeta.util.ModelUitl;
@@ -62,6 +62,7 @@ public class CommentFragment extends BaseFragment implements
 
     private static final String KEY_SID = "sid";
     private static final String KEY_COMMENTS = "comments";
+    private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
     public static CommentFragment newInstance(int sid, WebCommentResult result) {
         Bundle args = new Bundle();
@@ -164,8 +165,19 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void refreshComments() {
-        mCommentSubscription = CnBetaApiHelper.getComment(mSid)
+        int size = mComments.size();
+        int page = (size / ONE_PAGE_COMMENT_COUNT) + 1;
+        mCommentSubscription = CnBetaApiHelper.comments(mSid, page)
                 .subscribeOn(Schedulers.io())
+                .map(new Func1<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
+                    @Override
+                    public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
+                        if (!listResult.isSuccess()) {
+                            throw new RequestFailedException();
+                        }
+                        return listResult.result;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<Comment>>() {
                     @Override
@@ -176,20 +188,29 @@ public class CommentFragment extends BaseFragment implements
 
                     @Override
                     public void onError(Throwable e) {
-                        if (e instanceof RequestRateLimitingException) {
-                            showSnackBar(R.string.request_rate_limiting);
-                        } else {
-                            showSnackBar(R.string.load_articles_failed);
-                        }
+                        showSnackBar(R.string.load_articles_failed);
                         hideProgress();
                         hideOrShowTip();
                     }
 
                     @Override
-                    public void onNext(List<Comment> comments) {
-                        mCommentAdapter.clear();
-                        mCommentAdapter.addAll(comments);
-                        mOnCommentUpdateListener.onCommentUpdated(comments.size());
+                    public void onNext(List<Comment> result) {
+                        int previousSize = mCommentAdapter.listSize();
+                        if (!result.isEmpty()) {
+                            for (Comment comment : result) {
+                                if (!mCommentAdapter.getList().contains(comment)) {
+                                    mCommentAdapter.add(0, comment);
+                                }
+                            }
+                            if (mCommentAdapter.listSize() != previousSize) {
+                                mCommentView.getRecyclerView().scrollToPosition(0);
+                                mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
+                            } else {
+                                showSnackBar(R.string.no_more_comments);
+                            }
+                        } else {
+                            showSnackBar(R.string.no_more_comments);
+                        }
                     }
                 });
     }

@@ -22,8 +22,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.squareup.picasso.OkHttp3Downloader;
 
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
-import org.chaos.fx.cnbeta.net.exception.RequestRateLimitingException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
@@ -31,9 +29,7 @@ import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.net.model.Topic;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
-import org.chaos.fx.cnbeta.util.ModelUitl;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,8 +40,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.exceptions.Exceptions;
-import rx.functions.Func1;
 
 /**
  * @author Chaos
@@ -242,39 +236,6 @@ public class CnBetaApiHelper {
      */
     public static Observable<WebApi.Result<WebCommentResult>> getCommentJson(int sid, String sn) {
         return sWebApi.getCommentJson("1," + sid + "," + sn);
-    }
-
-    public static Observable<List<Comment>> getComment(final int sid) {
-        return getArticleHtml(sid)
-                .map(new Func1<ResponseBody, String>() {
-                    @Override
-                    public String call(ResponseBody responseBody) {
-                        try {
-                            return getSNFromArticleBody(responseBody.string());
-                        } catch (IOException e) {
-                            throw Exceptions.propagate(e);
-                        }
-                    }
-                })
-                .flatMap(new Func1<String, Observable<WebApi.Result<WebCommentResult>>>() {
-                    @Override
-                    public Observable<WebApi.Result<WebCommentResult>> call(String sn) {
-                        return getCommentJson(sid, sn);
-                    }
-                })
-                .map(new Func1<WebApi.Result<WebCommentResult>, List<Comment>>() {
-                    @Override
-                    public List<Comment> call(WebApi.Result<WebCommentResult> result) {
-                        if (result.isSuccess()) {
-                            return ModelUitl.toCommentList(result.result);
-                        }
-                        if (result.isRestricted()) {
-                            throw new RequestRateLimitingException();
-                        }
-                        throw new RequestFailedException();
-
-                    }
-                });
     }
 
     public static Observable<WebCaptcha> getCaptchaDataUrl(String token) {

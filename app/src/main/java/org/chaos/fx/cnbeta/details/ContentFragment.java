@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -323,6 +324,13 @@ public class ContentFragment extends BaseFragment {
                 addImageView(subNode.attributes().get("src"));
             } else if ("#text".equals(subNode.nodeName())) {
                 sb.append(((TextNode) subNode).text());
+            } else if ("embed".equals(subNode.nodeName())) {
+                String src = subNode.attr("src");
+                if (!TextUtils.isEmpty(src)) {
+                    removeLastEnterChars(sb);
+                    sb.append("\n\n") // 与上边文字隔开
+                            .append(src);
+                }
             } else {
                 addView(sb, subNode);
             }
@@ -342,6 +350,7 @@ public class ContentFragment extends BaseFragment {
         TextView view = (TextView) getActivity().getLayoutInflater().inflate(R.layout.article_content_text_item, contentLayout, false);
         contentLayout.addView(view);
         view.setText(text);
+        Linkify.addLinks(view, Linkify.WEB_URLS);
     }
 
     private void addImageView(String link) {

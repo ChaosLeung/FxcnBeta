@@ -279,10 +279,9 @@ public class ContentFragment extends BaseFragment {
         time.setText(TimeStringHelper.getTimeString(newsContent.getTime()));
         commentCountView.setText(String.format(getString(R.string.content_comment_count), newsContent.getCommentCount()));
 
-        Document doc = Jsoup.parseBodyFragment(newsContent.getSource());
-        source.setText(findTagText(doc));
+        source.setText(newsContent.getSource());
 
-        doc = Jsoup.parseBodyFragment(newsContent.getHomeText() + newsContent.getBodyText());
+        Document doc = Jsoup.parseBodyFragment(newsContent.getHomeText() + newsContent.getBodyText());
         Elements textareas = doc.select("textarea");
         if (!textareas.isEmpty()) {
             textareas.first().remove();
@@ -290,24 +289,12 @@ public class ContentFragment extends BaseFragment {
         addViewByNode(doc.body());
     }
 
-    private String findTagText(Node node) {
-        String tagText = "";
-        for (Node subNode : node.childNodes()) {
-            if ("#text".equals(subNode.nodeName())) {
-                return ((TextNode) subNode).text();
-            } else {
-                tagText = findTagText(subNode);
-            }
-        }
-        return tagText;
-    }
-
     private void addViewByNode(Node node) {
         StringBuilder sb = new StringBuilder();
         addView(sb, node);
         if (sb.length() > 0) {
-            removeLastEnterChars(sb);
-            addTextView(sb.toString());// 移除最后两个回车符
+            removeLastUselessChars(sb);// 移除最后两个回车符
+            addTextView(sb.toString());
         }
     }
 
@@ -316,9 +303,11 @@ public class ContentFragment extends BaseFragment {
         for (Node subNode : node.childNodes()) {
             if ("img".equals(subNode.nodeName())) {
                 if (sb.length() > 0) {
-                    removeLastEnterChars(sb);
-                    addTextView(sb.toString());// 移除最后两个回车符
-                    sb.delete(0, sb.length());
+                    removeLastUselessChars(sb);// 移除最后两个回车符
+                    if (sb.length() > 0) {
+                        addTextView(sb.toString());
+                        sb.delete(0, sb.length());
+                    }
                     preSBLen = 0;
                 }
                 addImageView(subNode.attributes().get("src"));
@@ -327,7 +316,7 @@ public class ContentFragment extends BaseFragment {
             } else if ("embed".equals(subNode.nodeName())) {
                 String src = subNode.attr("src");
                 if (!TextUtils.isEmpty(src)) {
-                    removeLastEnterChars(sb);
+                    removeLastUselessChars(sb);
                     sb.append("\n\n") // 与上边文字隔开
                             .append(src);
                 }
@@ -340,9 +329,14 @@ public class ContentFragment extends BaseFragment {
         }
     }
 
-    private void removeLastEnterChars(StringBuilder sb) {
-        if (sb.length() > 1 && sb.lastIndexOf("\n\n") == sb.length() - 2) {
-            sb.delete(sb.length() - 2, sb.length());
+    private void removeLastUselessChars(StringBuilder sb) {
+        int idx = sb.length() - 1;
+        while (sb.length() > 0 &&
+                (sb.charAt(idx) == '\n'
+                        || sb.charAt(idx) == '\r'
+                        || sb.charAt(idx) == ' ')) {
+            sb.delete(sb.length() - 1, sb.length());
+            idx = sb.length() - 1;
         }
     }
 

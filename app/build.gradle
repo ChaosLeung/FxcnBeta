@@ -68,6 +68,8 @@ dependencies {
     compile "${libs.design}"
     compile "${libs.supportV4}"
 
+    compile 'com.roughike:bottom-bar:1.4.0'
+
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"

@@ -17,23 +17,20 @@
 package org.chaos.fx.cnbeta;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.IdRes;
 import android.support.annotation.StringDef;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 
-import org.chaos.fx.cnbeta.help.FeedbackActivity;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnMenuTabClickListener;
+
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
@@ -45,22 +42,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+public class MainActivity extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
-    @Bind(R.id.drawer_layout) DrawerLayout mDrawer;
-    @Bind(R.id.nav_content) NavigationView mNavigationView;
+    private BottomBar mBottomBar;
 
     private List<OnActionBarDoubleClickListener> mActionBarDoubleClickListeners = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        setContentView(R.layout.activity_main_content);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,80 +72,55 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-
-            private final int originAlpha;
-            private final int originRed;
-            private final int originGreen;
-            private final int originBlue;
-
-            {
-                final int originColor = getResources().getColor(R.color.colorPrimaryDark);
-                originAlpha = Color.alpha(originColor);
-                originRed = Color.red(originColor);
-                originGreen = Color.green(originColor);
-                originBlue = Color.blue(originColor);
+        mBottomBar = BottomBar.attach(this, savedInstanceState);
+        mBottomBar.noNavBarGoodness();
+        mBottomBar.setItems(R.menu.navigation_menu);
+        mBottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
+            @Override
+            public void onMenuTabSelected(@IdRes int menuItemId) {
+                switch (menuItemId) {
+                    case R.id.nav_home:
+                        switchPage(PAGE_HOME);
+                        break;
+                    case R.id.nav_rank:
+                        switchPage(PAGE_RANK);
+                        break;
+                    case R.id.nav_hot_articles:
+                        switchPage(PAGE_HOT_ARTICLES);
+                        break;
+                    case R.id.nav_hot_comments:
+                        switchPage(PAGE_HOT_COMMENT);
+                        break;
+                }
             }
 
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                super.onDrawerSlide(drawerView, slideOffset);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Window window = getWindow();
-                    window.setStatusBarColor(
-                            Color.argb((int) Math.floor(originAlpha * (1 - slideOffset)),
-                                    originRed,
-                                    originGreen,
-                                    originBlue));
-                }
+            public void onMenuTabReSelected(@IdRes int menuItemId) {
+
             }
-        };
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        mNavigationView.setNavigationItemSelectedListener(this);
-        mNavigationView.setCheckedItem(R.id.nav_home);
-        switchPage(PAGE_HOME);
+        });
     }
 
     @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mBottomBar.onSaveInstanceState(outState);
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        switch (id) {
-            case R.id.nav_home:
-                switchPage(PAGE_HOME);
-                break;
-            case R.id.nav_rank:
-                switchPage(PAGE_RANK);
-                break;
-            case R.id.nav_hot_articles:
-                switchPage(PAGE_HOT_ARTICLES);
-                break;
-            case R.id.nav_hot_comments:
-                switchPage(PAGE_HOT_COMMENT);
-                break;
-            case R.id.nav_help:
-                startActivity(new Intent(this, FeedbackActivity.class));
-                break;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.nav_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
-
-        mDrawer.closeDrawer(GravityCompat.START);
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     @StringDef({PAGE_HOME, PAGE_RANK, PAGE_HOT_ARTICLES, PAGE_HOT_COMMENT})

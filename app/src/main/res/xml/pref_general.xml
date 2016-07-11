@@ -21,13 +21,17 @@
         android:title="@string/about">
 
         <Preference
+            android:key="help_and_feedback"
+            android:title="@string/nav_help" />
+
+        <Preference
             android:key="author_email"
-            android:title="@string/author_email"
-            android:summary="@string/info_default" />
+            android:summary="@string/info_default"
+            android:title="@string/author_email" />
 
         <Preference
             android:key="version_name"
-            android:title="@string/version_name"
-            android:summary="@string/info_default" />
+            android:summary="@string/info_default"
+            android:title="@string/version_name" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -16,7 +16,6 @@
 
 <resources>
     <string name="app_name">FxcnBeta</string>
-    <string name="action_settings">Settings</string>
 
     <string name="card_image_content_description">Thumb image of the article.</string>
 
@@ -55,14 +54,10 @@
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
     <string name="no_more_comments">没有更多评论</string>
-    <string name="request_rate_limiting">刷新太过频繁,请稍后再试</string>
 
     <string name="no_content">暂无内容</string>
 
     <string name="double_click_move_to_top">双击可返回顶部</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="nav_home">最新资讯</string>
     <string name="nav_rank">今日排行</string>
@@ -93,10 +88,6 @@
     <string name="hot_comment_content">%1$s：%2$s</string>
     <string name="anonymous">匿名网友</string>
 
-    <string name="comment_menu_support">支持</string>
-    <string name="comment_menu_against">反对</string>
-    <string name="comment_menu_reply">回复评论</string>
-    <string name="comment_menu_title">评论选项</string>
     <string name="hint_captcha">输入验证码</string>
     <string name="hint_comment">评论正文</string>
     <string name="error_captcha_should_not_empty">验证码不能为空</string>

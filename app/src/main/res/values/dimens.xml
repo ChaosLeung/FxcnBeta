@@ -15,24 +15,12 @@
   -->
 
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="card_height">96dp</dimen>
     <dimen name="thumb_height">72dp</dimen>
 
-    <dimen name="intrinsic_card_padding">4dp</dimen>
-    <dimen name="intrinsic_card_horizontal">5dp</dimen>
-    <dimen name="intrinsic_card_padding_minus_bg_bottom_padding">2dp</dimen>
-
-    <dimen name="time_text_size">36sp</dimen>
-
     <dimen name="card_inner_content_padding">12dp</dimen>
     <dimen name="card_inner_content_half_padding">6dp</dimen>
-
-    <dimen name="card_news_item_text_headline">20sp</dimen>
 
     <dimen name="article_item_img_margin">16dp</dimen>
 
@@ -41,12 +29,6 @@
 
     <dimen name="article_text_content">16sp</dimen>
     <dimen name="article_text_comment">14sp</dimen>
-    <dimen name="article_text_comment_time">12sp</dimen>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="nav_header_vertical_spacing">16dp</dimen>
-    <dimen name="nav_header_height">160dp</dimen>
-    <dimen name="appbar_padding_top">8dp</dimen>
 
     <dimen name="appbar_elevation">4dp</dimen>
 

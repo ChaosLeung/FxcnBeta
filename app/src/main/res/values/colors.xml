@@ -20,8 +20,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#009688</color>
 
-    <color name="car_light_background">#fffafafa</color>
-
     <color name="card_ripple_color_darken">#0a000000</color>
     <color name="main_background">#ffffffff</color>
 
@@ -31,8 +29,6 @@
     <color name="card_time_text_has_read">#ffc1c1c1</color>
 
     <color name="content_text">@color/card_text</color>
-
-    <color name="holo_light_highlight">#cccccccc</color>
 
     <color name="image_not_available">#fff4f4f4</color>
 

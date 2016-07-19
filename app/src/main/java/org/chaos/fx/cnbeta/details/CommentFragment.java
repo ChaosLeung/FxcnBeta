@@ -33,10 +33,6 @@ import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.WebApi;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import org.chaos.fx.cnbeta.util.ModelUitl;
@@ -47,33 +43,29 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
  *         4/2/16
  */
 public class CommentFragment extends BaseFragment implements
-        SwipeLinearRecyclerView.OnRefreshListener {
+        SwipeLinearRecyclerView.OnRefreshListener, CommentContract.View {
 
     private static final String KEY_SID = "sid";
     private static final String KEY_COMMENTS = "comments";
+    private static final String KEY_TOKEN = "token";
     private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
     public static CommentFragment newInstance(int sid, WebCommentResult result) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
+        args.putString(KEY_TOKEN, result.getToken());
         args.putParcelableArrayList(KEY_COMMENTS, ModelUitl.toCommentList(result));
         CommentFragment fragment = new CommentFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    private int mSid;
     private ArrayList<Comment> mComments;
     private OnCommentUpdateListener mOnCommentUpdateListener;
 
@@ -82,10 +74,13 @@ public class CommentFragment extends BaseFragment implements
     @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
     private CommentAdapter mCommentAdapter;
 
-    private Subscription mCommentSubscription;
-    private Subscription mSupportSubscription;
-    private Subscription mAgainstSubscription;
-    private Subscription mReplySubscription;
+    private CommentContract.Presenter mPresenter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOKEN), this);
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -106,7 +101,6 @@ public class CommentFragment extends BaseFragment implements
 
         ButterKnife.bind(this, view);
 
-        mSid = getArguments().getInt(KEY_SID);
         mComments = getArguments().getParcelableArrayList(KEY_COMMENTS);
 
         mCommentAdapter = new CommentAdapter(getActivity(), mCommentView.getRecyclerView());
@@ -118,13 +112,13 @@ public class CommentFragment extends BaseFragment implements
                 Comment c = mCommentAdapter.get(position);
                 switch (v.getId()) {
                     case R.id.support:
-                        support(c);
+                        mPresenter.support(c);
                         break;
                     case R.id.against:
-                        against(c);
+                        mPresenter.against(c);
                         break;
                     case R.id.reply:
-                        replyComment(c);
+                        mPresenter.replyComment(c);
                         break;
                 }
             }
@@ -132,24 +126,15 @@ public class CommentFragment extends BaseFragment implements
         mCommentAdapter.addAll(mComments);
         mCommentView.setAdapter(mCommentAdapter);
         mCommentView.setOnRefreshListener(this);
-        hideOrShowTip();
+        showNoCommentTipsIfNeed();
+
+        mPresenter.subscribe();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mSupportSubscription != null) {
-            mSupportSubscription.unsubscribe();
-        }
-        if (mAgainstSubscription != null) {
-            mAgainstSubscription.unsubscribe();
-        }
-        if (mCommentSubscription != null) {
-            mCommentSubscription.unsubscribe();
-        }
-        if (mReplySubscription != null) {
-            mReplySubscription.unsubscribe();
-        }
+        mPresenter.unsubscribe();
     }
 
     @Override
@@ -161,143 +146,13 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void onRefresh() {
-        refreshComments();
-    }
-
-    private void refreshComments() {
         int size = mComments.size();
         int page = (size / ONE_PAGE_COMMENT_COUNT) + 1;
-        mCommentSubscription = CnBetaApiHelper.comments(mSid, page)
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
-                    @Override
-                    public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Comment>>() {
-                    @Override
-                    public void onCompleted() {
-                        hideProgress();
-                        hideOrShowTip();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showSnackBar(R.string.load_articles_failed);
-                        hideProgress();
-                        hideOrShowTip();
-                    }
-
-                    @Override
-                    public void onNext(List<Comment> result) {
-                        int previousSize = mCommentAdapter.listSize();
-                        if (!result.isEmpty()) {
-                            for (Comment comment : result) {
-                                if (!mCommentAdapter.getList().contains(comment)) {
-                                    mCommentAdapter.add(0, comment);
-                                }
-                            }
-                            if (mCommentAdapter.listSize() != previousSize) {
-                                mCommentView.getRecyclerView().scrollToPosition(0);
-                                mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
-                            } else {
-                                showSnackBar(R.string.no_more_comments);
-                            }
-                        } else {
-                            showSnackBar(R.string.no_more_comments);
-                        }
-                    }
-                });
+        mPresenter.refreshComments(page);
     }
 
-    private String getToken() {
-        return ((ContentActivity) getActivity()).getToken();
-    }
-
-    private void support(final Comment c) {
-        mSupportSubscription = CnBetaApiHelper.supportComment(getToken(), mSid, c.getTid())
-                .map(new Func1<WebApi.Result, WebApi.Result>() {
-                    @Override
-                    public WebApi.Result call(WebApi.Result result) {
-                        if (!result.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return result;
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WebApi.Result>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showSnackBar(R.string.operation_failed);
-                    }
-
-                    @Override
-                    public void onNext(WebApi.Result result) {
-                        c.setSupport(c.getSupport() + 1);
-                        mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
-                    }
-                });
-    }
-
-    private void against(final Comment c) {
-        final Subscriber<WebApi.Result> subscriber = new Subscriber<WebApi.Result>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                showSnackBar(R.string.operation_failed);
-            }
-
-            @Override
-            public void onNext(WebApi.Result result) {
-                c.setAgainst(c.getAgainst() + 1);
-                mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
-            }
-        };
-        mAgainstSubscription = CnBetaApiHelper.againstComment(getToken(), mSid, c.getTid())
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<WebApi.Result, WebApi.Result>() {
-                    @Override
-                    public WebApi.Result call(WebApi.Result result) {
-                        if (!result.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return result;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
-    }
-
-    private void replyComment(final Comment c) {
-        showCommentDialog(c.getTid());
-    }
-
-    private void addComment() {
-        showCommentDialog(0);
-    }
-
-    /**
-     * 显示评论 dialog, 给用户添加/回复评论
-     *
-     * @param pid 对应评论的 id, 若为 0, 则为添加评论
-     */
-    private void showCommentDialog(final int pid) {
+    @Override
+    public void showCommentDialog(final int pid) {
         final CommentDialog commentDialog = new CommentDialog();
         commentDialog.setPositiveListener(new DialogInterface.OnClickListener() {
             @Override
@@ -315,7 +170,7 @@ public class CommentFragment extends BaseFragment implements
                     return;
                 }
 
-                publishComment(comment, captcha, pid);
+                mPresenter.publishComment(comment, captcha, pid);
 
                 commentDialog.dismiss();
             }
@@ -323,42 +178,13 @@ public class CommentFragment extends BaseFragment implements
         commentDialog.show(getChildFragmentManager(), "CommentDialog");
     }
 
-    private void publishComment(String content, String captcha, int pid) {
-        mReplySubscription = CnBetaApiHelper.replyComment(getToken(), content, captcha, mSid, pid)
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<WebApi.Result, WebApi.Result>() {
-                    @Override
-                    public WebApi.Result call(WebApi.Result result) {
-                        if (result.isSuccess()) {
-                            return result;
-                        } else {
-                            throw new RequestFailedException();
-                        }
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WebApi.Result>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        showSnackBar(String.format(getString(R.string.add_comment_failed_format), e.getMessage()));
-                    }
-
-                    @Override
-                    public void onNext(WebApi.Result o) {
-                        showSnackBar(R.string.add_comment_succeed);
-                    }
-                });
-    }
-
-    private void hideProgress() {
+    @Override
+    public void hideProgress() {
         mCommentView.setRefreshing(false);
     }
 
-    private void hideOrShowTip() {
+    @Override
+    public void showNoCommentTipsIfNeed() {
         mNoContentTipView.setVisibility(mCommentAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
@@ -378,10 +204,56 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.add_comment) {
-            addComment();
+            mPresenter.addComment();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void addComments(List<Comment> comments) {
+        int previousSize = mCommentAdapter.listSize();
+        for (Comment comment : comments) {
+            if (!mCommentAdapter.getList().contains(comment)) {
+                mCommentAdapter.add(0, comment);
+            }
+        }
+        if (mCommentAdapter.listSize() != previousSize) {
+            mCommentView.getRecyclerView().scrollToPosition(0);
+            mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
+        } else {
+            showNoMoreComments();
+        }
+    }
+
+    @Override
+    public void showLoadingFailed() {
+        showSnackBar(R.string.load_articles_failed);
+    }
+
+    @Override
+    public void showNoMoreComments() {
+        showSnackBar(R.string.no_more_comments);
+    }
+
+    @Override
+    public void showAddCommentSucceed() {
+        showSnackBar(R.string.add_comment_succeed);
+    }
+
+    @Override
+    public void showAddCommentFailed(String error) {
+        showSnackBar(String.format(getString(R.string.add_comment_failed_format), error));
+    }
+
+    @Override
+    public void showOperationFailed() {
+        showSnackBar(R.string.operation_failed);
+    }
+
+    @Override
+    public void notifyItemChanged(Comment c) {
+        mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
     }
 
     public interface OnCommentUpdateListener {

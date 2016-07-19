@@ -16,44 +16,31 @@
 
 package org.chaos.fx.cnbeta.rank;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.details.ContentActivity;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
-import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
  *         2015/11/17.
  */
-public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView.OnRefreshListener {
+public class RankSubFragment extends Fragment implements RankSubContract.View, SwipeLinearRecyclerView.OnRefreshListener {
 
     private static final String KEY_TYPE = "type";
 
@@ -78,14 +65,14 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     private RankSubAdapter mArticleAdapter;
 
-    private Subscription mSubscription;
-
     private int mPreClickPosition;
+    private RankSubContract.Presenter mPresenter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mType = getArguments().getString(KEY_TYPE);
+        mPresenter = new RankSubPresenter(this, mType);
     }
 
     @Nullable
@@ -94,7 +81,7 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
         View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
         ButterKnife.bind(this, rootView);
 
-        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView.getRecyclerView());
+        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView.getRecyclerView(), mType);
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -106,14 +93,13 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
         mArticlesView.setAdapter(mArticleAdapter);
 
         mArticlesView.setOnRefreshListener(this);
-        mArticlesView.post(new Runnable() {
-            @Override
-            public void run() {
-                mArticlesView.setRefreshing(true);
-                initArticles();
-            }
-        });
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mPresenter.subscribe();
     }
 
     @Override
@@ -122,52 +108,10 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
         mArticleAdapter.notifyItemChanged(mPreClickPosition);
     }
 
-    @SuppressLint("WrongConstant")
-    private void initArticles() {
-        mSubscription = CnBetaApiHelper.todayRank(mType)
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
-                    @Override
-                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<ArticleSummary>>() {
-                    @Override
-                    public void onCompleted() {
-                        mArticlesView.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (isVisible()) {
-                            showSnackBar(R.string.load_articles_failed);
-                        }
-                        mArticlesView.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onNext(List<ArticleSummary> result) {
-                        if (!result.isEmpty() && !mArticleAdapter.containsAll(result)) {
-                            mArticleAdapter.clear();
-                            mArticleAdapter.addAll(0, result);
-                        } else {
-                            showSnackBar(R.string.no_more_articles);
-                        }
-                    }
-                });
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        mPresenter.unsubscribe();
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -176,32 +120,31 @@ public class RankSubFragment extends Fragment implements SwipeLinearRecyclerView
 
     @Override
     public void onRefresh() {
-        initArticles();
+        mPresenter.loadArticles();
     }
 
-    private class RankSubAdapter extends BaseArticleAdapter {
+    @Override
+    public void showRefreshing(boolean refreshing) {
+        mArticlesView.setRefreshing(refreshing);
+    }
 
-        public RankSubAdapter(Context context, RecyclerView bindView) {
-            super(context, bindView);
-        }
+    @Override
+    public void showLoadFailed() {
+        showSnackBar(R.string.load_articles_failed);
+    }
 
-        @Override
-        protected void onBindHolderInternal(ArticleHolder holder, int position) {
-            super.onBindHolderInternal(holder, position);
-            ArticleSummary summary = get(position);
-            String subText = "";
-            if (CnBetaApi.TYPE_COUNTER.equals(mType)) {
-                subText = TimeStringHelper.getTimeString(summary.getPublishTime());
-            } else if (CnBetaApi.TYPE_DIG.equals(mType)) {
-                subText = getSubText(R.string.read_count, summary.getCounter());
-            } else if (CnBetaApi.TYPE_COMMENTS.equals(mType)) {
-                subText = getSubText(R.string.comment_count, summary.getComment());
-            }
-            holder.summary.setText(subText);
-        }
+    @Override
+    public void showNoMoreContent() {
+        showSnackBar(R.string.no_more_articles);
+    }
 
-        private String getSubText(@StringRes int strId, int value) {
-            return String.format(getContext().getString(strId), value);
+    @Override
+    public void addArticles(List<ArticleSummary> summaries) {
+        if (!mArticleAdapter.containsAll(summaries)) {
+            mArticleAdapter.clear();
+            mArticleAdapter.addAll(0, summaries);
+        } else {
+            showNoMoreContent();
         }
     }
 }

@@ -30,9 +30,6 @@ import org.chaos.fx.cnbeta.MainActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -41,15 +38,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -58,22 +46,16 @@ import rx.schedulers.Schedulers;
 public class ArticlesFragment extends BaseFragment
         implements SwipeLinearRecyclerView.OnRefreshListener,
         SwipeLinearRecyclerView.OnLoadMoreListener,
-        MainActivity.OnActionBarDoubleClickListener {
+        MainActivity.OnActionBarDoubleClickListener,
+        ArticlesContract.View {
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
     private static final int STORE_MAX_COUNT = 50;
 
-    @Bind(R.id.swipe_recycler_view)
-    SwipeLinearRecyclerView mArticlesView;
+    private static Handler sHandler = new Handler();
 
-    private ArticleAdapter mArticleAdapter;
-
-    private String mTopicId;
-
-    private Subscription mSubscription;
-
-    private volatile boolean initialized = false;
+    private static final long RESET_ACTION_BAR_TITLE_DELAY_TIME = 3000;
 
     public static ArticlesFragment newInstance(String topicId) {
         ArticlesFragment fragment = new ArticlesFragment();
@@ -83,9 +65,6 @@ public class ArticlesFragment extends BaseFragment
         return fragment;
     }
 
-    private static Handler sHandler = new Handler();
-
-    private static final long RESET_ACTION_BAR_TITLE_DELAY_TIME = 3000;
     private Runnable mResetActionBarTitleRunnable = new Runnable() {
         @Override
         public void run() {
@@ -93,15 +72,21 @@ public class ArticlesFragment extends BaseFragment
         }
     };
 
-    private Realm mRealm;
+    @Bind(R.id.swipe_recycler_view)
+    SwipeLinearRecyclerView mArticlesView;
+
+    private ArticleAdapter mArticleAdapter;
+
+    private ArticlesContract.Presenter mPresenter;
+
     private int mPreClickPosition;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setActionBarTitle(R.string.nav_home);
-        mTopicId = getArguments().getString(KEY_TOPIC_ID, "null");
-        mRealm = Realm.getDefaultInstance();
+        String topicId = getArguments().getString(KEY_TOPIC_ID, "null");
+        mPresenter = new ArticlesPresenter(topicId, this);
     }
 
     @Nullable
@@ -141,30 +126,20 @@ public class ArticlesFragment extends BaseFragment
 
         mArticlesView.setOnRefreshListener(this);
         mArticlesView.setOnLoadMoreListener(this);
-
-        RealmResults<ArticleSummary> results = mRealm.allObjects(ArticleSummary.class);
-        results.sort("mSid", Sort.DESCENDING);
-        mArticleAdapter.addAll(0, results);
-
-        mArticlesView.post(new Runnable() {
-            @Override
-            public void run() {
-                mArticlesView.setRefreshing(true);
-                doRequest(CnBetaApiHelper.articles());
-            }
-        });
         return rootView;
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        mPresenter.unsubscribe();
         ((MainActivity) getActivity()).removeOnActionBarDoubleClickListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mPresenter.subscribe();
         ((MainActivity) getActivity()).addOnActionBarDoubleClickListener(this);
         mArticleAdapter.notifyItemChanged(mPreClickPosition);
     }
@@ -173,55 +148,25 @@ public class ArticlesFragment extends BaseFragment
     public void onDestroyView() {
         super.onDestroyView();
         sHandler.removeCallbacks(mResetActionBarTitleRunnable);
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
         int size = mArticleAdapter.listSize();
         List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
-        if (!storeArticles.isEmpty()) {
-            mRealm.beginTransaction();
-            mRealm.where(ArticleSummary.class).lessThan("mSid", storeArticles.get(storeArticles.size() - 1).getSid()).findAll().clear();
-            mRealm.copyToRealmOrUpdate(storeArticles);
-            mRealm.commitTransaction();
-        }
+        mPresenter.saveArticles(storeArticles);
     }
 
     @Override
     public void onRefresh() {
-        Observable<CnBetaApi.Result<List<ArticleSummary>>> observable;
+        int sid;
         if (mArticleAdapter.getItemCount() == 0) {
-            observable = CnBetaApiHelper.topicArticles(mTopicId);
+            sid = -1;
         } else {
-            observable = CnBetaApiHelper.newArticles(
-                    mTopicId,
-                    mArticleAdapter.get(0).getSid());
+            sid = mArticleAdapter.get(0).getSid();
         }
-        doRequest(observable);
+        mPresenter.loadNewArticles(sid);
     }
 
     @Override
     public void onLoadMore() {
-        mArticleAdapter.getFooterView().setVisibility(View.VISIBLE);
-        mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
-        mArticlesView.getRecyclerView().smoothScrollToPosition(mArticleAdapter.getItemCount() - 1);
-        doRequest(CnBetaApiHelper.oldArticles(
-                mTopicId,
-                mArticleAdapter.get(mArticleAdapter.getItemCount() - 2).getSid()));
-    }
-
-    private void doRequest(Observable<CnBetaApi.Result<List<ArticleSummary>>> observable) {
-        mSubscription = observable.subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
-                    @Override
-                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new ArticleSubscriber());
+        mPresenter.loadOldArticles(mArticleAdapter.get(mArticleAdapter.getItemCount() - 1).getSid());
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -235,47 +180,63 @@ public class ArticlesFragment extends BaseFragment
         mArticlesView.getRecyclerView().scrollToPosition(0);
     }
 
-    private class ArticleSubscriber extends Subscriber<List<ArticleSummary>> {
+    @Override
+    public void setRefreshing(boolean refreshing) {
+        mArticlesView.setRefreshing(refreshing);
+    }
 
-        @Override
-        public void onCompleted() {
-            resetStatus();
-        }
+    @Override
+    public boolean isRefreshing() {
+        return mArticlesView.isRefreshing();
+    }
 
-        @Override
-        public void onError(Throwable e) {
-            if (isVisible()) {
-                showSnackBar(R.string.load_articles_failed);
-            }
-            resetStatus();
-        }
+    @Override
+    public void setLoading(boolean loading) {
+        mArticlesView.setLoading(loading);
+        mArticleAdapter.getFooterView().setVisibility(loading ? View.VISIBLE : View.GONE);
 
-        @Override
-        public void onNext(List<ArticleSummary> result) {
-            if (!result.isEmpty()) {
-                if (mArticlesView.isRefreshing()) {
-                    synchronized (this) {
-                        if (!initialized) {
-                            initialized = true;
-                            mArticleAdapter.clear();
-                        }
-                    }
-                    mArticleAdapter.getList().addAll(0, result);
-                    mArticleAdapter.notifyDataSetChanged();
-                    mArticlesView.getRecyclerView().scrollToPosition(0);
-                } else {
-                    mArticleAdapter.addAll(result);
-                }
-            } else {
-                showSnackBar(R.string.no_more_articles);
-            }
+        if (loading) {
+            mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
+            mArticlesView.getRecyclerView().smoothScrollToPosition(mArticleAdapter.getItemCount() - 1);
         }
+    }
 
-        private void resetStatus() {
-            mArticlesView.setRefreshing(false);
-            mArticlesView.setLoading(false);
-            mArticleAdapter.getFooterView().setVisibility(View.GONE);
-            mArticleAdapter.notifyItemRemoved(mArticleAdapter.getItemCount());
+    @Override
+    public boolean isLoading() {
+        return mArticlesView.isLoading();
+    }
+
+    @Override
+    public void addArticles(List<ArticleSummary> articles, boolean addToTop) {
+        if (addToTop) {
+            mArticleAdapter.addAll(0, articles);
+            mArticlesView.getRecyclerView().scrollToPosition(0);
+        } else {
+            mArticleAdapter.getList().addAll(articles);
+            mArticleAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void clearArticles() {
+        mArticleAdapter.clear();
+        mArticleAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return mArticleAdapter.isEmpty();
+    }
+
+    @Override
+    public void showNoArticles() {
+        showSnackBar(R.string.no_more_articles);
+    }
+
+    @Override
+    public void showLoadingArticlesError() {
+        showSnackBar(R.string.load_articles_failed);
+        setLoading(false);
+        setRefreshing(false);
     }
 }

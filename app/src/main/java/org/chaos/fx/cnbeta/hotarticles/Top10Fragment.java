@@ -27,9 +27,6 @@ import android.view.ViewGroup;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -38,24 +35,20 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
-public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerView.OnRefreshListener {
+public class Top10Fragment extends BaseFragment implements Top10Contract.View,
+        SwipeLinearRecyclerView.OnRefreshListener {
 
     @Bind(R.id.swipe_recycler_view)
     SwipeLinearRecyclerView mTop10View;
 
     private Top10Adapter mTop10Adapter;
 
-    private Subscription mSubscription;
+    private Top10Presenter mPresenter;
 
     public static Top10Fragment newInstance() {
         return new Top10Fragment();
@@ -66,6 +59,7 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPresenter = new Top10Presenter(this);
         setActionBarTitle(R.string.nav_hot_articles);
     }
 
@@ -87,14 +81,13 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
         mTop10View.setAdapter(mTop10Adapter);
 
         mTop10View.setOnRefreshListener(this);
-        mTop10View.post(new Runnable() {
-            @Override
-            public void run() {
-                mTop10View.setRefreshing(true);
-                loadTop10Articles();
-            }
-        });
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mPresenter.subscribe();
     }
 
     @Override
@@ -106,48 +99,7 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-    }
-
-    private void loadTop10Articles() {
-        mSubscription = CnBetaApiHelper.top10()
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
-                    @Override
-                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<ArticleSummary>>() {
-                    @Override
-                    public void onCompleted() {
-                        mTop10View.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (isVisible()) {
-                            showSnackBar(R.string.load_articles_failed);
-                        }
-                        mTop10View.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onNext(List<ArticleSummary> result) {
-                        if (!result.isEmpty() && !mTop10Adapter.containsAll(result)) {
-                            mTop10Adapter.clear();
-                            mTop10Adapter.addAll(0, result);
-                        } else {
-                            showSnackBar(R.string.no_more_articles);
-                        }
-                    }
-                });
+        mPresenter.unsubscribe();
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -156,6 +108,31 @@ public class Top10Fragment extends BaseFragment implements SwipeLinearRecyclerVi
 
     @Override
     public void onRefresh() {
-        loadTop10Articles();
+        mPresenter.loadTop10Articles();
+    }
+
+    @Override
+    public void showRefreshing(boolean refreshing) {
+        mTop10View.setRefreshing(refreshing);
+    }
+
+    @Override
+    public void showNoMoreContent() {
+        showSnackBar(R.string.no_more_articles);
+    }
+
+    @Override
+    public void showLoadFailed() {
+        showSnackBar(R.string.load_articles_failed);
+    }
+
+    @Override
+    public void addArticleSummary(List<ArticleSummary> summaries) {
+        if (!mTop10Adapter.containsAll(summaries)) {
+            mTop10Adapter.clear();
+            mTop10Adapter.addAll(0, summaries);
+        } else {
+            showNoMoreContent();
+        }
     }
 }

@@ -301,7 +301,8 @@ public class ContentFragment extends BaseFragment {
     private void addView(StringBuilder sb, Node node) {
         int preSBLen = sb.length();
         for (Node subNode : node.childNodes()) {
-            if ("img".equals(subNode.nodeName())) {
+            String subNodeName = subNode.nodeName();
+            if ("img".equals(subNodeName)) {
                 if (sb.length() > 0) {
                     removeLastUselessChars(sb);// 移除最后两个回车符
                     if (sb.length() > 0) {
@@ -311,10 +312,17 @@ public class ContentFragment extends BaseFragment {
                     preSBLen = 0;
                 }
                 addImageView(subNode.attributes().get("src"));
-            } else if ("#text".equals(subNode.nodeName())) {
+            } else if ("#text".equals(subNodeName)) {
                 sb.append(((TextNode) subNode).text());
-            } else if ("embed".equals(subNode.nodeName())) {
+            } else if ("embed".equals(subNodeName)) {// 搜狐, 土豆
                 String src = subNode.attr("src");
+                if (!TextUtils.isEmpty(src)) {
+                    removeLastUselessChars(sb);
+                    sb.append("\n\n") // 与上边文字隔开
+                            .append(src);
+                }
+            } else if ("object".equals(subNodeName) && "FPlayer".equals(subNode.attr("id"))) {// 网易视频
+                String src = subNode.attr("data");
                 if (!TextUtils.isEmpty(src)) {
                     removeLastUselessChars(sb);
                     sb.append("\n\n") // 与上边文字隔开

@@ -118,7 +118,14 @@ public class ContentPresenter implements ContentContract.Presenter {
         String time = body.select("span.date").text();
         String homeText = body.select("div.introduction > p").text();
         String thumb = body.select("a > img[title]").attr("src").replace("http://static.cnbetacdn.com", "");
-        String bodyText = body.getElementsByClass("content").html();
+
+        Element contentElement = body.getElementsByClass("content").first();
+        int elementSize = contentElement.childNodes().size();
+        for (int i = elementSize - 1; i >= elementSize - 3; i--) {// 移除广告
+            contentElement.childNodes().get(i).remove();
+        }
+        String bodyText = contentElement.html();
+
         String author = body.getElementsByClass("author").text();
         author = author.substring(6, author.length() - 1);
         NewsContent newsContent = new NewsContent();

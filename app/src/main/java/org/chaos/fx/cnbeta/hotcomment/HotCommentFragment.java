@@ -27,9 +27,6 @@ import android.view.ViewGroup;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -38,17 +35,12 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
-public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyclerView.OnRefreshListener {
+public class HotCommentFragment extends BaseFragment implements HotCommentContract.View, SwipeLinearRecyclerView.OnRefreshListener {
 
     public static HotCommentFragment newInstance() {
         return new HotCommentFragment();
@@ -58,12 +50,13 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
 
     private HotCommentAdapter mHotCommentAdapter;
 
-    private Subscription mSubscription;
+    private HotCommentContract.Presenter mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setActionBarTitle(R.string.nav_hot_comments);
+        mPresenter = new HotCommentPresenter(this);
     }
 
     @Nullable
@@ -84,61 +77,19 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
         mHotCommentView.setAdapter(mHotCommentAdapter);
 
         mHotCommentView.setOnRefreshListener(this);
-        mHotCommentView.post(new Runnable() {
-            @Override
-            public void run() {
-                mHotCommentView.setRefreshing(true);
-                loadHotComments();
-            }
-        });
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mPresenter.subscribe();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
-    }
-
-    private void loadHotComments() {
-        mSubscription = CnBetaApiHelper.hotComment()
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<HotComment>>, List<HotComment>>() {
-                    @Override
-                    public List<HotComment> call(CnBetaApi.Result<List<HotComment>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<HotComment>>() {
-                    @Override
-                    public void onCompleted() {
-                        mHotCommentView.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (isVisible()) {
-                            showSnackBar(R.string.load_articles_failed);
-                        }
-                        mHotCommentView.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onNext(List<HotComment> result) {
-                        if (!result.isEmpty() && !mHotCommentAdapter.containsAll(result)) {
-                            mHotCommentAdapter.clear();
-                            mHotCommentAdapter.addAll(0, result);
-                        } else {
-                            showSnackBar(R.string.no_more_articles);
-                        }
-                    }
-                });
+        mPresenter.unsubscribe();
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -147,6 +98,31 @@ public class HotCommentFragment extends BaseFragment implements SwipeLinearRecyc
 
     @Override
     public void onRefresh() {
-        loadHotComments();
+        mPresenter.loadHotComments();
+    }
+
+    @Override
+    public void showRefreshing(boolean refreshing) {
+        mHotCommentView.setRefreshing(refreshing);
+    }
+
+    @Override
+    public void showLoadFailed() {
+        showSnackBar(R.string.load_articles_failed);
+    }
+
+    @Override
+    public void showNoMoreContent() {
+        showSnackBar(R.string.no_more_articles);
+    }
+
+    @Override
+    public void addComments(List<HotComment> comments) {
+        if (!mHotCommentAdapter.containsAll(comments)) {
+            mHotCommentAdapter.clear();
+            mHotCommentAdapter.addAll(0, comments);
+        } else {
+            showNoMoreContent();
+        }
     }
 }

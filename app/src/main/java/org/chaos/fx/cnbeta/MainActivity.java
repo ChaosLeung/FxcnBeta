@@ -29,7 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
@@ -72,13 +72,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mBottomBar = BottomBar.attach(this, savedInstanceState);
-        mBottomBar.noNavBarGoodness();
-        mBottomBar.setItems(R.menu.navigation_menu);
-        mBottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
+        mBottomBar = (BottomBar) findViewById(R.id.bottom_bar);
+        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
-            public void onMenuTabSelected(@IdRes int menuItemId) {
-                switch (menuItemId) {
+            public void onTabSelected(@IdRes int tabId) {
+                switch (tabId) {
                     case R.id.nav_home:
                         switchPage(PAGE_HOME);
                         break;
@@ -93,18 +91,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
-
-            @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-
-            }
         });
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mBottomBar.onSaveInstanceState(outState);
     }
 
     @Override

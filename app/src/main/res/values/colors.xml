@@ -41,4 +41,7 @@
     <color name="comment_ic_bg">#EEEEEE</color>
     <color name="comment_ic_bg_pressed">#E0E0E0</color>
 
+    <color name="inactive_tab_color">#FAFAFA</color>
+    <color name="active_tab_color">#FFFFFF</color>
+
 </resources>

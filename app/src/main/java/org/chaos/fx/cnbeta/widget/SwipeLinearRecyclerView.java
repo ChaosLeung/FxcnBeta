@@ -150,6 +150,10 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
         }
     }
 
+    public void setNestedScrollingEnabled(boolean enabled) {
+        mRecyclerView.setNestedScrollingEnabled(enabled);
+    }
+
     public void removeOnRefreshListener() {
         mOnRefreshListener = null;
         mSwipeLayout.setEnabled(false);

@@ -80,24 +80,28 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
 
     @Override
     public void loadNewArticles(int sid) {
-        mArticlesView.setRefreshing(true);
+        if (!mArticlesView.isLoading()) {
+            mArticlesView.setRefreshing(true);
 
-        Observable<CnBetaApi.Result<List<ArticleSummary>>> observable;
+            Observable<CnBetaApi.Result<List<ArticleSummary>>> observable;
 
-        if (mArticlesView.isEmpty()) {
-            observable = CnBetaApiHelper.topicArticles(mTopicId);
-        } else {
-            observable = CnBetaApiHelper.newArticles(mTopicId, sid);
+            if (mArticlesView.isEmpty()) {
+                observable = CnBetaApiHelper.topicArticles(mTopicId);
+            } else {
+                observable = CnBetaApiHelper.newArticles(mTopicId, sid);
+            }
+
+            doRequest(observable);
         }
-
-        doRequest(observable);
     }
 
     @Override
     public void loadOldArticles(int sid) {
-        mArticlesView.setLoading(true);
+        if (!mArticlesView.isRefreshing()) {
+            mArticlesView.setLoading(true);
 
-        doRequest(CnBetaApiHelper.oldArticles(mTopicId, sid));
+            doRequest(CnBetaApiHelper.oldArticles(mTopicId, sid));
+        }
     }
 
     private void doRequest(Observable<CnBetaApi.Result<List<ArticleSummary>>> observable) {

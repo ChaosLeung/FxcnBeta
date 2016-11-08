@@ -193,7 +193,7 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void setLoading(boolean loading) {
         mArticlesView.setLoading(loading);
-        mArticleAdapter.getFooterView().setVisibility(loading ? View.VISIBLE : View.GONE);
+        mArticleAdapter.getFooterView().setVisibility(loading ? View.VISIBLE : View.INVISIBLE);
 
         if (loading) {
             mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());

@@ -63,7 +63,10 @@ dependencies {
     compile 'com.roughike:bottom-bar:2.1.1'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
+
     compile "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"
     compile "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
     compile "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0"

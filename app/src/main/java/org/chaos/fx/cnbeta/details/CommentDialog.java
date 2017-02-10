@@ -40,11 +40,11 @@ import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -87,7 +87,7 @@ public class CommentDialog extends DialogFragment {
         }
     };
 
-    private Subscription mCaptchaSubscription;
+    private Disposable mCaptchaDisposable;
 
     @NonNull
     @Override
@@ -119,15 +119,15 @@ public class CommentDialog extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mCaptchaSubscription.unsubscribe();
+        mCaptchaDisposable.dispose();
     }
 
     private void flashCaptcha() {
-        mCaptchaSubscription = CnBetaApiHelper.getCaptchaDataUrl(((ContentActivity) getActivity()).getToken())
+        mCaptchaDisposable = CnBetaApiHelper.getCaptchaDataUrl(((ContentActivity) getActivity()).getToken())
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<WebCaptcha, String>() {
+                .map(new Function<WebCaptcha, String>() {
                     @Override
-                    public String call(WebCaptcha webCaptcha) {
+                    public String apply(WebCaptcha webCaptcha) {
                         if (TextUtils.isEmpty(webCaptcha.getUrl())) {
                             throw new RequestFailedException();
                         }
@@ -136,24 +136,19 @@ public class CommentDialog extends DialogFragment {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .retry(3)
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(getActivity(), R.string.failed_to_get_captcha, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(String captchaUrl) {
+                    public void accept(String captchaUrl) throws Exception {
                         new Picasso.Builder(getActivity())
                                 .downloader(CnBetaApiHelper.okHttp3Downloader())
                                 .build()
                                 .load(WebApi.HOST_URL + captchaUrl)
                                 .into(mCaptchaView);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Toast.makeText(getActivity(), R.string.failed_to_get_captcha, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -23,11 +23,11 @@ import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -36,7 +36,7 @@ import rx.schedulers.Schedulers;
 
 public class Top10Presenter implements Top10Contract.Presenter {
     private Top10Contract.View mView;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
 
     public Top10Presenter(Top10Contract.View view) {
         mView = view;
@@ -44,11 +44,11 @@ public class Top10Presenter implements Top10Contract.Presenter {
 
     @Override
     public void loadTop10Articles() {
-        mSubscription = CnBetaApiHelper.top10()
+        mDisposable = CnBetaApiHelper.top10()
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
+                .map(new Function<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
-                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
+                    public List<ArticleSummary> apply(CnBetaApi.Result<List<ArticleSummary>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -56,25 +56,21 @@ public class Top10Presenter implements Top10Contract.Presenter {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<ArticleSummary>>() {
+                .subscribe(new Consumer<List<ArticleSummary>>() {
                     @Override
-                    public void onCompleted() {
-                        mView.showRefreshing(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showLoadFailed();
-                        mView.showRefreshing(false);
-                    }
-
-                    @Override
-                    public void onNext(List<ArticleSummary> result) {
+                    public void accept(List<ArticleSummary> result) throws Exception {
                         if (!result.isEmpty()) {
                             mView.addArticleSummary(result);
                         } else {
                             mView.showNoMoreContent();
                         }
+                        mView.showRefreshing(false);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        mView.showLoadFailed();
+                        mView.showRefreshing(false);
                     }
                 });
     }
@@ -87,8 +83,8 @@ public class Top10Presenter implements Top10Contract.Presenter {
 
     @Override
     public void unsubscribe() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
+        if (mDisposable != null) {
+            mDisposable.dispose();
         }
     }
 }

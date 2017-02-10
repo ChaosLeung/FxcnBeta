@@ -24,11 +24,12 @@ import org.chaos.fx.cnbeta.net.model.Comment;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * @author Chaos
@@ -42,22 +43,22 @@ public class CommentPresenter implements CommentContract.Presenter {
 
     private String mToken;
 
-    private CompositeSubscription mSubscriptions;
+    private CompositeDisposable mDisposables;
 
     public CommentPresenter(int sid, String token, CommentContract.View commentView) {
         mSid = sid;
         mToken = token;
         mCommentView = commentView;
-        mSubscriptions = new CompositeSubscription();
+        mDisposables = new CompositeDisposable();
     }
 
     @Override
     public void refreshComments(int page) {
-        mSubscriptions.add(CnBetaApiHelper.comments(mSid, page)
+        mDisposables.add(CnBetaApiHelper.comments(mSid, page)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
+                .map(new Function<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
                     @Override
-                    public List<Comment> call(CnBetaApi.Result<List<Comment>> listResult) {
+                    public List<Comment> apply(CnBetaApi.Result<List<Comment>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -65,38 +66,35 @@ public class CommentPresenter implements CommentContract.Presenter {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<Comment>>() {
+                .subscribe(new Consumer<List<Comment>>() {
                     @Override
-                    public void onCompleted() {
-                        mCommentView.hideProgress();
-                        mCommentView.showNoCommentTipsIfNeed();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mCommentView.showLoadingFailed();
-                        mCommentView.hideProgress();
-                        mCommentView.showNoCommentTipsIfNeed();
-                    }
-
-                    @Override
-                    public void onNext(List<Comment> result) {
+                    public void accept(List<Comment> result) throws Exception {
                         if (!result.isEmpty()) {
                             mCommentView.addComments(result);
                         } else {
                             mCommentView.showNoMoreComments();
                         }
+
+                        mCommentView.hideProgress();
+                        mCommentView.showNoCommentTipsIfNeed();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        mCommentView.showLoadingFailed();
+                        mCommentView.hideProgress();
+                        mCommentView.showNoCommentTipsIfNeed();
                     }
                 }));
     }
 
     @Override
     public void against(final Comment c) {
-        mSubscriptions.add(CnBetaApiHelper.againstComment(mToken, mSid, c.getTid())
+        mDisposables.add(CnBetaApiHelper.againstComment(mToken, mSid, c.getTid())
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<WebApi.Result, WebApi.Result>() {
+                .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
-                    public WebApi.Result call(WebApi.Result result) {
+                    public WebApi.Result apply(WebApi.Result result) {
                         if (!result.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -104,31 +102,26 @@ public class CommentPresenter implements CommentContract.Presenter {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WebApi.Result>() {
+                .subscribe(new Consumer<WebApi.Result>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mCommentView.showOperationFailed();
-                    }
-
-                    @Override
-                    public void onNext(WebApi.Result result) {
+                    public void accept(WebApi.Result result) throws Exception {
                         c.setAgainst(c.getAgainst() + 1);
                         mCommentView.notifyItemChanged(c);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        mCommentView.showOperationFailed();
                     }
                 }));
     }
 
     @Override
     public void support(final Comment c) {
-        mSubscriptions.add(CnBetaApiHelper.supportComment(mToken, mSid, c.getTid())
-                .map(new Func1<WebApi.Result, WebApi.Result>() {
+        mDisposables.add(CnBetaApiHelper.supportComment(mToken, mSid, c.getTid())
+                .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
-                    public WebApi.Result call(WebApi.Result result) {
+                    public WebApi.Result apply(WebApi.Result result) {
                         if (!result.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -137,21 +130,16 @@ public class CommentPresenter implements CommentContract.Presenter {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WebApi.Result>() {
+                .subscribe(new Consumer<WebApi.Result>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mCommentView.showOperationFailed();
-                    }
-
-                    @Override
-                    public void onNext(WebApi.Result result) {
+                    public void accept(WebApi.Result result) throws Exception {
                         c.setSupport(c.getSupport() + 1);
                         mCommentView.notifyItemChanged(c);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        mCommentView.showOperationFailed();
                     }
                 }));
     }
@@ -168,11 +156,11 @@ public class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void publishComment(String content, String captcha, int pid) {
-        mSubscriptions.add(CnBetaApiHelper.replyComment(mToken, content, captcha, mSid, pid)
+        mDisposables.add(CnBetaApiHelper.replyComment(mToken, content, captcha, mSid, pid)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<WebApi.Result, WebApi.Result>() {
+                .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
-                    public WebApi.Result call(WebApi.Result result) {
+                    public WebApi.Result apply(WebApi.Result result) {
                         if (result.isSuccess()) {
                             return result;
                         } else {
@@ -181,19 +169,15 @@ public class CommentPresenter implements CommentContract.Presenter {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WebApi.Result>() {
+                .subscribe(new Consumer<WebApi.Result>() {
                     @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mCommentView.showAddCommentFailed(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(WebApi.Result o) {
+                    public void accept(WebApi.Result result) throws Exception {
                         mCommentView.showAddCommentSucceed();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        mCommentView.showAddCommentFailed(e.getMessage());
                     }
                 }));
     }
@@ -210,6 +194,6 @@ public class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void unsubscribe() {
-        mSubscriptions.clear();
+        mDisposables.clear();
     }
 }

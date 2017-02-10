@@ -21,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -28,7 +29,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import rx.Observable;
 
 /**
  * @author Chaos

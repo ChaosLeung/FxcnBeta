@@ -32,12 +32,12 @@ import org.jsoup.select.Elements;
 
 import java.util.Locale;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.chaos.fx.cnbeta.details.ContentFragment.KEY_COMMENT_COUNT;
 import static org.chaos.fx.cnbeta.details.ContentFragment.KEY_HTML_CONTENT;
@@ -59,8 +59,7 @@ public class ContentPresenter implements ContentContract.Presenter {
     private NewsContent mNewsContent;
     private ContentContract.View mView;
 
-
-    private Subscription mContentSubscription;
+    private Disposable mContentDisposable;
 
     public ContentPresenter(Bundle arguments, ContentContract.View view) {
         mSid = arguments.getInt(KEY_SID);
@@ -86,24 +85,24 @@ public class ContentPresenter implements ContentContract.Presenter {
     @Override
     public void unsubscribe() {
         mView.clearViewInContent();
-        mContentSubscription.unsubscribe();
+        mContentDisposable.dispose();
     }
 
     private void loadContent() {
-        mContentSubscription = Observable.just(mHtmlContent)
+        mContentDisposable = Observable.just(mHtmlContent)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<String, NewsContent>() {
+                .map(new Function<String, NewsContent>() {
                     @Override
-                    public NewsContent call(String html) {
+                    public NewsContent apply(String html) {
                         NewsContent newsContent = parseHtmlContent(html);
                         newsContent.setCommentCount(mCommentCount);
                         return newsContent;
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<NewsContent>() {
+                .subscribe(new Consumer<NewsContent>() {
                     @Override
-                    public void call(NewsContent newsContent) {
+                    public void accept(NewsContent newsContent) {
                         mNewsContent = newsContent;
                         parseNewsContent(newsContent);
                     }

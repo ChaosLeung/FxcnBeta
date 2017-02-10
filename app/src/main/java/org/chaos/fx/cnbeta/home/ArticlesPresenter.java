@@ -24,16 +24,15 @@ import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * @author Chaos
@@ -47,7 +46,7 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
 
     private final Realm mRealm;
 
-    private CompositeSubscription mSubscriptions;
+    private CompositeDisposable mDisposables;
 
     private boolean mFirstLoad = true;
 
@@ -55,7 +54,7 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
         mTopicId = topicId;
         mArticlesView = articlesView;
         mRealm = Realm.getDefaultInstance();
-        mSubscriptions = new CompositeSubscription();
+        mDisposables = new CompositeDisposable();
     }
 
     @Override
@@ -69,7 +68,7 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
 
     @Override
     public void unsubscribe() {
-        mSubscriptions.clear();
+        mDisposables.clear();
     }
 
     private List<ArticleSummary> getLocalArticles() {
@@ -105,11 +104,12 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
     }
 
     private void doRequest(Observable<CnBetaApi.Result<List<ArticleSummary>>> observable) {
-        mSubscriptions.clear();
-        Subscription subscription = observable
-                .map(new Func1<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
+        mDisposables.clear();
+
+        mDisposables.add(observable
+                .map(new Function<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
-                    public List<ArticleSummary> call(CnBetaApi.Result<List<ArticleSummary>> listResult) {
+                    public List<ArticleSummary> apply(CnBetaApi.Result<List<ArticleSummary>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -118,24 +118,20 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<ArticleSummary>>() {
+                .subscribe(new Consumer<List<ArticleSummary>>() {
                     @Override
-                    public void onCompleted() {
+                    public void accept(List<ArticleSummary> result) throws Exception {
+                        processArticles(result);
+
                         mArticlesView.setRefreshing(false);
                         mArticlesView.setLoading(false);
                     }
-
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void onError(Throwable e) {
+                    public void accept(Throwable e) throws Exception {
                         mArticlesView.showLoadingArticlesError();
                     }
-
-                    @Override
-                    public void onNext(List<ArticleSummary> result) {
-                        processArticles(result);
-                    }
-                });
-        mSubscriptions.add(subscription);
+                }));
     }
 
     private void processArticles(List<ArticleSummary> result) {

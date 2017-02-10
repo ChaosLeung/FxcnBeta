@@ -41,16 +41,16 @@ import java.io.IOException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.exceptions.Exceptions;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -84,7 +84,7 @@ public class ContentActivity extends SwipeBackActivity implements
 
     private SectionsPagerAdapter mPagerAdapter;
 
-    private Subscription mArticleSubscription;
+    private Disposable mArticleDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +113,7 @@ public class ContentActivity extends SwipeBackActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mArticleSubscription.unsubscribe();
+        mArticleDisposable.dispose();
     }
 
     private void setupActionBar() {
@@ -164,11 +164,11 @@ public class ContentActivity extends SwipeBackActivity implements
         mLoadingView.setVisibility(View.VISIBLE);
         mErrorLayout.setVisibility(View.GONE);
 
-        mArticleSubscription = CnBetaApiHelper.getArticleHtml(mSid)
+        mArticleDisposable = CnBetaApiHelper.getArticleHtml(mSid)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<ResponseBody, String>() {
+                .map(new Function<ResponseBody, String>() {
                     @Override
-                    public String call(ResponseBody responseBody) {
+                    public String apply(ResponseBody responseBody) {
                         try {
                             mHtmlBody = responseBody.string();
                             return CnBetaApiHelper.getSNFromArticleBody(mHtmlBody);
@@ -177,15 +177,15 @@ public class ContentActivity extends SwipeBackActivity implements
                         }
                     }
                 })
-                .flatMap(new Func1<String, Observable<WebApi.Result<WebCommentResult>>>() {
+                .flatMap(new Function<String, Observable<WebApi.Result<WebCommentResult>>>() {
                     @Override
-                    public Observable<WebApi.Result<WebCommentResult>> call(String sn) {
+                    public Observable<WebApi.Result<WebCommentResult>> apply(String sn) {
                         return CnBetaApiHelper.getCommentJson(mSid, sn);
                     }
                 })
-                .map(new Func1<WebApi.Result<WebCommentResult>, WebCommentResult>() {
+                .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
                     @Override
-                    public WebCommentResult call(WebApi.Result<WebCommentResult> result) {
+                    public WebCommentResult apply(WebApi.Result<WebCommentResult> result) {
                         if (result.isSuccess()) {
                             return result.result;
                         } else {
@@ -195,22 +195,19 @@ public class ContentActivity extends SwipeBackActivity implements
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .retry(3)
-                .subscribe(new Subscriber<WebCommentResult>() {
+                .subscribe(new Consumer<WebCommentResult>() {
                     @Override
-                    public void onCompleted() {
+                    public void accept(WebCommentResult result) throws Exception {
+                        mWebCommentResult = result;
+
                         mLoadingView.setVisibility(View.GONE);
                         setupViewPager();
                     }
-
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void onError(Throwable e) {
+                    public void accept(Throwable e) throws Exception {
                         mLoadingView.setVisibility(View.GONE);
                         mErrorLayout.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onNext(WebCommentResult result) {
-                        mWebCommentResult = result;
                     }
                 });
     }

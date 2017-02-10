@@ -23,11 +23,11 @@ import org.chaos.fx.cnbeta.net.model.HotComment;
 
 import java.util.List;
 
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -36,7 +36,7 @@ import rx.schedulers.Schedulers;
 
 public class HotCommentPresenter implements HotCommentContract.Presenter {
     private HotCommentContract.View mView;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
 
     public HotCommentPresenter(HotCommentContract.View view) {
         mView = view;
@@ -44,11 +44,11 @@ public class HotCommentPresenter implements HotCommentContract.Presenter {
 
     @Override
     public void loadHotComments() {
-        mSubscription = CnBetaApiHelper.hotComment()
+        mDisposable = CnBetaApiHelper.hotComment()
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<CnBetaApi.Result<List<HotComment>>, List<HotComment>>() {
+                .map(new Function<CnBetaApi.Result<List<HotComment>>, List<HotComment>>() {
                     @Override
-                    public List<HotComment> call(CnBetaApi.Result<List<HotComment>> listResult) {
+                    public List<HotComment> apply(CnBetaApi.Result<List<HotComment>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -56,25 +56,21 @@ public class HotCommentPresenter implements HotCommentContract.Presenter {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<HotComment>>() {
+                .subscribe(new Consumer<List<HotComment>>() {
                     @Override
-                    public void onCompleted() {
-                        mView.showRefreshing(false);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mView.showLoadFailed();
-                        mView.showRefreshing(false);
-                    }
-
-                    @Override
-                    public void onNext(List<HotComment> result) {
+                    public void accept(List<HotComment> result) throws Exception {
                         if (!result.isEmpty()) {
                             mView.addComments(result);
                         } else {
                             mView.showNoMoreContent();
                         }
+                        mView.showRefreshing(false);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        mView.showLoadFailed();
+                        mView.showRefreshing(false);
                     }
                 });
     }
@@ -87,8 +83,8 @@ public class HotCommentPresenter implements HotCommentContract.Presenter {
 
     @Override
     public void unsubscribe() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
+        if (mDisposable != null) {
+            mDisposable.dispose();
         }
     }
 }

@@ -33,7 +33,7 @@ import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -61,7 +61,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
 
     private String mType;
 
-    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
+    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
 
     private RankSubAdapter mArticleAdapter;
 

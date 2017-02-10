@@ -43,7 +43,7 @@ import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -70,14 +70,14 @@ public class ContentFragment extends BaseFragment implements ContentContract.Vie
 
     private int mSid;
 
-    @Bind(R.id.title) TextView mTitleView;
-    @Bind(R.id.source) TextView mSourceView;
-    @Bind(R.id.author) TextView mAuthorView;
-    @Bind(R.id.time) TextView mTimeView;
-    @Bind(R.id.comment_count) TextView mCommentCountView;
-    @Bind(R.id.author_image) ImageView authorImg;
+    @BindView(R.id.title) TextView mTitleView;
+    @BindView(R.id.source) TextView mSourceView;
+    @BindView(R.id.author) TextView mAuthorView;
+    @BindView(R.id.time) TextView mTimeView;
+    @BindView(R.id.comment_count) TextView mCommentCountView;
+    @BindView(R.id.author_image) ImageView authorImg;
 
-    @Bind(R.id.content_layout) LinearLayout mContentLayout;
+    @BindView(R.id.content_layout) LinearLayout mContentLayout;
 
     private OnShowCommentListener mOnShowCommentListener;
 

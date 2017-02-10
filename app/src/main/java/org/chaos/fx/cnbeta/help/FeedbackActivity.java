@@ -38,7 +38,7 @@ import com.umeng.fb.fragment.FeedbackFragment;
 
 import org.chaos.fx.cnbeta.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
@@ -54,10 +54,10 @@ public class FeedbackActivity extends SwipeBackActivity implements TextWatcher {
     private EditText mUmengEdit;
     private Button mUmengSendBtn;
 
-    @Bind(R.id.name) EditText mNameEdit;
-    @Bind(R.id.contact_info) EditText mContactEdit;
-    @Bind(R.id.feedback) EditText mContentEdit;
-    @Bind(R.id.fb_current_length) TextView mCurrentLenView;
+    @BindView(R.id.name) EditText mNameEdit;
+    @BindView(R.id.contact_info) EditText mContactEdit;
+    @BindView(R.id.feedback) EditText mContentEdit;
+    @BindView(R.id.fb_current_length) TextView mCurrentLenView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

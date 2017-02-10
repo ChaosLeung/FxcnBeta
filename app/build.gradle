@@ -15,7 +15,6 @@
  */
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 
 buildscript {
@@ -25,7 +24,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.realm:realm-gradle-plugin:0.88.2"
+        classpath "io.realm:realm-gradle-plugin:2.3.1"
     }
 }
 
@@ -42,10 +41,6 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude 'META-INF/services/javax.annotation.processing.Processor'
-    }
-
     lintOptions {
         lintConfig file("lint.xml")
     }
@@ -57,7 +52,6 @@ dependencies {
 
     compile 'com.google.dagger:dagger:2.9'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.9'
-    provided 'javax.annotation:jsr250-api:1.0'
 
     compile "${libs.supportAnnotations}"
     compile "${libs.recyclerviewV7}"
@@ -79,7 +73,8 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.0'
 
-    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
     compile 'org.jsoup:jsoup:1.10.2'
 

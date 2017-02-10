@@ -33,7 +33,7 @@ import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         SwipeLinearRecyclerView.OnRefreshListener {
 
-    @Bind(R.id.swipe_recycler_view)
+    @BindView(R.id.swipe_recycler_view)
     SwipeLinearRecyclerView mTop10View;
 
     private Top10Adapter mTop10Adapter;

@@ -41,7 +41,7 @@ import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -69,9 +69,9 @@ public class CommentFragment extends BaseFragment implements
     private ArrayList<Comment> mComments;
     private OnCommentUpdateListener mOnCommentUpdateListener;
 
-    @Bind(R.id.no_content) TextView mNoContentTipView;
+    @BindView(R.id.no_content) TextView mNoContentTipView;
 
-    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
+    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
     private CommentAdapter mCommentAdapter;
 
     private CommentContract.Presenter mPresenter;

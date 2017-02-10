@@ -23,7 +23,6 @@ import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * @author Chaos
@@ -35,7 +34,7 @@ public class FxCBApplication extends Application {
         super.onCreate();
         CnBetaApiHelper.initialize();
         TimeStringHelper.initialize(this);
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder(this).build());
+        Realm.init(this);
         WXApiProvider.initialize(this);
     }
 }

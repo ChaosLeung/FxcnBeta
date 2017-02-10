@@ -32,7 +32,7 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.CnBetaApi;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -41,8 +41,8 @@ import butterknife.ButterKnife;
  */
 public class RanksFragment extends BaseFragment {
 
-    @Bind(R.id.container) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
+    @BindView(R.id.container) ViewPager mViewPager;
+    @BindView(R.id.tabs) TabLayout mTabLayout;
 
     private float mToolbarElevation;
 

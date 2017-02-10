@@ -28,7 +28,7 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.widget.ListAdapter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -63,8 +63,8 @@ public class HotCommentAdapter extends ListAdapter<HotComment, HotCommentAdapter
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.title) public TextView title;
-        @Bind(R.id.comment) public TextView comment;
+        @BindView(R.id.title) public TextView title;
+        @BindView(R.id.comment) public TextView comment;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -28,7 +28,7 @@ import android.widget.FrameLayout;
 
 import org.chaos.fx.cnbeta.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -37,8 +37,8 @@ import butterknife.ButterKnife;
  */
 public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefreshLayout.OnRefreshListener {
 
-    @Bind(R.id.swipe) SwipeRefreshLayout mSwipeLayout;
-    @Bind(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeLayout;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
 
     private OnRefreshListener mOnRefreshListener;
     private OnLoadMoreListener mOnLoadMoreListener;

@@ -31,7 +31,7 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
@@ -75,9 +75,9 @@ public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, Bas
 
     public class ArticleHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.title) public TextView title;
-        @Bind(R.id.summary) public TextView summary;
-        @Bind(R.id.image) public ImageView image;
+        @BindView(R.id.title) public TextView title;
+        @BindView(R.id.summary) public TextView summary;
+        @BindView(R.id.image) public ImageView image;
 
         public ArticleHolder(View itemView) {
             super(itemView);

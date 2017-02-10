@@ -38,7 +38,7 @@ import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 import java.io.IOException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
@@ -77,10 +77,10 @@ public class ContentActivity extends SwipeBackActivity implements
     private String mHtmlBody;
     private WebCommentResult mWebCommentResult;
 
-    @Bind(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.pager) ViewPager mViewPager;
 
-    @Bind(R.id.error_layout) View mErrorLayout;
-    @Bind(R.id.loading_view) ProgressBar mLoadingView;
+    @BindView(R.id.error_layout) View mErrorLayout;
+    @BindView(R.id.loading_view) ProgressBar mLoadingView;
 
     private SectionsPagerAdapter mPagerAdapter;
 

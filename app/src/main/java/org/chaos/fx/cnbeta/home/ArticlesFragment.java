@@ -36,7 +36,7 @@ import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -72,8 +72,7 @@ public class ArticlesFragment extends BaseFragment
         }
     };
 
-    @Bind(R.id.swipe_recycler_view)
-    SwipeLinearRecyclerView mArticlesView;
+    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
 
     private ArticleAdapter mArticleAdapter;
 

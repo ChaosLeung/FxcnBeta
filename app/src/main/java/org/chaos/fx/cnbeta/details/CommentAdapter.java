@@ -30,7 +30,7 @@ import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.ListAdapter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -110,13 +110,13 @@ public class CommentAdapter extends ListAdapter<Comment, CommentAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.comment) TextView comment;
-        @Bind(R.id.username) TextView username;
-        @Bind(R.id.reply_comment) TextView replyComment;
-        @Bind(R.id.time) TextView time;
-        @Bind(R.id.support) TextView support;
-        @Bind(R.id.against) TextView against;
-        @Bind(R.id.reply) ImageButton reply;
+        @BindView(R.id.comment) TextView comment;
+        @BindView(R.id.username) TextView username;
+        @BindView(R.id.reply_comment) TextView replyComment;
+        @BindView(R.id.time) TextView time;
+        @BindView(R.id.support) TextView support;
+        @BindView(R.id.against) TextView against;
+        @BindView(R.id.reply) ImageButton reply;
 
         public ViewHolder(View itemView) {
             super(itemView);

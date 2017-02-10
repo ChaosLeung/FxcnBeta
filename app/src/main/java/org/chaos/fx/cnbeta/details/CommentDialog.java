@@ -38,7 +38,7 @@ import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -62,9 +62,9 @@ public class CommentDialog extends DialogFragment {
         return fragment;
     }
 
-    @Bind(R.id.captcha) ImageView mCaptchaView;
-    @Bind(R.id.captcha_text) EditText mCaptchaText;
-    @Bind(R.id.comment) EditText mCommentText;
+    @BindView(R.id.captcha) ImageView mCaptchaView;
+    @BindView(R.id.captcha_text) EditText mCaptchaText;
+    @BindView(R.id.comment) EditText mCommentText;
 
     private DialogInterface.OnClickListener mPositiveListener;
 

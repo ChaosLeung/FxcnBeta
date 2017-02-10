@@ -33,7 +33,7 @@ import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -46,7 +46,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         return new HotCommentFragment();
     }
 
-    @Bind(R.id.swipe_recycler_view) SwipeLinearRecyclerView mHotCommentView;
+    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mHotCommentView;
 
     private HotCommentAdapter mHotCommentAdapter;
 

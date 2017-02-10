@@ -72,7 +72,7 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
     }
 
     private List<ArticleSummary> getLocalArticles() {
-        RealmResults<ArticleSummary> results = mRealm.allObjects(ArticleSummary.class);
+        RealmResults<ArticleSummary> results = mRealm.where(ArticleSummary.class).findAll();
         results.sort("mSid", Sort.DESCENDING);
         return new ArrayList<>(results);
     }
@@ -155,7 +155,7 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
     public void saveArticles(List<ArticleSummary> articles) {
         if (!articles.isEmpty()) {
             mRealm.beginTransaction();
-            mRealm.where(ArticleSummary.class).lessThan("mSid", articles.get(articles.size() - 1).getSid()).findAll().clear();
+            mRealm.where(ArticleSummary.class).lessThan("mSid", articles.get(articles.size() - 1).getSid()).findAll().deleteAllFromRealm();
             mRealm.copyToRealmOrUpdate(articles);
             mRealm.commitTransaction();
         }

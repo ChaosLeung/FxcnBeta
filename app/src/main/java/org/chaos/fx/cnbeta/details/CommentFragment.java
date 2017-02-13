@@ -35,7 +35,7 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
-import org.chaos.fx.cnbeta.util.ModelUitl;
+import org.chaos.fx.cnbeta.util.ModelUtil;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ public class CommentFragment extends BaseFragment implements
         SwipeLinearRecyclerView.OnRefreshListener, CommentContract.View {
 
     private static final String KEY_SID = "sid";
+    private static final String KEY_COMMENT_CLOSED = "comment_closed";
     private static final String KEY_COMMENTS = "comments";
     private static final String KEY_TOKEN = "token";
     private static final int ONE_PAGE_COMMENT_COUNT = 10;
@@ -60,11 +61,14 @@ public class CommentFragment extends BaseFragment implements
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
         args.putString(KEY_TOKEN, result.getToken());
-        args.putParcelableArrayList(KEY_COMMENTS, ModelUitl.toCommentList(result));
+        args.putBoolean(KEY_COMMENT_CLOSED, !result.isOpen());
+        args.putParcelableArrayList(KEY_COMMENTS, ModelUtil.toCommentList(result));
         CommentFragment fragment = new CommentFragment();
         fragment.setArguments(args);
         return fragment;
     }
+
+    private boolean isCommentClosed;
 
     private ArrayList<Comment> mComments;
     private OnCommentUpdateListener mOnCommentUpdateListener;
@@ -85,7 +89,6 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        setHasOptionsMenu(true);
         mOnCommentUpdateListener = (OnCommentUpdateListener) activity;
     }
 
@@ -101,7 +104,10 @@ public class CommentFragment extends BaseFragment implements
 
         ButterKnife.bind(this, view);
 
+        isCommentClosed = getArguments().getBoolean(KEY_COMMENT_CLOSED);
         mComments = getArguments().getParcelableArrayList(KEY_COMMENTS);
+
+        setHasOptionsMenu(!isCommentClosed);
 
         mCommentAdapter = new CommentAdapter(getActivity(), mCommentView.getRecyclerView());
         mCommentAdapter.addFooterView(
@@ -109,6 +115,10 @@ public class CommentFragment extends BaseFragment implements
         mCommentAdapter.setOnItemChildClickListener(new CommentAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(View v, int position) {
+                if (isCommentClosed) {
+                    return;
+                }
+
                 Comment c = mCommentAdapter.get(position);
                 switch (v.getId()) {
                     case R.id.support:
@@ -186,6 +196,9 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void showNoCommentTipsIfNeed() {
+        if (isCommentClosed) {
+            mNoContentTipView.setText(R.string.comment_closed);
+        }
         mNoContentTipView.setVisibility(mCommentAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 

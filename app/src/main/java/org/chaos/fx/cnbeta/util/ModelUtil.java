@@ -16,20 +16,24 @@
 
 package org.chaos.fx.cnbeta.util;
 
+import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebComment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Chaos
  *         7/6/16
  */
-public class ModelUitl {
+public class ModelUtil {
 
     public static Comment toComment(WebComment webComment) {
         Comment c = new Comment();
@@ -39,14 +43,18 @@ public class ModelUitl {
         c.setTid(webComment.getTid());
         c.setPid(webComment.getPid());
         c.setContent(webComment.getComment());
-        c.setUsername(String.format("%s网友", webComment.getAddress()));
+        if (!"匿名人士".equals(webComment.getName())) {
+            c.setUsername(webComment.getName());
+        } else if (webComment.getAddress() != null && !"".equals(webComment.getAddress())) {
+            c.setUsername(String.format("%s网友", webComment.getAddress()));
+        }
         return c;
     }
 
     public static ArrayList<Comment> toCommentList(WebCommentResult result) {
         ArrayList<Comment> comments = new ArrayList<>();
         Map<String, WebComment> commentMap = result.getComments();
-        if (commentMap == null) {
+        if (commentMap == null || commentMap.isEmpty()) {
             return comments;
         }
         Collection<WebComment> webComments = commentMap.values();
@@ -54,6 +62,29 @@ public class ModelUitl {
         for (int i = 0; i < webComments.size() && wci.hasNext(); i++) {
             comments.add(toComment(wci.next()));
         }
+        Collections.sort(comments, CommentComparator.DEFAULT_COMPARATOR);
         return comments;
+    }
+
+    public static WebComment toWebComment(ClosedComment comment) {
+        WebComment c = new WebComment();
+        c.setAgainstCount(comment.getAgainst());
+        c.setSupportCount(comment.getSupport());
+        c.setDate(comment.getDate());
+        c.setTid(comment.getTid());
+        c.setComment(comment.getComment());
+        c.setName(comment.getName());
+        return c;
+    }
+
+    public static Map<String, WebComment> toWebCommentMap(List<ClosedComment> comments) {
+        if (comments == null || comments.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, WebComment> commentMap = new HashMap<>();
+        for (ClosedComment c : comments) {
+            commentMap.put(Integer.toString(c.getTid()), toWebComment(c));
+        }
+        return commentMap;
     }
 }

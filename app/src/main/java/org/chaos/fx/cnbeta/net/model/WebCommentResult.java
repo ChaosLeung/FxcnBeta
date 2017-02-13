@@ -18,7 +18,6 @@ package org.chaos.fx.cnbeta.net.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
 import java.util.Map;
 
 public class WebCommentResult {
@@ -76,5 +75,16 @@ public class WebCommentResult {
 
     public void setSid(String sid) {
         this.sid = sid;
+    }
+
+    @Override
+    public String toString() {
+        return "WebCommentResult{" +
+                "comments=" + comments +
+                ", commentCount=" + commentCount +
+                ", open=" + open +
+                ", token='" + token + '\'' +
+                ", sid='" + sid + '\'' +
+                '}';
     }
 }

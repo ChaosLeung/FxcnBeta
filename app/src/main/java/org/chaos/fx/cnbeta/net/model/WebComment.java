@@ -114,4 +114,19 @@ public class WebComment {
     public void setAgainstCount(int againstCount) {
         this.againstCount = againstCount;
     }
+
+    @Override
+    public String toString() {
+        return "WebComment{" +
+                "tid=" + tid +
+                ", pid=" + pid +
+                ", sid=" + sid +
+                ", date='" + date + '\'' +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", comment='" + comment + '\'' +
+                ", supportCount=" + supportCount +
+                ", againstCount=" + againstCount +
+                '}';
+    }
 }

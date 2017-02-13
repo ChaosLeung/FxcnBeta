@@ -70,6 +70,11 @@ public class CnBetaSignUtil {
                 "&pageSize=10&sid=" + sid + "&timestamp=" + timestamp + "&v=1.0&mpuffgvbvbttn3Rc");
     }
 
+    public static String closedCommentsSign(long timestamp, int article) {
+        return generateDigestStr("app_key=10000&article=" + article +
+                "&format=json&method=phone.Comment&timestamp=" + timestamp + "&v=1.0&mpuffgvbvbttn3Rc");
+    }
+
     public static String addCommentSign(long timestamp, int sid, String content) {
         return generateDigestStr("app_key=10000&content=" + content +
                 "&format=json&method=Article.DoCmt&op=publish&sid=" + sid +

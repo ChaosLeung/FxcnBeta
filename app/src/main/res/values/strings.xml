@@ -54,6 +54,7 @@
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
     <string name="no_more_comments">没有更多评论</string>
+    <string name="comment_closed">评论已关闭</string>
 
     <string name="no_content">暂无内容</string>
 

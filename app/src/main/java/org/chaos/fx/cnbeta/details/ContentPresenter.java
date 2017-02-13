@@ -19,9 +19,12 @@ package org.chaos.fx.cnbeta.details;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
+import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.util.ModelUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -81,6 +84,23 @@ class ContentPresenter implements ContentContract.Presenter {
                             return result.result;
                         } else {
                             throw new RequestFailedException();
+                        }
+                    }
+                })
+                .flatMap(new Function<WebCommentResult, Observable<WebCommentResult>>() {
+                    @Override
+                    public Observable<WebCommentResult> apply(final WebCommentResult result) throws Exception {
+                        if (result.isOpen()) {
+                            return Observable.just(result);
+                        } else {
+                            return CnBetaApiHelper.closedComments(mSid)
+                                    .map(new Function<List<ClosedComment>, WebCommentResult>() {
+                                        @Override
+                                        public WebCommentResult apply(List<ClosedComment> comments) throws Exception {
+                                            result.setComments(ModelUtil.toWebCommentMap(comments));
+                                            return result;
+                                        }
+                                    });
                         }
                     }
                 })

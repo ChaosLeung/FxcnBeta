@@ -26,21 +26,30 @@
 
     <include layout="@layout/layout_app_bar" />
 
-    <FrameLayout
-        android:id="@+id/container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <com.roughike.bottombar.BottomBar
-        android:id="@+id/bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_gravity="bottom"
-        android:background="@color/colorPrimary"
-        app:bb_activeTabColor="@color/active_tab_color"
-        app:bb_inActiveTabColor="@color/inactive_tab_color"
-        app:bb_tabXmlResource="@xml/navigation_tabs"
-        app:bb_behavior="shifting" />
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.roughike.bottombar.BottomBar
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimary"
+            app:bb_activeTabColor="@color/active_tab_color"
+            app:bb_behavior="shifting"
+            app:bb_inActiveTabColor="@color/inactive_tab_color"
+            app:bb_showShadow="false"
+            app:bb_tabXmlResource="@xml/navigation_tabs" />
+
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

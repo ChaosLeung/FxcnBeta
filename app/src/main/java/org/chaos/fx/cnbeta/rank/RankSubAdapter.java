@@ -26,11 +26,11 @@ import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 
-public class RankSubAdapter extends BaseArticleAdapter {
+class RankSubAdapter extends BaseArticleAdapter {
 
     private String mType;
 
-    public RankSubAdapter(Context context, RecyclerView bindView, String type) {
+    RankSubAdapter(Context context, RecyclerView bindView, String type) {
         super(context, bindView);
         mType = type;
     }

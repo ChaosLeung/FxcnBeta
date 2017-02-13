@@ -85,7 +85,7 @@ public class ArticlesFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         setActionBarTitle(R.string.nav_home);
         String topicId = getArguments().getString(KEY_TOPIC_ID, "null");
-        mPresenter = new ArticlesPresenter(topicId, this);
+        mPresenter = new ArticlesPresenter(topicId);
     }
 
     @Nullable
@@ -138,7 +138,7 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.subscribe();
+        mPresenter.subscribe(this);
         ((MainActivity) getActivity()).addOnActionBarDoubleClickListener(this);
         mArticleAdapter.notifyItemChanged(mPreClickPosition);
     }

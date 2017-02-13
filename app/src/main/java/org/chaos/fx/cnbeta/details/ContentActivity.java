@@ -30,33 +30,19 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.WebApi;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
-import org.chaos.fx.cnbeta.net.model.WebCommentResult;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
-import okhttp3.ResponseBody;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
-public class ContentActivity extends SwipeBackActivity implements
+public class ContentActivity extends SwipeBackActivity implements ContentContract.View,
         ContentFragment.OnShowCommentListener, CommentFragment.OnCommentUpdateListener {
 
     private static final String TAG = "ContentActivity";
@@ -74,9 +60,6 @@ public class ContentActivity extends SwipeBackActivity implements
     private int mSid;
     private String mLogoLink;
 
-    private String mHtmlBody;
-    private WebCommentResult mWebCommentResult;
-
     @BindView(R.id.pager) ViewPager mViewPager;
 
     @BindView(R.id.error_layout) View mErrorLayout;
@@ -84,7 +67,7 @@ public class ContentActivity extends SwipeBackActivity implements
 
     private SectionsPagerAdapter mPagerAdapter;
 
-    private Disposable mArticleDisposable;
+    private ContentContract.Presenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,13 +90,14 @@ public class ContentActivity extends SwipeBackActivity implements
 
         setupActionBar();
 
-        requestArticleHtml();
+        mPresenter = new ContentPresenter(mSid);
+        mPresenter.subscribe(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mArticleDisposable.dispose();
+        mPresenter.unsubscribe();
     }
 
     private void setupActionBar() {
@@ -161,62 +145,26 @@ public class ContentActivity extends SwipeBackActivity implements
 
     @OnClick(R.id.error_button)
     public void requestArticleHtml() {
-        mLoadingView.setVisibility(View.VISIBLE);
-        mErrorLayout.setVisibility(View.GONE);
-
-        mArticleDisposable = CnBetaApiHelper.getArticleHtml(mSid)
-                .subscribeOn(Schedulers.io())
-                .map(new Function<ResponseBody, String>() {
-                    @Override
-                    public String apply(ResponseBody responseBody) {
-                        try {
-                            mHtmlBody = responseBody.string();
-                            return CnBetaApiHelper.getSNFromArticleBody(mHtmlBody);
-                        } catch (IOException e) {
-                            throw Exceptions.propagate(e);
-                        }
-                    }
-                })
-                .flatMap(new Function<String, Observable<WebApi.Result<WebCommentResult>>>() {
-                    @Override
-                    public Observable<WebApi.Result<WebCommentResult>> apply(String sn) {
-                        return CnBetaApiHelper.getCommentJson(mSid, sn);
-                    }
-                })
-                .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
-                    @Override
-                    public WebCommentResult apply(WebApi.Result<WebCommentResult> result) {
-                        if (result.isSuccess()) {
-                            return result.result;
-                        } else {
-                            throw new RequestFailedException();
-                        }
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .retry(3)
-                .subscribe(new Consumer<WebCommentResult>() {
-                    @Override
-                    public void accept(WebCommentResult result) throws Exception {
-                        mWebCommentResult = result;
-
-                        mLoadingView.setVisibility(View.GONE);
-                        setupViewPager();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable e) throws Exception {
-                        mLoadingView.setVisibility(View.GONE);
-                        mErrorLayout.setVisibility(View.VISIBLE);
-                    }
-                });
+        mPresenter.loadArticleHtml();
     }
 
     String getToken() {
-        if (mWebCommentResult == null) {
-            return null;
-        }
-        return mWebCommentResult.getToken();
+        return mPresenter.getArticleToken();
+    }
+
+    @Override
+    public void showLoadingView(boolean show) {
+        mLoadingView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showLoadingError(boolean show) {
+        mErrorLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setupChildViews() {
+        setupViewPager();
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -227,9 +175,9 @@ public class ContentActivity extends SwipeBackActivity implements
 
         private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            commentFragment = CommentFragment.newInstance(mSid, mWebCommentResult);
-            contentFragment = ContentFragment.newInstance(mSid, mLogoLink, mHtmlBody,
-                    mWebCommentResult.getCommentCount());
+            commentFragment = CommentFragment.newInstance(mSid, mPresenter.getWebComments());
+            contentFragment = ContentFragment.newInstance(mSid, mLogoLink, mPresenter.getHtmlBody(),
+                    mPresenter.getWebComments().getCommentCount());
         }
 
         @Override

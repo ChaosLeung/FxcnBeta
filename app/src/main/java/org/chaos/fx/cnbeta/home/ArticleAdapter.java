@@ -27,9 +27,9 @@ import org.chaos.fx.cnbeta.util.TimeStringHelper;
  * @author Chaos
  *         2015/11/15.
  */
-public class ArticleAdapter extends BaseArticleAdapter {
+class ArticleAdapter extends BaseArticleAdapter {
 
-    public ArticleAdapter(Context context, RecyclerView bindView) {
+    ArticleAdapter(Context context, RecyclerView bindView) {
         super(context, bindView);
     }
 

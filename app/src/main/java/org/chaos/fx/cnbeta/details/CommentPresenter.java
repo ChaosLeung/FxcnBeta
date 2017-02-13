@@ -36,19 +36,18 @@ import io.reactivex.schedulers.Schedulers;
  *         10/14/16
  */
 
-public class CommentPresenter implements CommentContract.Presenter {
+class CommentPresenter implements CommentContract.Presenter {
 
     private int mSid;
-    private CommentContract.View mCommentView;
+    private CommentContract.View mView;
 
     private String mToken;
 
     private CompositeDisposable mDisposables;
 
-    public CommentPresenter(int sid, String token, CommentContract.View commentView) {
+    CommentPresenter(int sid, String token) {
         mSid = sid;
         mToken = token;
-        mCommentView = commentView;
         mDisposables = new CompositeDisposable();
     }
 
@@ -70,20 +69,20 @@ public class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(List<Comment> result) throws Exception {
                         if (!result.isEmpty()) {
-                            mCommentView.addComments(result);
+                            mView.addComments(result);
                         } else {
-                            mCommentView.showNoMoreComments();
+                            mView.showNoMoreComments();
                         }
 
-                        mCommentView.hideProgress();
-                        mCommentView.showNoCommentTipsIfNeed();
+                        mView.hideProgress();
+                        mView.showNoCommentTipsIfNeed();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
-                        mCommentView.showLoadingFailed();
-                        mCommentView.hideProgress();
-                        mCommentView.showNoCommentTipsIfNeed();
+                        mView.showLoadingFailed();
+                        mView.hideProgress();
+                        mView.showNoCommentTipsIfNeed();
                     }
                 }));
     }
@@ -106,12 +105,12 @@ public class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(WebApi.Result result) throws Exception {
                         c.setAgainst(c.getAgainst() + 1);
-                        mCommentView.notifyItemChanged(c);
+                        mView.notifyItemChanged(c);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
-                        mCommentView.showOperationFailed();
+                        mView.showOperationFailed();
                     }
                 }));
     }
@@ -134,24 +133,24 @@ public class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(WebApi.Result result) throws Exception {
                         c.setSupport(c.getSupport() + 1);
-                        mCommentView.notifyItemChanged(c);
+                        mView.notifyItemChanged(c);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
-                        mCommentView.showOperationFailed();
+                        mView.showOperationFailed();
                     }
                 }));
     }
 
     @Override
     public void addComment() {
-        mCommentView.showCommentDialog(0);
+        mView.showCommentDialog(0);
     }
 
     @Override
     public void replyComment(Comment c) {
-        mCommentView.showCommentDialog(c.getTid());
+        mView.showCommentDialog(c.getTid());
     }
 
     @Override
@@ -172,12 +171,12 @@ public class CommentPresenter implements CommentContract.Presenter {
                 .subscribe(new Consumer<WebApi.Result>() {
                     @Override
                     public void accept(WebApi.Result result) throws Exception {
-                        mCommentView.showAddCommentSucceed();
+                        mView.showAddCommentSucceed();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
-                        mCommentView.showAddCommentFailed(e.getMessage());
+                        mView.showAddCommentFailed(e.getMessage());
                     }
                 }));
     }
@@ -188,8 +187,8 @@ public class CommentPresenter implements CommentContract.Presenter {
     }
 
     @Override
-    public void subscribe() {
-
+    public void subscribe(CommentContract.View view) {
+        mView = view;
     }
 
     @Override

@@ -72,7 +72,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mType = getArguments().getString(KEY_TYPE);
-        mPresenter = new RankSubPresenter(this, mType);
+        mPresenter = new RankSubPresenter(mType);
     }
 
     @Nullable
@@ -99,7 +99,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mPresenter.subscribe();
+        mPresenter.subscribe(this);
     }
 
     @Override

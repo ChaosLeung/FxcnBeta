@@ -38,11 +38,11 @@ import io.realm.Sort;
  * @author Chaos
  *         7/19/16
  */
-public class ArticlesPresenter implements ArticlesContract.Presenter {
+class ArticlesPresenter implements ArticlesContract.Presenter {
 
     private final String mTopicId;
 
-    private final ArticlesContract.View mArticlesView;
+    private ArticlesContract.View mView;
 
     private final Realm mRealm;
 
@@ -50,18 +50,18 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
 
     private boolean mFirstLoad = true;
 
-    public ArticlesPresenter(String topicId, ArticlesContract.View articlesView) {
+    ArticlesPresenter(String topicId) {
         mTopicId = topicId;
-        mArticlesView = articlesView;
         mRealm = Realm.getDefaultInstance();
         mDisposables = new CompositeDisposable();
     }
 
     @Override
-    public void subscribe() {
+    public void subscribe(ArticlesContract.View view) {
+        mView = view;
         if (mFirstLoad) {
-            mArticlesView.addArticles(getLocalArticles(), true);// load articles from local Repository
-            mArticlesView.setRefreshing(true);
+            mView.addArticles(getLocalArticles(), true);// load articles from local Repository
+            mView.setRefreshing(true);
             doRequest(CnBetaApiHelper.articles());
         }
     }
@@ -79,12 +79,12 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
 
     @Override
     public void loadNewArticles(int sid) {
-        if (!mArticlesView.isLoading()) {
-            mArticlesView.setRefreshing(true);
+        if (!mView.isLoading()) {
+            mView.setRefreshing(true);
 
             Observable<CnBetaApi.Result<List<ArticleSummary>>> observable;
 
-            if (mArticlesView.isEmpty()) {
+            if (mView.isEmpty()) {
                 observable = CnBetaApiHelper.topicArticles(mTopicId);
             } else {
                 observable = CnBetaApiHelper.newArticles(mTopicId, sid);
@@ -96,8 +96,8 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
 
     @Override
     public void loadOldArticles(int sid) {
-        if (!mArticlesView.isRefreshing()) {
-            mArticlesView.setLoading(true);
+        if (!mView.isRefreshing()) {
+            mView.setLoading(true);
 
             doRequest(CnBetaApiHelper.oldArticles(mTopicId, sid));
         }
@@ -123,13 +123,13 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
                     public void accept(List<ArticleSummary> result) throws Exception {
                         processArticles(result);
 
-                        mArticlesView.setRefreshing(false);
-                        mArticlesView.setLoading(false);
+                        mView.setRefreshing(false);
+                        mView.setLoading(false);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
-                        mArticlesView.showLoadingArticlesError();
+                        mView.showLoadingArticlesError();
                     }
                 }));
     }
@@ -138,16 +138,16 @@ public class ArticlesPresenter implements ArticlesContract.Presenter {
         if (!result.isEmpty()) {
             if (mFirstLoad) {
                 mFirstLoad = false;
-                mArticlesView.clearArticles();
+                mView.clearArticles();
             }
 
-            if (mArticlesView.isRefreshing()) {// refreshing, add items to top
-                mArticlesView.addArticles(result, true);
-            } else if (mArticlesView.isLoading()) {// loading, add items to bottom
-                mArticlesView.addArticles(result, false);
+            if (mView.isRefreshing()) {// refreshing, add items to top
+                mView.addArticles(result, true);
+            } else if (mView.isLoading()) {// loading, add items to bottom
+                mView.addArticles(result, false);
             }
         } else {
-            mArticlesView.showNoArticles();
+            mView.showNoArticles();
         }
     }
 

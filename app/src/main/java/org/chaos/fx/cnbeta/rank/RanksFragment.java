@@ -85,7 +85,7 @@ public class RanksFragment extends BaseFragment {
         }
     }
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] RANK_TYPES = new String[]{
                 CnBetaApi.TYPE_COUNTER,
@@ -95,7 +95,7 @@ public class RanksFragment extends BaseFragment {
 
         private final String[] RANK_TITLES;
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
             RANK_TITLES = getResources().getStringArray(R.array.rank_types);
         }

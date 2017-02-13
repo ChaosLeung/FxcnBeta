@@ -34,14 +34,13 @@ import io.reactivex.schedulers.Schedulers;
  *         11/7/16
  */
 
-public class RankSubPresenter implements RankSubContract.Presenter {
+class RankSubPresenter implements RankSubContract.Presenter {
 
     private RankSubContract.View mView;
     private String mType;
     private Disposable mDisposable;
 
-    public RankSubPresenter(RankSubContract.View view, String type) {
-        mView = view;
+    RankSubPresenter(String type) {
         mType = type;
     }
 
@@ -79,7 +78,8 @@ public class RankSubPresenter implements RankSubContract.Presenter {
     }
 
     @Override
-    public void subscribe() {
+    public void subscribe(RankSubContract.View view) {
+        mView = view;
         mView.showRefreshing(true);
         loadArticles();
     }

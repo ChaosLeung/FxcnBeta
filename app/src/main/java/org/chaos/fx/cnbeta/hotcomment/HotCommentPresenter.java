@@ -34,12 +34,11 @@ import io.reactivex.schedulers.Schedulers;
  *         11/7/16
  */
 
-public class HotCommentPresenter implements HotCommentContract.Presenter {
+class HotCommentPresenter implements HotCommentContract.Presenter {
     private HotCommentContract.View mView;
     private Disposable mDisposable;
 
-    public HotCommentPresenter(HotCommentContract.View view) {
-        mView = view;
+    HotCommentPresenter() {
     }
 
     @Override
@@ -76,7 +75,8 @@ public class HotCommentPresenter implements HotCommentContract.Presenter {
     }
 
     @Override
-    public void subscribe() {
+    public void subscribe(HotCommentContract.View view) {
+        mView = view;
         mView.showRefreshing(true);
         loadHotComments();
     }

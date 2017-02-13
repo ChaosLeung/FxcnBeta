@@ -34,12 +34,11 @@ import io.reactivex.schedulers.Schedulers;
  *         11/7/16
  */
 
-public class Top10Presenter implements Top10Contract.Presenter {
+class Top10Presenter implements Top10Contract.Presenter {
     private Top10Contract.View mView;
     private Disposable mDisposable;
 
-    public Top10Presenter(Top10Contract.View view) {
-        mView = view;
+    Top10Presenter() {
     }
 
     @Override
@@ -76,7 +75,8 @@ public class Top10Presenter implements Top10Contract.Presenter {
     }
 
     @Override
-    public void subscribe() {
+    public void subscribe(Top10Contract.View view) {
+        mView = view;
         mView.showRefreshing(true);
         loadTop10Articles();
     }

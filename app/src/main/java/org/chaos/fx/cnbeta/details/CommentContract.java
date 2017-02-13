@@ -27,9 +27,9 @@ import java.util.List;
  *         10/14/16
  */
 
-public interface CommentContract {
+interface CommentContract {
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         void addComments(List<Comment> comments);
 
         /**
@@ -56,7 +56,7 @@ public interface CommentContract {
         void notifyItemChanged(Comment c);
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void refreshComments(int page);
 
         void against(Comment c);

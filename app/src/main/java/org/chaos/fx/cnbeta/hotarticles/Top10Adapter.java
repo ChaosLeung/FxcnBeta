@@ -20,15 +20,15 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
-public class Top10Adapter extends BaseArticleAdapter {
-    public Top10Adapter(Context context, RecyclerView bindView) {
+class Top10Adapter extends BaseArticleAdapter {
+    Top10Adapter(Context context, RecyclerView bindView) {
         super(context, bindView);
     }
 

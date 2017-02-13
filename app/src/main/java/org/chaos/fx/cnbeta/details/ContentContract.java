@@ -20,15 +20,34 @@ import android.graphics.Bitmap;
 
 import org.chaos.fx.cnbeta.BasePresenter;
 import org.chaos.fx.cnbeta.BaseView;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 /**
  * @author Chaos
  *         10/26/16
  */
 
-public interface ContentContract {
+interface ContentContract {
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
+        void showLoadingView(boolean show);
+
+        void showLoadingError(boolean show);
+
+        void setupChildViews();
+    }
+
+    interface Presenter extends BasePresenter<View> {
+        void loadArticleHtml();
+
+        String getArticleToken();
+
+        String getHtmlBody();
+
+        WebCommentResult getWebComments();
+    }
+
+    interface SubView extends BaseView {
         void loadAuthorImage(String authorImgLink);
 
         void setTitle(String title);
@@ -48,7 +67,7 @@ public interface ContentContract {
         void addImageToContent(String imgLink);
     }
 
-    interface Presenter extends BasePresenter {
+    interface SubPresenter extends BasePresenter<SubView> {
         void shareUrlToWechat(Bitmap bitmap, boolean toTimeline);
     }
 }

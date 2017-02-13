@@ -50,7 +50,7 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         4/2/16
  */
-public class ContentFragment extends BaseFragment implements ContentContract.View {
+public class ContentFragment extends BaseFragment implements ContentContract.SubView {
 
     protected static final String KEY_SID = "sid";
     protected static final String KEY_TOPIC_LOGO = "topic_logo";
@@ -106,12 +106,12 @@ public class ContentFragment extends BaseFragment implements ContentContract.Vie
         }
     };
 
-    private ContentContract.Presenter mPresenter;
+    private ContentContract.SubPresenter mPresenter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new ContentPresenter(new Bundle(getArguments()), this);
+        mPresenter = new ContentSubPresenter(new Bundle(getArguments()));
     }
 
     @Override
@@ -142,7 +142,7 @@ public class ContentFragment extends BaseFragment implements ContentContract.Vie
             }
         });
 
-        mPresenter.subscribe();
+        mPresenter.subscribe(this);
     }
 
     @Override

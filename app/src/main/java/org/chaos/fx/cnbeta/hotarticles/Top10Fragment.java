@@ -59,7 +59,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new Top10Presenter(this);
+        mPresenter = new Top10Presenter();
         setActionBarTitle(R.string.nav_hot_articles);
     }
 
@@ -87,7 +87,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mPresenter.subscribe();
+        mPresenter.subscribe(this);
     }
 
     @Override

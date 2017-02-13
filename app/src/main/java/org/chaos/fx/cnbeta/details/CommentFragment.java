@@ -79,7 +79,7 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOKEN), this);
+        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOKEN));
     }
 
     @Override
@@ -128,13 +128,14 @@ public class CommentFragment extends BaseFragment implements
         mCommentView.setOnRefreshListener(this);
         showNoCommentTipsIfNeed();
 
-        mPresenter.subscribe();
+        mPresenter.subscribe(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.unsubscribe();
+        mCommentAdapter.setOnItemChildClickListener(null);
     }
 
     @Override

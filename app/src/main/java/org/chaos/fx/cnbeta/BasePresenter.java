@@ -20,8 +20,8 @@ package org.chaos.fx.cnbeta;
  * @author Chaos
  *         7/19/16
  */
-public interface BasePresenter {
-    void subscribe();
+public interface BasePresenter<T extends BaseView> {
+    void subscribe(T view);
 
     void unsubscribe();
 }

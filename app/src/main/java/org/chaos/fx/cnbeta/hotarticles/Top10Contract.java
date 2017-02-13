@@ -27,8 +27,9 @@ import java.util.List;
  *         11/7/16
  */
 
-public interface Top10Contract {
-    interface View extends BaseView<Presenter> {
+interface Top10Contract {
+
+    interface View extends BaseView {
         void showRefreshing(boolean refreshing);
 
         void showNoMoreContent();
@@ -38,7 +39,7 @@ public interface Top10Contract {
         void addArticleSummary(List<ArticleSummary> summaries);
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void loadTop10Articles();
     }
 }

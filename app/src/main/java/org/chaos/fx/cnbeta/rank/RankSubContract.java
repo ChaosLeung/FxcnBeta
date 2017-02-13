@@ -27,8 +27,9 @@ import java.util.List;
  *         11/7/16
  */
 
-public interface RankSubContract {
-    interface View extends BaseView<Presenter> {
+interface RankSubContract {
+
+    interface View extends BaseView {
         void showRefreshing(boolean refreshing);
 
         void showLoadFailed();
@@ -38,7 +39,7 @@ public interface RankSubContract {
         void addArticles(List<ArticleSummary> summaries);
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void loadArticles();
     }
 }

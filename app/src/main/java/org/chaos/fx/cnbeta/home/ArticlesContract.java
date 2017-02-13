@@ -26,9 +26,9 @@ import java.util.List;
  * @author Chaos
  *         7/19/16
  */
-public interface ArticlesContract {
+interface ArticlesContract {
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         void setRefreshing(boolean refreshing);
 
         boolean isRefreshing();
@@ -48,7 +48,7 @@ public interface ArticlesContract {
         void showLoadingArticlesError();
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
 
         void loadNewArticles(int sid);
 

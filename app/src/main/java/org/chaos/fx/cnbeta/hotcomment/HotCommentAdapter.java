@@ -35,9 +35,9 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         2015/11/14.
  */
-public class HotCommentAdapter extends ListAdapter<HotComment, HotCommentAdapter.ViewHolder> {
+class HotCommentAdapter extends ListAdapter<HotComment, ViewHolder> {
 
-    public HotCommentAdapter(Context context, RecyclerView bindView) {
+    HotCommentAdapter(Context context, RecyclerView bindView) {
         super(context, bindView);
     }
 
@@ -61,14 +61,15 @@ public class HotCommentAdapter extends ListAdapter<HotComment, HotCommentAdapter
         return listSize();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+}
 
-        @BindView(R.id.title) public TextView title;
-        @BindView(R.id.comment) public TextView comment;
+class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
+    @BindView(R.id.title) public TextView title;
+    @BindView(R.id.comment) public TextView comment;
+
+    ViewHolder(View itemView) {
+        super(itemView);
+        ButterKnife.bind(this, itemView);
     }
 }

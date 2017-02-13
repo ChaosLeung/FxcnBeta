@@ -37,9 +37,9 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         2015/11/22.
  */
-public class CommentAdapter extends ListAdapter<Comment, CommentAdapter.ViewHolder> {
+class CommentAdapter extends ListAdapter<Comment, ViewHolder> {
 
-    public CommentAdapter(Context context, RecyclerView bindView) {
+    CommentAdapter(Context context, RecyclerView bindView) {
         super(context, bindView);
     }
 
@@ -104,27 +104,23 @@ public class CommentAdapter extends ListAdapter<Comment, CommentAdapter.ViewHold
         mOnItemChildClickListener = listener;
     }
 
-    public void removeOnItemChildClickListener() {
-        mOnItemChildClickListener = null;
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.comment) TextView comment;
-        @BindView(R.id.username) TextView username;
-        @BindView(R.id.reply_comment) TextView replyComment;
-        @BindView(R.id.time) TextView time;
-        @BindView(R.id.support) TextView support;
-        @BindView(R.id.against) TextView against;
-        @BindView(R.id.reply) ImageButton reply;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
-
-    public interface OnItemChildClickListener {
+    interface OnItemChildClickListener {
         void onItemChildClick(View v, int position);
+    }
+}
+
+class ViewHolder extends RecyclerView.ViewHolder {
+
+    @BindView(R.id.comment) TextView comment;
+    @BindView(R.id.username) TextView username;
+    @BindView(R.id.reply_comment) TextView replyComment;
+    @BindView(R.id.time) TextView time;
+    @BindView(R.id.support) TextView support;
+    @BindView(R.id.against) TextView against;
+    @BindView(R.id.reply) ImageButton reply;
+
+    ViewHolder(View itemView) {
+        super(itemView);
+        ButterKnife.bind(this, itemView);
     }
 }

@@ -20,5 +20,5 @@ package org.chaos.fx.cnbeta;
  * @author Chaos
  *         7/19/16
  */
-public interface BaseView<T> {
+public interface BaseView {
 }

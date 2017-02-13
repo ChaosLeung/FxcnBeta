@@ -54,12 +54,7 @@ import io.reactivex.schedulers.Schedulers;
 public class CommentDialog extends DialogFragment {
 
     public static CommentDialog newInstance() {
-
-        Bundle args = new Bundle();
-
-        CommentDialog fragment = new CommentDialog();
-        fragment.setArguments(args);
-        return fragment;
+        return new CommentDialog();
     }
 
     @BindView(R.id.captcha) ImageView mCaptchaView;

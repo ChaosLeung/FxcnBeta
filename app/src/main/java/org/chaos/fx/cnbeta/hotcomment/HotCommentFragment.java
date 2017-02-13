@@ -56,7 +56,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setActionBarTitle(R.string.nav_hot_comments);
-        mPresenter = new HotCommentPresenter(this);
+        mPresenter = new HotCommentPresenter();
     }
 
     @Nullable
@@ -83,7 +83,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mPresenter.subscribe();
+        mPresenter.subscribe(this);
     }
 
     @Override

@@ -19,5 +19,7 @@
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_gravity="center"
+           android:layout_marginBottom="@dimen/article_item_img_margin"
            android:layout_marginTop="@dimen/article_item_img_margin"
-           android:layout_marginBottom="@dimen/article_item_img_margin"/>
+           android:adjustViewBounds="true"
+           android:src="@drawable/default_content_image_holder" />

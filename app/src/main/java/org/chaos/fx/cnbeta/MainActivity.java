@@ -35,7 +35,7 @@ import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
 import org.chaos.fx.cnbeta.rank.RanksFragment;
-import org.chaos.fx.cnbeta.settings.SettingsActivity;
+import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, PreferencesActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

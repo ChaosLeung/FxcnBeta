@@ -39,10 +39,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".details.ContentActivity"
+                  android:exported="false"
                   android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".settings.SettingsActivity" />
+        <activity android:name=".preferences.PreferencesActivity"
+                  android:exported="false" />
 
-        <activity android:name=".help.FeedbackActivity"/>
+        <activity android:name=".help.FeedbackActivity"
+                  android:exported="false" />
     </application>
 
 </manifest>

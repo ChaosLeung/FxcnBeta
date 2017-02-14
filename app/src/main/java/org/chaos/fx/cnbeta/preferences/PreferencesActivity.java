@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta.settings;
+package org.chaos.fx.cnbeta.preferences;
 
 
 import android.content.Intent;
@@ -37,7 +37,7 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
  * @author Chaos
  *         2015/11/22
  */
-public class SettingsActivity extends AppCompatPreferenceActivity implements SwipeBackActivityBase {
+public class PreferencesActivity extends AppCompatPreferenceActivity implements SwipeBackActivityBase {
 
     private SwipeBackActivityHelper mHelper;
 

@@ -18,7 +18,6 @@ package org.chaos.fx.cnbeta.details;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,11 +33,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
+import com.squareup.picasso.RequestCreator;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
 import java.util.Locale;
@@ -80,31 +82,6 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
     @BindView(R.id.content_layout) LinearLayout mContentLayout;
 
     private OnShowCommentListener mOnShowCommentListener;
-
-    private Transformation transformation = new Transformation() {
-        @Override
-        public Bitmap transform(Bitmap source) {
-            int targetWidth = mContentLayout.getWidth();
-
-            if (source.getWidth() > 10) {
-                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-                int targetHeight = (int) (targetWidth * aspectRatio);
-                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
-                if (result != source) {
-                    // Same bitmap is returned if sizes are the same
-                    source.recycle();
-                }
-                return result;
-            } else {
-                return source;
-            }
-        }
-
-        @Override
-        public String key() {
-            return "desiredWidth";
-        }
-    };
 
     private ContentContract.SubPresenter mPresenter;
 
@@ -241,9 +218,75 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
 
     @Override
     public void addImageToContent(String link) {
-        ImageView view = (ImageView) getActivity().getLayoutInflater().inflate(R.layout.article_content_img_item, mContentLayout, false);
+        final ImageView view = (ImageView) getActivity().getLayoutInflater().inflate(R.layout.article_content_img_item, mContentLayout, false);
         mContentLayout.addView(view);
-        Picasso.with(getActivity()).load(link).transform(transformation).into(view);
+
+        final ImageListener l = new ImageListener(view, link);
+        view.setOnClickListener(l);
+
+        RequestCreator r = Picasso.with(getActivity()).load(link).placeholder(R.drawable.default_content_image_loading);
+        if (PreferenceHelper.getInstance().inSafeDataMode()) {
+            l.setLoadCacheForFirst(true);
+            r.networkPolicy(NetworkPolicy.OFFLINE);
+        }
+        r.into(view, l);
+    }
+
+    private class ImageListener implements View.OnClickListener, Callback {
+
+        private static final int LOADING = 1;
+        private static final int SUCCESS = 2;
+        private static final int ERROR = 3;
+
+        private int state = LOADING;
+
+        private final ImageView target;
+        private final String url;
+
+        private boolean loadCacheForFirst = false;
+
+        private ImageListener(ImageView target, String url) {
+            this.target = target;
+            this.url = url;
+        }
+
+        public void setLoadCacheForFirst(boolean loadCacheForFirst) {
+            this.loadCacheForFirst = loadCacheForFirst;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (loadCacheForFirst) {
+                return;
+            }
+
+            if (state == ERROR) {
+                state = LOADING;
+                Picasso.with(getContext())
+                        .load(url)
+                        .placeholder(R.drawable.default_content_image_loading)
+                        .into(target, this);
+            } else if (state == SUCCESS) {// Gallery
+                // TODO: 14/02/2017 show images in Gallery
+            }
+        }
+
+        @Override
+        public void onSuccess() {
+            state = SUCCESS;
+            loadCacheForFirst = false;
+        }
+
+        @Override
+        public void onError() {
+            state = ERROR;
+            Picasso.with(getContext())
+                    .load(loadCacheForFirst
+                            ? R.drawable.default_content_image_holder
+                            : R.drawable.default_content_image_failed)
+                    .into(target);// no need callback
+            loadCacheForFirst = false;
+        }
     }
 
     public interface OnShowCommentListener {

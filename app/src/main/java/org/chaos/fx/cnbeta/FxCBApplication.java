@@ -19,6 +19,7 @@ package org.chaos.fx.cnbeta;
 import android.app.Application;
 
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 
@@ -36,5 +37,6 @@ public class FxCBApplication extends Application {
         TimeStringHelper.initialize(this);
         Realm.init(this);
         WXApiProvider.initialize(this);
+        PreferenceHelper.initialize(this);
     }
 }

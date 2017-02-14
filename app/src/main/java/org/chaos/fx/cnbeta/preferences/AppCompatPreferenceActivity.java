@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta.settings;
+package org.chaos.fx.cnbeta.preferences;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

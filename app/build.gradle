@@ -57,6 +57,7 @@ dependencies {
     compile "${libs.recyclerviewV7}"
     compile "${libs.cardviewV7}"
     compile "${libs.appcompatV7}"
+    compile "${libs.preferenceV14}"
     compile "${libs.design}"
     compile "${libs.supportV4}"
 

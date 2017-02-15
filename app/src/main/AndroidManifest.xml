@@ -15,8 +15,9 @@
   ~ limitations under the License.
   -->
 
-<manifest package="org.chaos.fx.cnbeta"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="org.chaos.fx.cnbeta"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -27,6 +28,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -38,9 +40,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity android:name=".details.ContentActivity"
                   android:exported="false"
                   android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".details.ImagePagerActivity"
+                  android:exported="false"
+                  android:theme="@style/AppTheme.ActionBar.Translucent" />
+
         <activity android:name=".preferences.PreferencesActivity"
                   android:exported="false" />
 

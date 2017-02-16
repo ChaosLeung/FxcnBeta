@@ -69,5 +69,9 @@ interface ContentContract {
 
     interface SubPresenter extends BasePresenter<SubView> {
         void shareUrlToWechat(Bitmap bitmap, boolean toTimeline);
+
+        String[] getAllImageUrls();
+
+        int indexOfImage(String url);
     }
 }

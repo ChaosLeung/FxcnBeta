@@ -30,6 +30,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -61,6 +63,8 @@ class ContentSubPresenter implements ContentContract.SubPresenter {
 
     private Disposable mContentDisposable;
 
+    private List<String> mImageUrls = new ArrayList<>();
+
     ContentSubPresenter(Bundle arguments) {
         mSid = arguments.getInt(KEY_SID);
         mLogoLink = arguments.getString(KEY_TOPIC_LOGO);
@@ -74,6 +78,16 @@ class ContentSubPresenter implements ContentContract.SubPresenter {
                 mNewsContent.getTitle(),
                 Jsoup.parseBodyFragment(mNewsContent.getHomeText()).text(),
                 bitmap, toTimeline);
+    }
+
+    @Override
+    public String[] getAllImageUrls() {
+        return mImageUrls.toArray(new String[mImageUrls.size()]);
+    }
+
+    @Override
+    public int indexOfImage(String url) {
+        return mImageUrls.indexOf(url);
     }
 
     @Override
@@ -189,7 +203,9 @@ class ContentSubPresenter implements ContentContract.SubPresenter {
                     }
                     preSBLen = 0;
                 }
-                mView.addImageToContent(subNode.attributes().get("src"));
+                String link = subNode.attributes().get("src");
+                mView.addImageToContent(link);
+                mImageUrls.add(link);
             } else if ("#text".equals(subNodeName)) {
                 sb.append(((TextNode) subNode).text());
             } else if ("embed".equals(subNodeName)) {// 搜狐, 土豆

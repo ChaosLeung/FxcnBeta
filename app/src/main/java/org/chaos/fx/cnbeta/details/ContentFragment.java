@@ -267,7 +267,7 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
                         .placeholder(R.drawable.default_content_image_loading)
                         .into(target, this);
             } else if (state == SUCCESS) {// Gallery
-                // TODO: 14/02/2017 show images in Gallery
+                ImagePagerActivity.start(getActivity(), mPresenter.getAllImageUrls(), mPresenter.indexOfImage(url));
             }
         }
 

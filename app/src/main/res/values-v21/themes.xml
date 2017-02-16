@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015 Chaos
+  ~ Copyright 2017 Chaos
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,11 +15,6 @@
   ~ limitations under the License.
   -->
 
-<resources>>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-    </style>
+<resources>
+    <style name="AppTheme.PreferenceFragmentList" parent="PreferenceFragmentList.Material" />
 </resources>

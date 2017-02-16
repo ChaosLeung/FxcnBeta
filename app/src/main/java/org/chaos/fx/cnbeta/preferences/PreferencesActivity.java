@@ -54,9 +54,4 @@ public class PreferencesActivity extends SwipeBackActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void scrollToFinishActivity() {
-//        Utils.convertActivityToTranslucent(this);
-//        getSwipeBackLayout().scrollToFinishActivity();
-//    }
 }

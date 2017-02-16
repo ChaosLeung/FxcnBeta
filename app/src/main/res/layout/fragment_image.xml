@@ -25,10 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ProgressBar
+    <include
         android:id="@+id/progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        layout="@layout/layout_loading" />
 </FrameLayout>

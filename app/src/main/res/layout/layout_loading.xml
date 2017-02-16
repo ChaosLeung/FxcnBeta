@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015 Chaos
+  ~ Copyright 2017 Chaos
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
   ~ limitations under the License.
   -->
 
-<ProgressBar android:id="@+id/loading_view"
-             style="?android:attr/progressBarStyle"
-             xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_gravity="center"
-             android:padding="5dp"
-             android:visibility="invisible" />
+<me.zhanghai.android.materialprogressbar.MaterialProgressBar
+    android:id="@+id/loading_view"
+    style="@style/Widget.MaterialProgressBar.ProgressBar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:indeterminate="true"
+    android:visibility="invisible" />

@@ -17,43 +17,25 @@
 package org.chaos.fx.cnbeta.preferences;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.help.FeedbackActivity;
 
-import me.imid.swipebacklayout.lib.SwipeBackLayout;
-import me.imid.swipebacklayout.lib.Utils;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivityBase;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivityHelper;
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         2015/11/22
  */
-public class PreferencesActivity extends AppCompatPreferenceActivity implements SwipeBackActivityBase {
-
-    private SwipeBackActivityHelper mHelper;
+public class PreferencesActivity extends SwipeBackActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHelper = new SwipeBackActivityHelper(this);
-        mHelper.onActivityCreate();
         setupActionBar();
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new GeneralPreferenceFragment()).commit();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        this.mHelper.onPostCreate();
+        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
     }
 
     private void setupActionBar() {
@@ -67,48 +49,9 @@ public class PreferencesActivity extends AppCompatPreferenceActivity implements 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            scrollToFinishActivity();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public SwipeBackLayout getSwipeBackLayout() {
-        return mHelper.getSwipeBackLayout();
-    }
-
-    @Override
-    public void setSwipeBackEnable(boolean enable) {
-        getSwipeBackLayout().setEnableGesture(enable);
-    }
-
-    @Override
-    public void scrollToFinishActivity() {
-        Utils.convertActivityToTranslucent(this);
-        getSwipeBackLayout().scrollToFinishActivity();
-    }
-
-    public static class GeneralPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
-
-        private static final String KEY_HELP_AND_FEEDBACK = "help_and_feedback";
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-
-            findPreference("version_name").setSummary(BuildConfig.VERSION_NAME);
-            findPreference("author_email").setSummary("lgf42031@gmail.com");
-            findPreference("help_and_feedback").setOnPreferenceClickListener(this);
-        }
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            String key = preference.getKey();
-            if (KEY_HELP_AND_FEEDBACK.equals(key)) {
-                startActivity(new Intent(getActivity(), FeedbackActivity.class));
-            }
-            return false;
-        }
-    }
 }

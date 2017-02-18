@@ -15,12 +15,9 @@
   ~ limitations under the License.
   -->
 
-<me.zhanghai.android.materialprogressbar.MaterialProgressBar
-    android:id="@+id/loading_view"
-    style="@style/Widget.MaterialProgressBar.ProgressBar"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:indeterminate="true"
-    android:visibility="invisible" />
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/divider" />
+    <size
+        android:width="1dp"
+        android:height="1dp" />
+</shape>

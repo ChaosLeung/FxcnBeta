@@ -35,6 +35,8 @@ interface ContentContract {
         void showLoadingError(boolean show);
 
         void setupChildViews();
+
+        void showTransition();
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -65,6 +67,8 @@ interface ContentContract {
         void addTextToContent(String text);
 
         void addImageToContent(String imgLink);
+
+        void showTransition();
     }
 
     interface SubPresenter extends BasePresenter<SubView> {

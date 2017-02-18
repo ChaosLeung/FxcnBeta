@@ -42,7 +42,7 @@ ext {
             appcompatV7       : "com.android.support:appcompat-v7:${libsVersion.support}",
             design            : "com.android.support:design:${libsVersion.support}",
             supportV4         : "com.android.support:support-v4:${libsVersion.support}",
-            preferenceV7      : "com.android.support:preference-v7:${libsVersion.support}"]
+            preferenceV14      : "com.android.support:preference-v14:${libsVersion.support}"]
 }
 
 // config for android config

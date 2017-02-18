@@ -23,6 +23,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/main_background</item>
+        <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
+        <item name="android:listDivider">@drawable/list_divider</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -39,4 +41,55 @@
         <item name="windowActionBarOverlay">true</item>
     </style>
 
+    <style name="AppTheme.Preference" parent="Preference">
+        <item name="android:layout">@layout/preference_material</item>
+    </style>
+
+    <style name="AppTheme.Preference.Category" parent="Preference.Category">
+        <item name="android:layout">@layout/preference_category_material</item>
+    </style>
+
+    <style name="AppTheme.Preference.SwitchPreference" parent="Preference.SwitchPreference">
+        <item name="android:layout">@layout/preference_material</item>
+        <item name="android:widgetLayout">@layout/preference_widget_switch</item>
+    </style>
+
+    <style name="AppTheme.Preference.SwitchPreferenceCompat" parent="Preference.SwitchPreferenceCompat">
+        <item name="android:layout">@layout/preference_material</item>
+        <item name="android:widgetLayout">@layout/preference_widget_switch</item>
+    </style>
+
+    <style name="AppTheme.Preference.Information" parent="Preference.Information">
+        <item name="android:enabled">false</item>
+        <item name="android:layout">@layout/preference_information_material</item>
+        <item name="android:shouldDisableView">false</item>
+    </style>
+
+    <style name="AppTheme.Preference.PreferenceScreen" parent="Preference.PreferenceScreen">
+        <item name="android:layout">@layout/preference_material</item>
+    </style>
+
+    <style name="AppTheme.Preference.CheckBoxPreference" parent="Preference">
+        <item name="android:layout">@layout/preference_material</item>
+        <item name="android:widgetLayout">@layout/preference_widget_checkbox</item>
+    </style>
+
+    <style name="AppTheme.PreferenceFragment" parent="PreferenceFragment.Material" />
+
+    <style name="AppTheme.PreferenceFragmentList" parent="PreferenceFragmentList" />
+
+    <style name="AppTheme.PreferenceThemeOverlay" parent="PreferenceThemeOverlay">
+        <item name="preferenceStyle">@style/AppTheme.Preference</item>
+        <item name="switchPreferenceStyle">@style/AppTheme.Preference.SwitchPreference</item>
+        <item name="switchPreferenceCompatStyle">@style/AppTheme.Preference.SwitchPreferenceCompat</item>
+        <item name="preferenceFragmentStyle">@style/AppTheme.PreferenceFragment</item>
+        <item name="preferenceFragmentCompatStyle">@style/AppTheme.PreferenceFragment</item>
+        <item name="preferenceFragmentListStyle">@style/AppTheme.PreferenceFragmentList</item>
+        <item name="preferenceCategoryStyle">@style/AppTheme.Preference.Category</item>
+        <item name="preferenceScreenStyle">@style/AppTheme.Preference.PreferenceScreen</item>
+        <item name="preferenceInformationStyle">@style/AppTheme.Preference.Information</item>
+        <item name="checkBoxPreferenceStyle">@style/AppTheme.Preference.CheckBoxPreference</item>
+    </style>
+
+    <style name="AppTheme.Content" parent="AppTheme.NoActionBar" />
 </resources>

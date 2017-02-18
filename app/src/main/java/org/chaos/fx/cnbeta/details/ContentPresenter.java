@@ -119,6 +119,7 @@ class ContentPresenter implements ContentContract.Presenter {
                     public void accept(Throwable e) throws Exception {
                         mView.showLoadingView(false);
                         mView.showLoadingError(true);
+                        mView.showTransition();
                     }
                 });
     }

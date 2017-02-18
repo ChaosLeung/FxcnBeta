@@ -22,6 +22,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.SharedElementCallback;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,7 +45,9 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,6 +74,9 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
         return fragment;
     }
 
+    public static final String EXTRA_START_IMAGE_POSITION = "start_image_position";
+    public static final String EXTRA_CURRENT_IMAGE_POSITION = "current_image_position";
+
     private int mSid;
 
     @BindView(R.id.title) TextView mTitleView;
@@ -84,6 +91,30 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
     private OnShowCommentListener mOnShowCommentListener;
 
     private ContentContract.SubPresenter mPresenter;
+
+    private Bundle mTmpReenterState;
+
+    private SharedElementCallback mSharedElementCallback = new SharedElementCallback() {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (mTmpReenterState != null) {
+                // update transition if position changed
+                int startPosition = mTmpReenterState.getInt(EXTRA_START_IMAGE_POSITION);
+                int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_IMAGE_POSITION);
+                if (startPosition != currentPosition) {
+                    String transitionName = mPresenter.getAllImageUrls()[currentPosition];
+                    View target = mContentLayout.findViewWithTag(transitionName);
+                    if (target != null) {
+                        names.clear();
+                        sharedElements.clear();
+                        names.add(transitionName);
+                        sharedElements.put(transitionName, target);
+                    }
+                }
+                mTmpReenterState = null;
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +140,8 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
         super.onViewCreated(view, savedInstanceState);
 
         ButterKnife.bind(this, view);
+
+        getActivity().setExitSharedElementCallback(mSharedElementCallback);// for ImagePagerActivity
 
         mSid = getArguments().getInt(KEY_SID);
 
@@ -220,6 +253,7 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
     public void addImageToContent(String link) {
         final ImageView view = (ImageView) getActivity().getLayoutInflater().inflate(R.layout.article_content_img_item, mContentLayout, false);
         mContentLayout.addView(view);
+        view.setTag(link);
 
         final ImageListener l = new ImageListener(view, link);
         view.setOnClickListener(l);
@@ -230,6 +264,15 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
             r.networkPolicy(NetworkPolicy.OFFLINE);
         }
         r.into(view, l);
+    }
+
+    @Override
+    public void showTransition() {
+        getActivity().supportStartPostponedEnterTransition();
+    }
+
+    public void onFragmentReenter(Intent data) {
+        mTmpReenterState = data.getExtras();
     }
 
     private class ImageListener implements View.OnClickListener, Callback {
@@ -267,7 +310,12 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
                         .placeholder(R.drawable.default_content_image_loading)
                         .into(target, this);
             } else if (state == SUCCESS) {// Gallery
-                ImagePagerActivity.start(getActivity(), mPresenter.getAllImageUrls(), mPresenter.indexOfImage(url));
+                ImagePagerActivity.start(
+                        getActivity(),
+                        mPresenter.getAllImageUrls(),
+                        mPresenter.indexOfImage(url),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                getActivity(), target, url));
             }
         }
 

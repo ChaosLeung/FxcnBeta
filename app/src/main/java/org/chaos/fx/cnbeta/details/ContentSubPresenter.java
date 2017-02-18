@@ -119,6 +119,7 @@ class ContentSubPresenter implements ContentContract.SubPresenter {
                     public void accept(NewsContent newsContent) {
                         mNewsContent = newsContent;
                         parseNewsContent(newsContent);
+                        mView.showTransition();
                     }
                 });
     }

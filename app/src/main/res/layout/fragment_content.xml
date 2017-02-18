@@ -14,12 +14,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/horizontal_border"
+    android:transitionName="@string/transition_details_background">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -34,6 +35,7 @@
             android:layout_height="wrap_content"
             android:textColor="#000"
             android:textSize="30sp"
+            android:transitionName="@string/transition_details_title"
             tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future" />
 
         <ImageView

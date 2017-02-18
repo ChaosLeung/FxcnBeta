@@ -45,7 +45,7 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
  *         2015/11/15.
  */
 public class ContentActivity extends SwipeBackActivity implements ContentContract.View,
-        ContentFragment.OnShowCommentListener, CommentFragment.OnCommentUpdateListener {
+        DetailsFragment.OnShowCommentListener, CommentFragment.OnCommentUpdateListener {
 
     private static final String TAG = "ContentActivity";
 
@@ -144,7 +144,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void onCommentUpdated(int count) {
-        mPagerAdapter.contentFragment.updateCommentCount(count);
+        mPagerAdapter.detailsFragment.updateCommentCount(count);
     }
 
     @OnClick(R.id.error_button)
@@ -179,19 +179,19 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
-        mPagerAdapter.contentFragment.onFragmentReenter(data);
+        mPagerAdapter.detailsFragment.onFragmentReenter(data);
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] contentTitles = new String[]{getString(R.string.content), getString(R.string.comment)};
-        ContentFragment contentFragment;
+        DetailsFragment detailsFragment;
         CommentFragment commentFragment;
 
         private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
             commentFragment = CommentFragment.newInstance(mSid, mPresenter.getWebComments());
-            contentFragment = ContentFragment.newInstance(mSid, mLogoLink, mPresenter.getHtmlBody(),
+            detailsFragment = DetailsFragment.newInstance(mSid, mLogoLink, mPresenter.getHtmlBody(),
                     mPresenter.getWebComments().getCommentCount());
         }
 
@@ -199,7 +199,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return contentFragment;
+                    return detailsFragment;
                 case 1:
                     return commentFragment;
             }

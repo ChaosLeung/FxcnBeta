@@ -130,8 +130,8 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
     public void finishAfterTransition() {
         isReturning = true;
         Intent data = new Intent();
-        data.putExtra(ContentFragment.EXTRA_START_IMAGE_POSITION, mStartPosition);
-        data.putExtra(ContentFragment.EXTRA_CURRENT_IMAGE_POSITION, mViewPager.getCurrentItem());
+        data.putExtra(DetailsFragment.EXTRA_START_IMAGE_POSITION, mStartPosition);
+        data.putExtra(DetailsFragment.EXTRA_CURRENT_IMAGE_POSITION, mViewPager.getCurrentItem());
         setResult(RESULT_OK, data);
         super.finishAfterTransition();
     }

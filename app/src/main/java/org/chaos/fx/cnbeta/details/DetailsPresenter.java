@@ -41,17 +41,17 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static org.chaos.fx.cnbeta.details.ContentFragment.KEY_COMMENT_COUNT;
-import static org.chaos.fx.cnbeta.details.ContentFragment.KEY_HTML_CONTENT;
-import static org.chaos.fx.cnbeta.details.ContentFragment.KEY_SID;
-import static org.chaos.fx.cnbeta.details.ContentFragment.KEY_TOPIC_LOGO;
+import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_COMMENT_COUNT;
+import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_HTML_CONTENT;
+import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_SID;
+import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_TOPIC_LOGO;
 
 /**
  * @author Chaos
  *         10/26/16
  */
 
-class ContentSubPresenter implements ContentContract.SubPresenter {
+class DetailsPresenter implements DetailsContract.Presenter {
 
     private int mSid;
     private String mLogoLink;
@@ -59,13 +59,13 @@ class ContentSubPresenter implements ContentContract.SubPresenter {
     private int mCommentCount;
 
     private NewsContent mNewsContent;
-    private ContentContract.SubView mView;
+    private DetailsContract.View mView;
 
     private Disposable mContentDisposable;
 
     private List<String> mImageUrls = new ArrayList<>();
 
-    ContentSubPresenter(Bundle arguments) {
+    DetailsPresenter(Bundle arguments) {
         mSid = arguments.getInt(KEY_SID);
         mLogoLink = arguments.getString(KEY_TOPIC_LOGO);
         mHtmlContent = arguments.getString(KEY_HTML_CONTENT);
@@ -91,7 +91,7 @@ class ContentSubPresenter implements ContentContract.SubPresenter {
     }
 
     @Override
-    public void subscribe(ContentContract.SubView view) {
+    public void subscribe(DetailsContract.View view) {
         mView = view;
         loadContent();
     }

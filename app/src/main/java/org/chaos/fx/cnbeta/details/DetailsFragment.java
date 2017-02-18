@@ -56,20 +56,20 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         4/2/16
  */
-public class ContentFragment extends BaseFragment implements ContentContract.SubView {
+public class DetailsFragment extends BaseFragment implements DetailsContract.View {
 
     protected static final String KEY_SID = "sid";
     protected static final String KEY_TOPIC_LOGO = "topic_logo";
     protected static final String KEY_HTML_CONTENT = "html_content";
     protected static final String KEY_COMMENT_COUNT = "comment_count";
 
-    public static ContentFragment newInstance(int sid, String topicLogoLink, String htmlBody, int commentCount) {
+    public static DetailsFragment newInstance(int sid, String topicLogoLink, String htmlBody, int commentCount) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
         args.putString(KEY_TOPIC_LOGO, topicLogoLink);
         args.putString(KEY_HTML_CONTENT, htmlBody);
         args.putInt(KEY_COMMENT_COUNT, commentCount);
-        ContentFragment fragment = new ContentFragment();
+        DetailsFragment fragment = new DetailsFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,7 +90,7 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
 
     private OnShowCommentListener mOnShowCommentListener;
 
-    private ContentContract.SubPresenter mPresenter;
+    private DetailsContract.Presenter mPresenter;
 
     private Bundle mTmpReenterState;
 
@@ -119,7 +119,7 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new ContentSubPresenter(new Bundle(getArguments()));
+        mPresenter = new DetailsPresenter(new Bundle(getArguments()));
     }
 
     @Override

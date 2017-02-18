@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,45 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.graphics.Bitmap;
+
 import org.chaos.fx.cnbeta.BasePresenter;
 import org.chaos.fx.cnbeta.BaseView;
-import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 /**
  * @author Chaos
- *         10/26/16
+ *         18/02/2017
  */
 
-interface ContentContract {
+interface DetailsContract {
 
     interface View extends BaseView {
-        void showLoadingView(boolean show);
+        void loadAuthorImage(String authorImgLink);
 
-        void showLoadingError(boolean show);
+        void setTitle(String title);
 
-        void setupChildViews();
+        void setAuthor(String author);
+
+        void setTimeString(String timeString);
+
+        void setCommentCount(int count);
+
+        void setSource(String source);
+
+        void clearViewInContent();
+
+        void addTextToContent(String text);
+
+        void addImageToContent(String imgLink);
 
         void showTransition();
     }
 
     interface Presenter extends BasePresenter<View> {
-        void loadArticleHtml();
+        void shareUrlToWechat(Bitmap bitmap, boolean toTimeline);
 
-        String getArticleToken();
+        String[] getAllImageUrls();
 
-        String getHtmlBody();
-
-        WebCommentResult getWebComments();
+        int indexOfImage(String url);
     }
 }

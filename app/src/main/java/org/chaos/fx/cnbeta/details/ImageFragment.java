@@ -19,9 +19,11 @@ package org.chaos.fx.cnbeta.details;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Callback;
@@ -31,7 +33,6 @@ import org.chaos.fx.cnbeta.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
@@ -53,7 +54,7 @@ public class ImageFragment extends Fragment {
         return fragment;
     }
 
-    @BindView(R.id.image) PhotoView mPhotoView;
+    @BindView(R.id.image) ImageView mPhotoView;
     @BindView(R.id.progress) ProgressBar mProgressBar;
 
     private PhotoViewAttacher mAttacher;
@@ -85,6 +86,7 @@ public class ImageFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         mUrl = getArguments().getString(KEY_IMAGE_URL);
+        ViewCompat.setTransitionName(mPhotoView, mUrl);
 
         mAttacher = new PhotoViewAttacher(mPhotoView);
         loadImage();
@@ -100,6 +102,7 @@ public class ImageFragment extends Fragment {
                         showLoading(false);
                         mAttacher.update();
                         mAttacher.setOnPhotoTapListener(null);
+                        getActivity().supportStartPostponedEnterTransition();
                     }
 
                     @Override
@@ -108,6 +111,7 @@ public class ImageFragment extends Fragment {
                         mPhotoView.setImageResource(R.drawable.default_content_image_failed);
                         mAttacher.update();
                         mAttacher.setOnPhotoTapListener(mImageTapListener);
+                        getActivity().supportStartPostponedEnterTransition();
                     }
                 });
     }

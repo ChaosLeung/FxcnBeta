@@ -167,6 +167,12 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         setupViewPager();
     }
 
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        mPagerAdapter.contentFragment.onFragmentReenter(data);
+    }
+
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] contentTitles = new String[]{getString(R.string.content), getString(R.string.comment)};

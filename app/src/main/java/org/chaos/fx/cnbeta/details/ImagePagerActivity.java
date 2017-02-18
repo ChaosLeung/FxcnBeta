@@ -18,18 +18,26 @@ package org.chaos.fx.cnbeta.details;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.SharedElementCallback;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.chaos.fx.cnbeta.R;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,26 +53,54 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
     private static final String EXTRA_IMAGE_URLS = "image_urls";
     private static final String EXTRA_CURRENT_IMAGE = "current_image";
 
-    public static void start(Context context, String[] imageUrls, int currentImageIdx) {
+    public static void start(Context context, String[] imageUrls, int currentImageIdx, ActivityOptionsCompat options) {
         Intent starter = new Intent(context, ImagePagerActivity.class);
         starter.putExtra(EXTRA_IMAGE_URLS, imageUrls);
         starter.putExtra(EXTRA_CURRENT_IMAGE, currentImageIdx);
-        context.startActivity(starter);
+        ActivityCompat.startActivity(context, starter, options.toBundle());
     }
 
     @BindView(R.id.pager) ViewPager mViewPager;
 
     private String[] mImageUrls;
+    private int mStartPosition;
+
+    private ImageFragment mCurrentFragment;
+    private boolean isReturning;
+
+    private final SharedElementCallback mSharedElementCallback = new SharedElementCallback() {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (isReturning) {
+                View target = mCurrentFragment.mPhotoView;
+                if (target == null) {
+                    names.clear();
+                    sharedElements.clear();
+                } else if (mStartPosition != mViewPager.getCurrentItem()) {
+                    // update transition if position changed
+                    names.clear();
+                    sharedElements.clear();
+                    String transitionName = ViewCompat.getTransitionName(target);
+                    names.add(transitionName);
+                    sharedElements.put(transitionName, target);
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_pager);
 
+        supportPostponeEnterTransition();
+        setEnterSharedElementCallback(mSharedElementCallback);
+
         ButterKnife.bind(this);
 
         mImageUrls = getIntent().getStringArrayExtra(EXTRA_IMAGE_URLS);
         int currentItem = getIntent().getIntExtra(EXTRA_CURRENT_IMAGE, 0);
+        mStartPosition = currentItem;
 
         mViewPager.setAdapter(new ImagePagerAdapter(getSupportFragmentManager()));
         mViewPager.addOnPageChangeListener(this);
@@ -79,6 +115,25 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
     protected void onDestroy() {
         super.onDestroy();
         mViewPager.removeOnPageChangeListener(this);
+    }
+
+    @Override
+    public void scrollToFinishActivity() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            supportFinishAfterTransition();
+        } else {
+            super.scrollToFinishActivity();
+        }
+    }
+
+    @Override
+    public void finishAfterTransition() {
+        isReturning = true;
+        Intent data = new Intent();
+        data.putExtra(ContentFragment.EXTRA_START_IMAGE_POSITION, mStartPosition);
+        data.putExtra(ContentFragment.EXTRA_CURRENT_IMAGE_POSITION, mViewPager.getCurrentItem());
+        setResult(RESULT_OK, data);
+        super.finishAfterTransition();
     }
 
     private void setActionBarTitleByIndex(int idx) {
@@ -117,7 +172,8 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
 
         @Override
         public Fragment getItem(int position) {
-            return ImageFragment.newInstance(mImageUrls[position]);
+            mCurrentFragment = ImageFragment.newInstance(mImageUrls[position]);
+            return mCurrentFragment;
         }
 
         @Override

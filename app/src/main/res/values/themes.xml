@@ -24,6 +24,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/main_background</item>
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
+        <item name="android:listDivider">@drawable/list_divider</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">

@@ -34,7 +34,7 @@
 
     <color name="reply_comment">#ffeeeeee</color>
 
-    <color name="divider">#aaaaaa</color>
+    <color name="divider">#1f000000</color>
 
     <color name="fb_content_length">#aaaaaa</color>
 

@@ -89,4 +89,6 @@
         <item name="preferenceInformationStyle">@style/AppTheme.Preference.Information</item>
         <item name="checkBoxPreferenceStyle">@style/AppTheme.Preference.CheckBoxPreference</item>
     </style>
+
+    <style name="AppTheme.Content" parent="AppTheme.NoActionBar" />
 </resources>

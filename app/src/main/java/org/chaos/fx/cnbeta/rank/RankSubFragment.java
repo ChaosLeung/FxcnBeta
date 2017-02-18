@@ -20,7 +20,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +89,13 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
             public void onItemClick(View v, int position) {
                 mPreClickPosition = position;
                 ArticleSummary summary = mArticleAdapter.get(position);
-                ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo());
+
+                View tv = v.findViewById(R.id.title);
+                ActivityOptionsCompat options =
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                                Pair.create(v, getString(R.string.transition_details_background)),
+                                Pair.create(tv, getString(R.string.transition_details_title)));
+                ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo(), options);
             }
         });
         mArticlesView.setAdapter(mArticleAdapter);

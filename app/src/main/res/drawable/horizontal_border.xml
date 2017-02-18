@@ -15,11 +15,9 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <style name="AppTheme.PreferenceFragmentList" parent="PreferenceFragmentList.Material" />
-
-    <style name="AppTheme.Content" parent="AppTheme.NoActionBar">
-        <item name="android:windowSharedElementEnterTransition">@transition/details_shared_enter</item>
-        <item name="android:windowSharedElementReturnTransition">@transition/details_shared_return</item>
-    </style>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/main_background" />
+    <stroke
+        android:width="1dp"
+        android:color="@color/divider" />
+</shape>

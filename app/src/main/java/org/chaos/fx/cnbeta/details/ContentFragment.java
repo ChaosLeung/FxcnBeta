@@ -266,6 +266,11 @@ public class ContentFragment extends BaseFragment implements ContentContract.Sub
         r.into(view, l);
     }
 
+    @Override
+    public void showTransition() {
+        getActivity().supportStartPostponedEnterTransition();
+    }
+
     public void onFragmentReenter(Intent data) {
         mTmpReenterState = data.getExtras();
     }

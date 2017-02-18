@@ -19,6 +19,8 @@ package org.chaos.fx.cnbeta.details;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -50,11 +52,11 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     private static final String KEY_SID = "sid";
     private static final String KEY_TOPIC_LOGO = "topic_logo";
 
-    public static void start(Context context, int sid, String topicLogoLink) {
+    public static void start(Context context, int sid, String topicLogoLink, ActivityOptionsCompat options) {
         Intent intent = new Intent(context, ContentActivity.class);
         intent.putExtra(KEY_SID, sid);
         intent.putExtra(KEY_TOPIC_LOGO, topicLogoLink);
-        context.startActivity(intent);
+        ActivityCompat.startActivity(context, intent, options.toBundle());
     }
 
     private int mSid;
@@ -75,6 +77,8 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         setContentView(R.layout.activity_content);
 
         ButterKnife.bind(this);
+
+        supportPostponeEnterTransition();
 
         mSid = getIntent().getIntExtra(KEY_SID, -1);
         mLogoLink = getIntent().getStringExtra(KEY_TOPIC_LOGO);
@@ -165,6 +169,11 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     @Override
     public void setupChildViews() {
         setupViewPager();
+    }
+
+    @Override
+    public void showTransition() {
+        supportPostponeEnterTransition();
     }
 
     @Override

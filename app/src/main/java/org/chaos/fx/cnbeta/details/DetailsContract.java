@@ -56,5 +56,7 @@ interface DetailsContract {
         String[] getAllImageUrls();
 
         int indexOfImage(String url);
+
+        void loadContentByHtml(String content);
     }
 }

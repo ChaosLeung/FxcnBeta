@@ -18,7 +18,6 @@ package org.chaos.fx.cnbeta.details;
 
 import org.chaos.fx.cnbeta.BasePresenter;
 import org.chaos.fx.cnbeta.BaseView;
-import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 
 /**
  * @author Chaos
@@ -32,18 +31,12 @@ interface ContentContract {
 
         void showLoadingError(boolean show);
 
-        void setupChildViews();
+        void setupDetailsFragment(String html);
 
-        void showTransition();
+        void setupCommentFragment(String sn);
     }
 
     interface Presenter extends BasePresenter<View> {
         void loadArticleHtml();
-
-        String getArticleToken();
-
-        String getHtmlBody();
-
-        WebCommentResult getWebComments();
     }
 }

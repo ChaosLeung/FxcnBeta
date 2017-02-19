@@ -20,10 +20,15 @@ import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
+import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
+import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.util.ModelUtil;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -39,16 +44,66 @@ import io.reactivex.schedulers.Schedulers;
 class CommentPresenter implements CommentContract.Presenter {
 
     private int mSid;
-    private CommentContract.View mView;
-
+    private String mSN;
     private String mToken;
+    private CommentContract.View mView;
 
     private CompositeDisposable mDisposables;
 
-    CommentPresenter(int sid, String token) {
+    private boolean isCommentEnable;
+
+    CommentPresenter(int sid) {
         mSid = sid;
-        mToken = token;
         mDisposables = new CompositeDisposable();
+    }
+
+    @Override
+    public void setSN(String sn) {
+        mSN = sn;
+    }
+
+    @Override
+    public void loadComments() {
+        mDisposables.add(CnBetaApiHelper.getCommentJson(mSid, mSN)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
+                    @Override
+                    public WebCommentResult apply(WebApi.Result<WebCommentResult> result) throws Exception {
+                        if (result.isSuccess()) {
+                            return result.result;
+                        } else {
+                            throw new RequestFailedException();
+                        }
+                    }
+                })
+                .flatMap(new Function<WebCommentResult, ObservableSource<WebCommentResult>>() {
+                    @Override
+                    public ObservableSource<WebCommentResult> apply(final WebCommentResult result) throws Exception {
+                        if (result.isOpen()) {
+                            return Observable.just(result);
+                        } else {
+                            return CnBetaApiHelper.closedComments(mSid)
+                                    .map(new Function<List<ClosedComment>, WebCommentResult>() {
+                                        @Override
+                                        public WebCommentResult apply(List<ClosedComment> comments) throws Exception {
+                                            result.setComments(ModelUtil.toWebCommentMap(comments));
+                                            return result;
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<WebCommentResult>() {
+                    @Override
+                    public void accept(WebCommentResult result) throws Exception {
+                        isCommentEnable = result.isOpen();
+                        mToken = result.getToken();
+                        List<Comment> comments = ModelUtil.toCommentList(result);
+                        mView.addComments(comments);
+                        mView.showNoCommentTipsIfNeed();
+                    }
+                }));
     }
 
     @Override
@@ -105,7 +160,7 @@ class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(WebApi.Result result) throws Exception {
                         c.setAgainst(c.getAgainst() + 1);
-                        mView.notifyItemChanged(c);
+                        mView.notifyCommentChanged(c);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -133,7 +188,7 @@ class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(WebApi.Result result) throws Exception {
                         c.setSupport(c.getSupport() + 1);
-                        mView.notifyItemChanged(c);
+                        mView.notifyCommentChanged(c);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -182,8 +237,13 @@ class CommentPresenter implements CommentContract.Presenter {
     }
 
     @Override
-    public void updateToken(String token) {
-        mToken = token;
+    public boolean isCommentEnable() {
+        return isCommentEnable;
+    }
+
+    @Override
+    public String getToken() {
+        return mToken;
     }
 
     @Override

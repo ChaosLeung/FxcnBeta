@@ -53,8 +53,14 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CommentDialog extends DialogFragment {
 
-    public static CommentDialog newInstance() {
-        return new CommentDialog();
+    private static final String KEY_TOKEN = "token";
+
+    public static CommentDialog newInstance(String token) {
+        Bundle args = new Bundle();
+        args.putString(KEY_TOKEN, token);
+        CommentDialog fragment = new CommentDialog();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @BindView(R.id.captcha) ImageView mCaptchaView;
@@ -118,7 +124,7 @@ public class CommentDialog extends DialogFragment {
     }
 
     private void flashCaptcha() {
-        mCaptchaDisposable = CnBetaApiHelper.getCaptchaDataUrl(((ContentActivity) getActivity()).getToken())
+        mCaptchaDisposable = CnBetaApiHelper.getCaptchaDataUrl(getArguments().getString(KEY_TOKEN))
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebCaptcha, String>() {
                     @Override

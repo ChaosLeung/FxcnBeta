@@ -46,4 +46,7 @@
 
     <color name="gallery_action_bar">#7F000000</color>
 
+    <color name="author_image">#FAFAFA</color>
+    <color name="holder_color">#FAFAFA</color>
+
 </resources>

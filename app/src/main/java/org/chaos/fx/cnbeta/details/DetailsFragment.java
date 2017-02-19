@@ -59,16 +59,14 @@ import butterknife.ButterKnife;
 public class DetailsFragment extends BaseFragment implements DetailsContract.View {
 
     protected static final String KEY_SID = "sid";
+    protected static final String KEY_TITLE = "title";
     protected static final String KEY_TOPIC_LOGO = "topic_logo";
-    protected static final String KEY_HTML_CONTENT = "html_content";
-    protected static final String KEY_COMMENT_COUNT = "comment_count";
 
-    public static DetailsFragment newInstance(int sid, String topicLogoLink, String htmlBody, int commentCount) {
+    public static DetailsFragment newInstance(int sid, String title, String topicLogoLink) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
+        args.putString(KEY_TITLE, title);
         args.putString(KEY_TOPIC_LOGO, topicLogoLink);
-        args.putString(KEY_HTML_CONTENT, htmlBody);
-        args.putInt(KEY_COMMENT_COUNT, commentCount);
         DetailsFragment fragment = new DetailsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -119,7 +117,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new DetailsPresenter(new Bundle(getArguments()));
+        mPresenter = new DetailsPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOPIC_LOGO));
     }
 
     @Override
@@ -132,7 +130,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_content, container, false);
+        return inflater.inflate(R.layout.fragment_details, container, false);
     }
 
     @Override
@@ -144,6 +142,9 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         getActivity().setExitSharedElementCallback(mSharedElementCallback);// for ImagePagerActivity
 
         mSid = getArguments().getInt(KEY_SID);
+        mTitleView.setText(getArguments().getString(KEY_TITLE));
+
+        getActivity().supportStartPostponedEnterTransition();
 
         mCommentCountView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,7 +165,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (!hidden) {
-            setActionBarTitle(R.string.content);
+            setActionBarTitle(R.string.details);
         }
     }
 
@@ -198,10 +199,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
                 ((BitmapDrawable) authorImg.getDrawable()).getBitmap(), toTimeline);
     }
 
-    public void updateCommentCount(int count) {
-        if (mCommentCountView != null && isVisible()) {
-            mCommentCountView.setText(String.format(getString(R.string.content_comment_count), count));
-        }
+    public void handleHtmlContent(String html) {
+        mPresenter.loadContentByHtml(html);
     }
 
     @Override

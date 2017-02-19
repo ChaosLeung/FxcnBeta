@@ -36,8 +36,16 @@
         layout="@layout/layout_loading"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <include
-        layout="@layout/layout_error"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    <!-- Use a clickable layout to disable swiping with finger in ViewPager-->
+    <FrameLayout
+        android:id="@+id/error_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true">
+
+        <include
+            layout="@layout/layout_error"
+            android:visibility="visible" />
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -53,10 +53,14 @@ interface CommentContract {
 
         void hideProgress();
 
-        void notifyItemChanged(Comment c);
+        void notifyCommentChanged(Comment c);
     }
 
     interface Presenter extends BasePresenter<View> {
+        void setSN(String sn);
+
+        void loadComments();
+
         void refreshComments(int page);
 
         void against(Comment c);
@@ -69,6 +73,8 @@ interface CommentContract {
 
         void publishComment(String content, String captcha, int pid);
 
-        void updateToken(String token);
+        boolean isCommentEnable();
+
+        String getToken();
     }
 }

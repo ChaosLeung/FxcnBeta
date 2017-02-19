@@ -67,7 +67,7 @@
     <string name="nav_help">帮助 &amp; 反馈</string>
     <string name="nav_settings">设置</string>
 
-    <string name="content">文章正文</string>
+    <string name="details">文章正文</string>
     <string name="comment">评论</string>
 
     <string name="content_comment_count">%d 条评论</string>

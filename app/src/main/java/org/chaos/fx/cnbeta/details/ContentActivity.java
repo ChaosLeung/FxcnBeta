@@ -50,21 +50,25 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     private static final String TAG = "ContentActivity";
 
     private static final String KEY_SID = "sid";
+    private static final String KEY_TITLE = "title";
     private static final String KEY_TOPIC_LOGO = "topic_logo";
 
-    public static void start(Context context, int sid, String topicLogoLink, ActivityOptionsCompat options) {
+    public static void start(Context context, int sid, String title,
+                             String topicLogoLink, ActivityOptionsCompat options) {
         Intent intent = new Intent(context, ContentActivity.class);
         intent.putExtra(KEY_SID, sid);
+        intent.putExtra(KEY_TITLE, title);
         intent.putExtra(KEY_TOPIC_LOGO, topicLogoLink);
         ActivityCompat.startActivity(context, intent, options.toBundle());
     }
 
     private int mSid;
+    private String mTitle;
     private String mLogoLink;
 
     @BindView(R.id.pager) ViewPager mViewPager;
 
-    @BindView(R.id.error_layout) View mErrorLayout;
+    @BindView(R.id.error_container) View mErrorLayout;
     @BindView(R.id.loading_view) ProgressBar mLoadingView;
 
     private SectionsPagerAdapter mPagerAdapter;
@@ -81,6 +85,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         supportPostponeEnterTransition();
 
         mSid = getIntent().getIntExtra(KEY_SID, -1);
+        mTitle = getIntent().getStringExtra(KEY_TITLE);
         mLogoLink = getIntent().getStringExtra(KEY_TOPIC_LOGO);
 
         if (mSid != -1) {
@@ -93,6 +98,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         }
 
         setupActionBar();
+        setupViewPager();
 
         mPresenter = new ContentPresenter(mSid);
         mPresenter.subscribe(this);
@@ -110,7 +116,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            setTitle(R.string.content);
+            setTitle(R.string.details);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -144,16 +150,12 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void onCommentUpdated(int count) {
-        mPagerAdapter.detailsFragment.updateCommentCount(count);
+        mPagerAdapter.detailsFragment.setCommentCount(count);
     }
 
     @OnClick(R.id.error_button)
     public void requestArticleHtml() {
         mPresenter.loadArticleHtml();
-    }
-
-    String getToken() {
-        return mPresenter.getArticleToken();
     }
 
     @Override
@@ -167,13 +169,13 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     }
 
     @Override
-    public void setupChildViews() {
-        setupViewPager();
+    public void setupDetailsFragment(String html) {
+        mPagerAdapter.detailsFragment.handleHtmlContent(html);
     }
 
     @Override
-    public void showTransition() {
-        supportPostponeEnterTransition();
+    public void setupCommentFragment(String sn) {
+        mPagerAdapter.commentFragment.handleSN(sn);
     }
 
     @Override
@@ -184,15 +186,14 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] contentTitles = new String[]{getString(R.string.content), getString(R.string.comment)};
+        private final String[] contentTitles = new String[]{getString(R.string.details), getString(R.string.comment)};
         DetailsFragment detailsFragment;
         CommentFragment commentFragment;
 
         private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            commentFragment = CommentFragment.newInstance(mSid, mPresenter.getWebComments());
-            detailsFragment = DetailsFragment.newInstance(mSid, mLogoLink, mPresenter.getHtmlBody(),
-                    mPresenter.getWebComments().getCommentCount());
+            commentFragment = CommentFragment.newInstance(mSid);
+            detailsFragment = DetailsFragment.newInstance(mSid, mTitle, mLogoLink);
         }
 
         @Override

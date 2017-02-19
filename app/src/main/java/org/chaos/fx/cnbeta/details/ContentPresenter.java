@@ -17,16 +17,9 @@
 package org.chaos.fx.cnbeta.details;
 
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.WebApi;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
-import org.chaos.fx.cnbeta.net.model.ClosedComment;
-import org.chaos.fx.cnbeta.net.model.WebCommentResult;
-import org.chaos.fx.cnbeta.util.ModelUtil;
 
 import java.io.IOException;
-import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -46,8 +39,6 @@ class ContentPresenter implements ContentContract.Presenter {
     private Disposable mDisposable;
 
     private int mSid;
-    private String mHtmlBody;
-    private WebCommentResult mWebCommentResult;
 
     ContentPresenter(int sid) {
         mSid = sid;
@@ -64,79 +55,29 @@ class ContentPresenter implements ContentContract.Presenter {
                     @Override
                     public String apply(ResponseBody responseBody) {
                         try {
-                            mHtmlBody = responseBody.string();
-                            return CnBetaApiHelper.getSNFromArticleBody(mHtmlBody);
+                            return responseBody.string();
                         } catch (IOException e) {
                             throw Exceptions.propagate(e);
                         }
                     }
                 })
-                .flatMap(new Function<String, Observable<WebApi.Result<WebCommentResult>>>() {
-                    @Override
-                    public Observable<WebApi.Result<WebCommentResult>> apply(String sn) {
-                        return CnBetaApiHelper.getCommentJson(mSid, sn);
-                    }
-                })
-                .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
-                    @Override
-                    public WebCommentResult apply(WebApi.Result<WebCommentResult> result) {
-                        if (result.isSuccess()) {
-                            return result.result;
-                        } else {
-                            throw new RequestFailedException();
-                        }
-                    }
-                })
-                .flatMap(new Function<WebCommentResult, Observable<WebCommentResult>>() {
-                    @Override
-                    public Observable<WebCommentResult> apply(final WebCommentResult result) throws Exception {
-                        if (result.isOpen()) {
-                            return Observable.just(result);
-                        } else {
-                            return CnBetaApiHelper.closedComments(mSid)
-                                    .map(new Function<List<ClosedComment>, WebCommentResult>() {
-                                        @Override
-                                        public WebCommentResult apply(List<ClosedComment> comments) throws Exception {
-                                            result.setComments(ModelUtil.toWebCommentMap(comments));
-                                            return result;
-                                        }
-                                    });
-                        }
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .retry(3)
-                .subscribe(new Consumer<WebCommentResult>() {
+                .subscribe(new Consumer<String>() {
                     @Override
-                    public void accept(WebCommentResult result) throws Exception {
-                        mWebCommentResult = result;
-
+                    public void accept(String result) throws Exception {
+                        mView.setupDetailsFragment(result);
+                        String sn = CnBetaApiHelper.getSNFromArticleBody(result);
+                        mView.setupCommentFragment(sn);
                         mView.showLoadingView(false);
-                        mView.setupChildViews();
+                        mView.showLoadingError(false);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
                         mView.showLoadingView(false);
                         mView.showLoadingError(true);
-                        mView.showTransition();
                     }
                 });
-    }
-
-    @Override
-    public String getArticleToken() {
-        return mWebCommentResult.getToken();
-    }
-
-    @Override
-    public String getHtmlBody() {
-        return mHtmlBody;
-    }
-
-    @Override
-    public WebCommentResult getWebComments() {
-        return mWebCommentResult;
     }
 
     @Override

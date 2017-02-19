@@ -34,11 +34,8 @@ import android.widget.TextView;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.model.Comment;
-import org.chaos.fx.cnbeta.net.model.WebCommentResult;
-import org.chaos.fx.cnbeta.util.ModelUtil;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -52,25 +49,16 @@ public class CommentFragment extends BaseFragment implements
         SwipeLinearRecyclerView.OnRefreshListener, CommentContract.View {
 
     private static final String KEY_SID = "sid";
-    private static final String KEY_COMMENT_CLOSED = "comment_closed";
-    private static final String KEY_COMMENTS = "comments";
-    private static final String KEY_TOKEN = "token";
     private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
-    public static CommentFragment newInstance(int sid, WebCommentResult result) {
+    public static CommentFragment newInstance(int sid) {
         Bundle args = new Bundle();
         args.putInt(KEY_SID, sid);
-        args.putString(KEY_TOKEN, result.getToken());
-        args.putBoolean(KEY_COMMENT_CLOSED, !result.isOpen());
-        args.putParcelableArrayList(KEY_COMMENTS, ModelUtil.toCommentList(result));
         CommentFragment fragment = new CommentFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    private boolean isCommentClosed;
-
-    private ArrayList<Comment> mComments;
     private OnCommentUpdateListener mOnCommentUpdateListener;
 
     @BindView(R.id.no_content) TextView mNoContentTipView;
@@ -83,7 +71,7 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOKEN));
+        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID));
     }
 
     @Override
@@ -104,18 +92,13 @@ public class CommentFragment extends BaseFragment implements
 
         ButterKnife.bind(this, view);
 
-        isCommentClosed = getArguments().getBoolean(KEY_COMMENT_CLOSED);
-        mComments = getArguments().getParcelableArrayList(KEY_COMMENTS);
-
-        setHasOptionsMenu(!isCommentClosed);
-
         mCommentAdapter = new CommentAdapter(getActivity(), mCommentView.getRecyclerView());
         mCommentAdapter.addFooterView(
                 getActivity().getLayoutInflater().inflate(R.layout.layout_loading, mCommentView, false));
         mCommentAdapter.setOnItemChildClickListener(new CommentAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(View v, int position) {
-                if (isCommentClosed) {
+                if (!mPresenter.isCommentEnable()) {
                     return;
                 }
 
@@ -133,7 +116,6 @@ public class CommentFragment extends BaseFragment implements
                 }
             }
         });
-        mCommentAdapter.addAll(mComments);
         mCommentView.setAdapter(mCommentAdapter);
         mCommentView.setOnRefreshListener(this);
         showNoCommentTipsIfNeed();
@@ -148,6 +130,11 @@ public class CommentFragment extends BaseFragment implements
         mCommentAdapter.setOnItemChildClickListener(null);
     }
 
+    public void handleSN(String sn) {
+        mPresenter.setSN(sn);
+        mPresenter.loadComments();
+    }
+
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (!hidden) {
@@ -157,14 +144,14 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void onRefresh() {
-        int size = mComments.size();
+        int size = mCommentAdapter.listSize();
         int page = (size / ONE_PAGE_COMMENT_COUNT) + 1;
         mPresenter.refreshComments(page);
     }
 
     @Override
     public void showCommentDialog(final int pid) {
-        final CommentDialog commentDialog = new CommentDialog();
+        final CommentDialog commentDialog = CommentDialog.newInstance(mPresenter.getToken());
         commentDialog.setPositiveListener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -196,9 +183,6 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void showNoCommentTipsIfNeed() {
-        if (isCommentClosed) {
-            mNoContentTipView.setText(R.string.comment_closed);
-        }
         mNoContentTipView.setVisibility(mCommentAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
@@ -232,11 +216,17 @@ public class CommentFragment extends BaseFragment implements
                 mCommentAdapter.add(0, comment);
             }
         }
+
         if (mCommentAdapter.listSize() != previousSize) {
             mCommentView.getRecyclerView().scrollToPosition(0);
             mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
-        } else {
+        } else if (previousSize != 0) {
             showNoMoreComments();
+        }
+
+        if (previousSize == 0) {
+            setHasOptionsMenu(mPresenter.isCommentEnable());
+            getActivity().supportInvalidateOptionsMenu();
         }
     }
 
@@ -266,7 +256,7 @@ public class CommentFragment extends BaseFragment implements
     }
 
     @Override
-    public void notifyItemChanged(Comment c) {
+    public void notifyCommentChanged(Comment c) {
         mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
     }
 

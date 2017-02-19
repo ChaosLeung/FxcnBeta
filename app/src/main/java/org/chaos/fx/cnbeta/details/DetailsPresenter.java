@@ -18,7 +18,6 @@ package org.chaos.fx.cnbeta.details;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.chaos.fx.cnbeta.net.model.NewsContent;
@@ -41,11 +40,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_COMMENT_COUNT;
-import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_HTML_CONTENT;
-import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_SID;
-import static org.chaos.fx.cnbeta.details.DetailsFragment.KEY_TOPIC_LOGO;
-
 /**
  * @author Chaos
  *         10/26/16
@@ -55,8 +49,6 @@ class DetailsPresenter implements DetailsContract.Presenter {
 
     private int mSid;
     private String mLogoLink;
-    private String mHtmlContent;
-    private int mCommentCount;
 
     private NewsContent mNewsContent;
     private DetailsContract.View mView;
@@ -65,11 +57,9 @@ class DetailsPresenter implements DetailsContract.Presenter {
 
     private List<String> mImageUrls = new ArrayList<>();
 
-    DetailsPresenter(Bundle arguments) {
-        mSid = arguments.getInt(KEY_SID);
-        mLogoLink = arguments.getString(KEY_TOPIC_LOGO);
-        mHtmlContent = arguments.getString(KEY_HTML_CONTENT);
-        mCommentCount = arguments.getInt(KEY_COMMENT_COUNT);
+    DetailsPresenter(int sid, String logo) {
+        mSid = sid;
+        mLogoLink = logo;
     }
 
     @Override
@@ -93,7 +83,6 @@ class DetailsPresenter implements DetailsContract.Presenter {
     @Override
     public void subscribe(DetailsContract.View view) {
         mView = view;
-        loadContent();
     }
 
     @Override
@@ -102,15 +91,14 @@ class DetailsPresenter implements DetailsContract.Presenter {
         mContentDisposable.dispose();
     }
 
-    private void loadContent() {
-        mContentDisposable = Observable.just(mHtmlContent)
+    @Override
+    public void loadContentByHtml(String html) {
+        mContentDisposable = Observable.just(html)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<String, NewsContent>() {
                     @Override
                     public NewsContent apply(String html) {
-                        NewsContent newsContent = parseHtmlContent(html);
-                        newsContent.setCommentCount(mCommentCount);
-                        return newsContent;
+                        return parseHtmlContent(html);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -119,7 +107,6 @@ class DetailsPresenter implements DetailsContract.Presenter {
                     public void accept(NewsContent newsContent) {
                         mNewsContent = newsContent;
                         parseNewsContent(newsContent);
-                        mView.showTransition();
                     }
                 });
     }
@@ -170,7 +157,7 @@ class DetailsPresenter implements DetailsContract.Presenter {
         mView.setTitle(newsContent.getTitle());
         mView.setAuthor(newsContent.getAuthor());
         mView.setTimeString(newsContent.getTime());
-        mView.setCommentCount(newsContent.getCommentCount());
+//        mView.setCommentCount(newsContent.getCommentCount()); // WebApi 转换的 NewsContent 的 comment count 永远是 0
 
         mView.setSource(newsContent.getSource());
 

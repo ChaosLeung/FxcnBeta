@@ -108,7 +108,8 @@ public class ArticlesFragment extends BaseFragment
                         ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
                                 Pair.create(v, getString(R.string.transition_details_background)),
                                 Pair.create(tv, getString(R.string.transition_details_title)));
-                ContentActivity.start(getActivity(), summary.getSid(), summary.getTopicLogo(), options);
+                ContentActivity.start(getActivity(), summary.getSid(), summary.getTitle(),
+                        summary.getTopicLogo(), options);
             }
         });
         mArticleAdapter.addFooterView(

@@ -115,12 +115,6 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     };
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPresenter = new DetailsPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOPIC_LOGO));
-    }
-
-    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         setHasOptionsMenu(true);
@@ -153,6 +147,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             }
         });
 
+        mPresenter = new DetailsPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOPIC_LOGO));
         mPresenter.subscribe(this);
     }
 

@@ -37,4 +37,6 @@
 
     <dimen name="comment_ic_padding">5dp</dimen>
 
+    <dimen name="tab_layout_height">48dp</dimen>
+
 </resources>

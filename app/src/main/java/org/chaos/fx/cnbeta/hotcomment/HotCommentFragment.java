@@ -54,18 +54,17 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     private HotCommentContract.Presenter mPresenter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setActionBarTitle(R.string.nav_hot_comments);
-        mPresenter = new HotCommentPresenter();
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
-        ButterKnife.bind(this, rootView);
+        return inflater.inflate(R.layout.fragment_hot_comment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
 
         mHotCommentAdapter = new HotCommentAdapter(getActivity(), mHotCommentView.getRecyclerView());
         mHotCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
@@ -85,12 +84,8 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         mHotCommentView.setAdapter(mHotCommentAdapter);
 
         mHotCommentView.setOnRefreshListener(this);
-        return rootView;
-    }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        mPresenter = new HotCommentPresenter();
         mPresenter.subscribe(this);
     }
 

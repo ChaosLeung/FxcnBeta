@@ -69,12 +69,6 @@ public class CommentFragment extends BaseFragment implements
     private CommentContract.Presenter mPresenter;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID));
-    }
-
-    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mOnCommentUpdateListener = (OnCommentUpdateListener) activity;
@@ -120,6 +114,7 @@ public class CommentFragment extends BaseFragment implements
         mCommentView.setOnRefreshListener(this);
         showNoCommentTipsIfNeed();
 
+        mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID));
         mPresenter.subscribe(this);
     }
 

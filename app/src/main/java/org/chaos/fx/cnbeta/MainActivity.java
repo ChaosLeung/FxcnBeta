@@ -16,17 +16,20 @@
 
 package org.chaos.fx.cnbeta;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.IdRes;
-import android.support.annotation.StringDef;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -34,64 +37,113 @@ import com.roughike.bottombar.OnTabSelectListener;
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
-import org.chaos.fx.cnbeta.rank.RanksFragment;
 import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
+import org.chaos.fx.cnbeta.rank.RanksFragment;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    private BottomBar mBottomBar;
+    private static final int DURATION_EXPAND_TAB_LAYOUT = 300;
+    private static final int DURATION_COLLAPSE_TAB_LAYOUT = 200;
 
-    private List<OnActionBarDoubleClickListener> mActionBarDoubleClickListeners = new ArrayList<>();
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.tabs) TabLayout mTabLayout;
+    @BindView(R.id.bottom_bar) BottomBar mBottomBar;
+    @BindView(R.id.pager) ViewPager mViewPager;
+
+    private String[] mPageTitles;
+
+    private ValueAnimator mExpandAnimator;
+    private ValueAnimator mCollapseAnimator;
+
+    private ValueAnimator.AnimatorUpdateListener mTabLayoutAnimatorListener = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            float alpha = 1;
+            if (animation == mExpandAnimator) {
+                alpha = animation.getAnimatedFraction();
+            } else if (animation == mCollapseAnimator) {
+                alpha = 1 - animation.getAnimatedFraction();
+            }
+            mTabLayout.setAlpha(alpha);
+            mTabLayout.getLayoutParams().height = (int) animation.getAnimatedValue();
+            mTabLayout.requestLayout();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_content);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setOnClickListener(new View.OnClickListener() {
+        ButterKnife.bind(this);
 
-            private long preBarClickTime;
+        setSupportActionBar(mToolbar);
 
+        mPageTitles = new String[]{getString(R.string.nav_home), getString(R.string.nav_rank),
+                getString(R.string.nav_hot_articles), getString(R.string.nav_hot_comments)};
+
+        setTitle(mPageTitles[0]);
+        mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
+        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
-            public void onClick(View v) {
-                long currentTime = SystemClock.elapsedRealtime();
-                if (currentTime - preBarClickTime > 750) {
-                    preBarClickTime = currentTime;
-                } else {
-                    for (OnActionBarDoubleClickListener listener : mActionBarDoubleClickListeners) {
-                        listener.onActionBarDoubleClick();
-                    }
+            public void onPageSelected(int position) {
+                if (position == 1) {// RankFragment
+                    expandTabLayout();
+                } else if (mTabLayout.getHeight() != 0) {
+                    collapseTabLayout();
                 }
+
+                mBottomBar.selectTabAtPosition(position, true);
+                setTitle(mPageTitles[position]);
             }
         });
-
-        mBottomBar = (BottomBar) findViewById(R.id.bottom_bar);
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-                switch (tabId) {
-                    case R.id.nav_home:
-                        switchPage(PAGE_HOME);
-                        break;
-                    case R.id.nav_rank:
-                        switchPage(PAGE_RANK);
-                        break;
-                    case R.id.nav_hot_articles:
-                        switchPage(PAGE_HOT_ARTICLES);
-                        break;
-                    case R.id.nav_hot_comments:
-                        switchPage(PAGE_HOT_COMMENT);
-                        break;
-                }
+                mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId));
             }
         });
+    }
+
+    private void expandTabLayout() {
+        if (mCollapseAnimator != null && mCollapseAnimator.isRunning()) {
+            mCollapseAnimator.cancel();
+        }
+
+        int prevHeight = mTabLayout.getHeight();
+        int targetHeight = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+
+        if (mExpandAnimator == null) {
+            mExpandAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
+            mExpandAnimator.setInterpolator(new DecelerateInterpolator());
+            mExpandAnimator.setDuration(DURATION_EXPAND_TAB_LAYOUT);
+            mExpandAnimator.addUpdateListener(mTabLayoutAnimatorListener);
+        } else {
+            mExpandAnimator.setIntValues(prevHeight, targetHeight);
+        }
+        mExpandAnimator.start();
+    }
+
+    private void collapseTabLayout() {
+        if (mExpandAnimator != null && mExpandAnimator.isRunning()) {
+            mExpandAnimator.cancel();
+        }
+
+        int prevHeight = mTabLayout.getHeight();
+        int targetHeight = 0;
+        if (mCollapseAnimator == null) {
+            mCollapseAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
+            mCollapseAnimator.setInterpolator(new DecelerateInterpolator());
+            mCollapseAnimator.setDuration(DURATION_COLLAPSE_TAB_LAYOUT);
+            mCollapseAnimator.addUpdateListener(mTabLayoutAnimatorListener);
+        } else {
+            mCollapseAnimator.setIntValues(prevHeight, targetHeight);
+        }
+        mCollapseAnimator.start();
     }
 
     @Override
@@ -110,50 +162,35 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @StringDef({PAGE_HOME, PAGE_RANK, PAGE_HOT_ARTICLES, PAGE_HOT_COMMENT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Page {
-    }
+    private class PagerAdapter extends FragmentPagerAdapter {
 
-    private static final String PAGE_HOME = "HomeFragment";
-    private static final String PAGE_RANK = "RankFragment";
-    private static final String PAGE_HOT_ARTICLES = "HotArticlesFragment";
-    private static final String PAGE_HOT_COMMENT = "HotCommentFragment";
-
-    private String mCurrentPageTag;
-
-    private void switchPage(@Page String pageTag) {
-        if (pageTag.equals(mCurrentPageTag)) {
-            return;
+        private PagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        mCurrentPageTag = pageTag;
-        Fragment fragment = null;
-        if (PAGE_HOME.equals(pageTag)) {
-            fragment = ArticlesFragment.newInstance("null");
-        } else if (PAGE_HOT_ARTICLES.equals(pageTag)) {
-            fragment = Top10Fragment.newInstance();
-        } else if (PAGE_HOT_COMMENT.equals(pageTag)) {
-            fragment = HotCommentFragment.newInstance();
-        } else if (PAGE_RANK.equals(pageTag)) {
-            fragment = RanksFragment.newInstance();
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return ArticlesFragment.newInstance("null");
+                case 1:
+                    return RanksFragment.newInstance();
+                case 2:
+                    return Top10Fragment.newInstance();
+                case 3:
+                    return HotCommentFragment.newInstance();
+            }
+            return new Fragment();
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
-    }
 
-    public interface OnActionBarDoubleClickListener {
-        void onActionBarDoubleClick();
-    }
-
-    public void addOnActionBarDoubleClickListener(OnActionBarDoubleClickListener listener) {
-        if (!mActionBarDoubleClickListeners.contains(listener)) {
-            mActionBarDoubleClickListeners.add(listener);
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mPageTitles[position];
         }
-    }
 
-    public void removeOnActionBarDoubleClickListener(OnActionBarDoubleClickListener listener) {
-        mActionBarDoubleClickListeners.remove(listener);
+        @Override
+        public int getCount() {
+            return mPageTitles.length;
+        }
     }
 }

@@ -22,6 +22,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,31 +46,29 @@ import butterknife.ButterKnife;
 public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         SwipeLinearRecyclerView.OnRefreshListener {
 
-    @BindView(R.id.swipe_recycler_view)
-    SwipeLinearRecyclerView mTop10View;
+    public static Top10Fragment newInstance() {
+        return new Top10Fragment();
+    }
+
+    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mTop10View;
 
     private Top10Adapter mTop10Adapter;
 
     private Top10Presenter mPresenter;
 
-    public static Top10Fragment newInstance() {
-        return new Top10Fragment();
-    }
-
     private int mPreClickPosition;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPresenter = new Top10Presenter();
-        setActionBarTitle(R.string.nav_hot_articles);
-    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
-        ButterKnife.bind(this, rootView);
+        return inflater.inflate(R.layout.fragment_top10, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
 
         mTop10Adapter = new Top10Adapter(getActivity(), mTop10View.getRecyclerView());
         mTop10Adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
@@ -90,12 +89,8 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         mTop10View.setAdapter(mTop10Adapter);
 
         mTop10View.setOnRefreshListener(this);
-        return rootView;
-    }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        mPresenter = new Top10Presenter();
         mPresenter.subscribe(this);
     }
 

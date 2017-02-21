@@ -32,11 +32,23 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- BottomBar top shadow -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/top_shadow" />
+        </FrameLayout>
 
         <com.roughike.bottombar.BottomBar
             android:id="@+id/bottom_bar"

@@ -22,10 +22,9 @@
             android:padding="24dp"
             android:scrollbars="none">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/release_note"
@@ -34,5 +33,7 @@
             android:lineSpacingMultiplier="1.2"
             android:textColor="@color/card_text"
             android:textSize="@dimen/release_note_text" />
-    </LinearLayout>
+
+        <include layout="@layout/layout_loading" />
+    </FrameLayout>
 </ScrollView>

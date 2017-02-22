@@ -16,14 +16,19 @@
 
 package org.chaos.fx.cnbeta.preferences;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.preference.PreferenceDialogFragmentCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
@@ -33,12 +38,16 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.InputStream;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * @author Chaos
  *         20/02/2017
  */
 
-public class ReleaseNoteDialogFragment extends PreferenceDialogFragmentCompat {
+public class ReleaseNoteDialogFragment extends PreferenceDialogFragmentCompat
+        implements LoaderManager.LoaderCallbacks<CharSequence> {
 
     public static ReleaseNoteDialogFragment newInstance(String key) {
         Bundle args = new Bundle();
@@ -48,14 +57,17 @@ public class ReleaseNoteDialogFragment extends PreferenceDialogFragmentCompat {
         return fragment;
     }
 
-    private TextView mTextView;
+    @BindView(R.id.release_note) TextView mTextView;
+    @BindView(R.id.loading_view) ProgressBar mProgressBar;
 
     @Override
     protected void onBindDialogView(View view) {
         super.onBindDialogView(view);
 
-        mTextView = (TextView) view.findViewById(R.id.release_note);
-        mTextView.setText(ReleaseNoteParser.parse(readReleaseNote()));
+        ButterKnife.bind(this, view);
+
+        mProgressBar.setVisibility(View.VISIBLE);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -63,20 +75,58 @@ public class ReleaseNoteDialogFragment extends PreferenceDialogFragmentCompat {
         // no-op
     }
 
-    private String readReleaseNote() {
-        try {
-            InputStream is = getContext().getAssets().open("release_note.html");
-            int size = is.available();
+    @Override
+    public Loader<CharSequence> onCreateLoader(int id, Bundle args) {
+        return new ReleaseNoteLoader(getContext());
+    }
 
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
+    @Override
+    public void onLoadFinished(Loader<CharSequence> loader, CharSequence data) {
+        mTextView.setText(data);
+        mProgressBar.setVisibility(View.GONE);
+    }
 
-            return new String(buffer);
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    public void onLoaderReset(Loader<CharSequence> loader) {
+        // no-op
+    }
+
+    private static class ReleaseNoteLoader extends AsyncTaskLoader<CharSequence> {
+
+        private ReleaseNoteLoader(Context context) {
+            super(context);
         }
-        return "";
+
+        @Override
+        protected void onStopLoading() {
+            cancelLoad();
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public CharSequence loadInBackground() {
+            return ReleaseNoteParser.parse(readReleaseNote());
+        }
+
+        private String readReleaseNote() {
+            try {
+                InputStream is = getContext().getAssets().open("release_note.html");
+                int size = is.available();
+
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+
+                return new String(buffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
     }
 }
 

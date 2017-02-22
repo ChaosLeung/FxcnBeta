@@ -46,7 +46,6 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         setPreferencesFromResource(R.xml.pref_general, rootKey);
 
         findPreference("version_name").setSummary(BuildConfig.VERSION_NAME);
-        findPreference("author_email").setSummary("lgf42031@gmail.com");
         findPreference(KEY_HELP_AND_FEEDBACK).setOnPreferenceClickListener(this);
     }
 

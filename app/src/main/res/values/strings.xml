@@ -87,6 +87,7 @@
     <string name="about">关于</string>
     <string name="version_name">版本号</string>
     <string name="update_log">更新日志</string>
+    <string name="license">开源许可</string>
     <string name="info_default">Unknown</string>
     <string name="other">其他</string>
 

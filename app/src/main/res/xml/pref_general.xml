@@ -37,6 +37,10 @@
             android:title="@string/nav_help" />
 
         <org.chaos.fx.cnbeta.preferences.DialogPreference
+            android:key="license"
+            android:title="@string/license" />
+
+        <org.chaos.fx.cnbeta.preferences.DialogPreference
             android:dialogIcon="@null"
             android:dialogLayout="@layout/layout_release_note"
             android:dialogMessage="@null"

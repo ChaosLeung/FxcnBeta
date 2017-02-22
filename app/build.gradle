@@ -89,5 +89,7 @@ dependencies {
 
     compile 'me.zhanghai.android.materialprogressbar:library:1.3.0'
 
+    compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
+
     compile project(':ThirdPartyLib')
 }

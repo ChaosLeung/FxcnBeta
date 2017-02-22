@@ -40,6 +40,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
 
     private static final String KEY_HELP_AND_FEEDBACK = "help_and_feedback";
     private static final String KEY_RELEASE_NOTE = "release_note";
+    private static final String KEY_LICENSE = "license";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -71,6 +72,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
             final DialogFragment f;
             if (KEY_RELEASE_NOTE.equals(key)) {
                 f = ReleaseNoteDialogFragment.newInstance(key);
+            } else if (KEY_LICENSE.equals(key)) {
+                f = LicenseDialogFragmentProvider.newFragment(getActivity());
             } else {
                 throw new IllegalArgumentException("Tried to display dialog for unknown preference key.");
             }

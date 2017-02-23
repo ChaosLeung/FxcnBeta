@@ -16,7 +16,7 @@
 
 package org.chaos.fx.cnbeta.rank;
 
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -48,9 +48,9 @@ class RankSubPresenter implements RankSubContract.Presenter {
     public void loadArticles() {
         mDisposable = CnBetaApiHelper.todayRank(mType)
                 .subscribeOn(Schedulers.io())
-                .map(new Function<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
+                .map(new Function<MobileApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
-                    public List<ArticleSummary> apply(CnBetaApi.Result<List<ArticleSummary>> listResult) throws Exception {
+                    public List<ArticleSummary> apply(MobileApi.Result<List<ArticleSummary>> listResult) throws Exception {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }

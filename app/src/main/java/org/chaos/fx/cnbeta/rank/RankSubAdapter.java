@@ -21,7 +21,7 @@ import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
@@ -40,11 +40,11 @@ class RankSubAdapter extends BaseArticleAdapter {
         super.onBindHolderInternal(holder, position);
         ArticleSummary summary = get(position);
         String subText = "";
-        if (CnBetaApi.TYPE_COUNTER.equals(mType)) {
+        if (MobileApi.TYPE_COUNTER.equals(mType)) {
             subText = TimeStringHelper.getTimeString(summary.getPublishTime());
-        } else if (CnBetaApi.TYPE_DIG.equals(mType)) {
+        } else if (MobileApi.TYPE_DIG.equals(mType)) {
             subText = getSubText(R.string.read_count, summary.getCounter());
-        } else if (CnBetaApi.TYPE_COMMENTS.equals(mType)) {
+        } else if (MobileApi.TYPE_COMMENTS.equals(mType)) {
             subText = getSubText(R.string.comment_count, summary.getComment());
         }
         holder.summary.setText(subText);

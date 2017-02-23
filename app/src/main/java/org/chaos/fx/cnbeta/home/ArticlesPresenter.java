@@ -16,7 +16,7 @@
 
 package org.chaos.fx.cnbeta.home;
 
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -82,7 +82,7 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
         if (!mView.isLoading()) {
             mView.setRefreshing(true);
 
-            Observable<CnBetaApi.Result<List<ArticleSummary>>> observable;
+            Observable<MobileApi.Result<List<ArticleSummary>>> observable;
 
             if (mView.isEmpty()) {
                 observable = CnBetaApiHelper.topicArticles(mTopicId);
@@ -103,13 +103,13 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
         }
     }
 
-    private void doRequest(Observable<CnBetaApi.Result<List<ArticleSummary>>> observable) {
+    private void doRequest(Observable<MobileApi.Result<List<ArticleSummary>>> observable) {
         mDisposables.clear();
 
         mDisposables.add(observable
-                .map(new Function<CnBetaApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
+                .map(new Function<MobileApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
                     @Override
-                    public List<ArticleSummary> apply(CnBetaApi.Result<List<ArticleSummary>> listResult) {
+                    public List<ArticleSummary> apply(MobileApi.Result<List<ArticleSummary>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }

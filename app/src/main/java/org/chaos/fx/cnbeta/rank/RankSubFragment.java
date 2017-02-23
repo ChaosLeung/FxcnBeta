@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.details.ContentActivity;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -48,7 +49,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     private static final String KEY_TYPE = "type";
 
     /**
-     * {@code type} 应为 {@link org.chaos.fx.cnbeta.net.CnBetaApi.RankType}
+     * {@code type} 应为 {@link MobileApi.RankType}
      * 然而直接加了这 annotation AS 语法提示飘红，所以直接砍了
      *
      * @param type 排行类型

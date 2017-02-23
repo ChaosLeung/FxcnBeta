@@ -16,13 +16,14 @@
 
 package org.chaos.fx.cnbeta.details;
 
-import org.chaos.fx.cnbeta.net.CnBetaApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.ModelUtil;
 
 import java.util.List;
@@ -64,6 +65,10 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void loadComments() {
+        loadWebApiComments();
+    }
+
+    private void loadWebApiComments() {
         mDisposables.add(CnBetaApiHelper.getCommentJson(mSid, mSN)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
@@ -106,13 +111,17 @@ class CommentPresenter implements CommentContract.Presenter {
                 }));
     }
 
+    private void loadMobileApiComments() {
+        refreshComments(1);
+    }
+
     @Override
     public void refreshComments(int page) {
         mDisposables.add(CnBetaApiHelper.comments(mSid, page)
                 .subscribeOn(Schedulers.io())
-                .map(new Function<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
+                .map(new Function<MobileApi.Result<List<Comment>>, List<Comment>>() {
                     @Override
-                    public List<Comment> apply(CnBetaApi.Result<List<Comment>> listResult) {
+                    public List<Comment> apply(MobileApi.Result<List<Comment>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -249,6 +258,10 @@ class CommentPresenter implements CommentContract.Presenter {
     @Override
     public void subscribe(CommentContract.View view) {
         mView = view;
+
+        if (PreferenceHelper.getInstance().inMobileApiMode()) {
+            loadMobileApiComments();
+        }
     }
 
     @Override

@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import org.chaos.fx.cnbeta.net.model.NewsContent;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -88,56 +89,23 @@ class DetailsPresenter implements DetailsContract.Presenter {
     @Override
     public void unsubscribe() {
         mView.clearViewInContent();
-        mContentDisposable.dispose();
+        if (mContentDisposable != null) {
+            mContentDisposable.dispose();
+        }
     }
 
     @Override
-    public void loadContentByHtml(String html) {
-        mContentDisposable = Observable.just(html)
-                .subscribeOn(Schedulers.io())
-                .map(new Function<String, NewsContent>() {
-                    @Override
-                    public NewsContent apply(String html) {
-                        return parseHtmlContent(html);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
+    public void loadContentByNewsContent(NewsContent content) {
+        mNewsContent = content;
+//        parseNewsContent(content);
+        mContentDisposable = Observable.just(content)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<NewsContent>() {
                     @Override
-                    public void accept(NewsContent newsContent) {
-                        mNewsContent = newsContent;
-                        parseNewsContent(newsContent);
+                    public void accept(NewsContent content) throws Exception {
+                        parseNewsContent(content);
                     }
                 });
-    }
-
-    private NewsContent parseHtmlContent(String html) {
-        Element body = Jsoup.parse(html).body();
-        String title = body.getElementById("news_title").text();
-        String source = body.select("span.where").text();
-        source = source.substring(3, source.length());
-        String time = body.select("span.date").text();
-        String homeText = body.select("div.introduction > p").text();
-        String thumb = body.select("a > img[title]").attr("src").replace("http://static.cnbetacdn.com", "");
-
-        Element contentElement = body.getElementsByClass("content").first();
-        int elementSize = contentElement.childNodes().size();
-        for (int i = elementSize - 1; i >= elementSize - 3; i--) {// 移除广告
-            contentElement.childNodes().get(i).remove();
-        }
-        String bodyText = contentElement.html();
-
-        String author = body.getElementsByClass("author").text();
-        author = author.substring(6, author.length() - 1);
-        NewsContent newsContent = new NewsContent();
-        newsContent.setTitle(title);
-        newsContent.setTime(time);
-        newsContent.setHomeText(homeText);
-        newsContent.setBodyText(bodyText);
-        newsContent.setThumb(thumb);
-        newsContent.setSource(source);
-        newsContent.setAuthor(author);
-        return newsContent;
     }
 
     @SuppressLint("SetTextI18n")
@@ -157,9 +125,16 @@ class DetailsPresenter implements DetailsContract.Presenter {
         mView.setTitle(newsContent.getTitle());
         mView.setAuthor(newsContent.getAuthor());
         mView.setTimeString(newsContent.getTime());
-//        mView.setCommentCount(newsContent.getCommentCount()); // WebApi 转换的 NewsContent 的 comment count 永远是 0
 
-        mView.setSource(newsContent.getSource());
+        if (PreferenceHelper.getInstance().inMobileApiMode()) {
+            // WebApi 转换的 NewsContent 的 comment count 永远是 0，
+            // 直接交给 CommentFragment 传过来。只有 MobileApi 才直接设置
+            mView.setCommentCount(newsContent.getCommentCount());
+        }
+
+        String source = Jsoup.parse(newsContent.getSource()).text();
+        newsContent.setSource(source);
+        mView.setSource(source);
 
         Document doc = Jsoup.parseBodyFragment(newsContent.getHomeText() + newsContent.getBodyText());
         Elements textareas = doc.select("textarea");

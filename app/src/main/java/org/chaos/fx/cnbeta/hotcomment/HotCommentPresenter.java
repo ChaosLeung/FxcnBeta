@@ -16,7 +16,7 @@
 
 package org.chaos.fx.cnbeta.hotcomment;
 
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HotComment;
@@ -45,9 +45,9 @@ class HotCommentPresenter implements HotCommentContract.Presenter {
     public void loadHotComments() {
         mDisposable = CnBetaApiHelper.hotComment()
                 .subscribeOn(Schedulers.io())
-                .map(new Function<CnBetaApi.Result<List<HotComment>>, List<HotComment>>() {
+                .map(new Function<MobileApi.Result<List<HotComment>>, List<HotComment>>() {
                     @Override
-                    public List<HotComment> apply(CnBetaApi.Result<List<HotComment>> listResult) {
+                    public List<HotComment> apply(MobileApi.Result<List<HotComment>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }

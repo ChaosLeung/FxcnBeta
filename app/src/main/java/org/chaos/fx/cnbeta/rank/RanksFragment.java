@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import org.chaos.fx.cnbeta.net.MobileApi;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,9 +69,9 @@ public class RanksFragment extends BaseFragment {
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] RANK_TYPES = new String[]{
-                CnBetaApi.TYPE_COUNTER,
-                CnBetaApi.TYPE_DIG,
-                CnBetaApi.TYPE_COMMENTS
+                MobileApi.TYPE_COUNTER,
+                MobileApi.TYPE_DIG,
+                MobileApi.TYPE_COMMENTS
         };
 
         private final String[] RANK_TITLES;

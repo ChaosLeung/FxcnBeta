@@ -40,7 +40,7 @@ import retrofit2.http.Query;
  * @author Chaos
  *         2015/11/01.
  */
-public interface CnBetaApi {
+public interface MobileApi {
 
     String BASE_URL = "http://api.cnbeta.com";
     String BASE_PARAMS = "/capi?app_key=10000&format=json&v=1.0&mpuffgvbvbttn3Rc&method=";
@@ -166,16 +166,16 @@ public interface CnBetaApi {
      * @param sign      加密字符串
      * @param sid       文章 id
      * @param content   评论内容
-     * @return FIXME 未知，目前一直返回评论参数错误（官方也这尿性……）
+     * @return 操作状态描述
      */
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
-    Observable<Result<Object>> addComment(@Query("timestamp") long timestamp,
+    Observable<Result<String>> addComment(@Query("timestamp") long timestamp,
                                           @Query("sign") String sign,
                                           @Query("sid") int sid,
                                           @Query("content") String content);
 
     /**
-     * 回复评论 (目前一直返回评论参数错误)
+     * 回复评论
      *
      * @param timestamp 时间戳
      * @param sign      加密字符串

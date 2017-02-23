@@ -66,4 +66,8 @@ public class PreferenceHelper {
         }
         return false;
     }
+
+    public boolean inMobileApiMode() {
+        return mPreferences.getBoolean(PreferenceKeys.MOBILE_API_MODE, false);
+    }
 }

@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 
 import org.chaos.fx.cnbeta.BasePresenter;
 import org.chaos.fx.cnbeta.BaseView;
+import org.chaos.fx.cnbeta.net.model.NewsContent;
 
 /**
  * @author Chaos
@@ -46,8 +47,6 @@ interface DetailsContract {
         void addTextToContent(String text);
 
         void addImageToContent(String imgLink);
-
-        void showTransition();
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -57,6 +56,6 @@ interface DetailsContract {
 
         int indexOfImage(String url);
 
-        void loadContentByHtml(String content);
+        void loadContentByNewsContent(NewsContent content);
     }
 }

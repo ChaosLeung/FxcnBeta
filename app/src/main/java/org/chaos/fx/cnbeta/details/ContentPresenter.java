@@ -16,15 +16,17 @@
 
 package org.chaos.fx.cnbeta.details;
 
-import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -40,6 +42,16 @@ import okhttp3.ResponseBody;
  */
 
 class ContentPresenter implements ContentContract.Presenter {
+
+    private static final String QUERY_TITLE = "header.title > h1";
+    private static final String QUERY_SOURCE = "span.source";
+    private static final String QUERY_TIME = "div.meta > span";
+    private static final String QUERY_AUTHOR = "div.article-author";
+    private static final String QUERY_SUMMARY = "div.article-summary > p";
+    private static final String QUERY_THUMB = "a > img[title]";
+    private static final String QUERY_RELATION = "div.article-relation";
+    private static final String QUERY_ADVERTISEMENT = "div.article-global";
+    private static final String QUERY_CONTENT = "div.article-content";
 
     private ContentContract.View mView;
     private Disposable mDisposable;
@@ -109,7 +121,7 @@ class ContentPresenter implements ContentContract.Presenter {
                     @Override
                     public NewsContent apply(String html) throws Exception {
                         String sn = CnBetaApiHelper.getSNFromArticleBody(html);
-                        mView.setupCommentFragment(sn);
+//                        mView.setupCommentFragment(sn);
                         return parseHtmlContent(html);
                     }
                 })
@@ -132,21 +144,26 @@ class ContentPresenter implements ContentContract.Presenter {
 
     private NewsContent parseHtmlContent(String html) {
         Element body = Jsoup.parse(html).body();
-        String title = body.getElementById("news_title").text();
-        String source = body.select("span.where").text();
-        source = source.substring(3, source.length());
-        String time = body.select("span.date").text();
-        String homeText = body.select("div.introduction > p").text();
-        String thumb = body.select("a > img[title]").attr("src").replace("http://static.cnbetacdn.com", "");
 
-        Element contentElement = body.getElementsByClass("content").first();
-        int elementSize = contentElement.childNodes().size();
-        for (int i = elementSize - 1; i >= elementSize - 3; i--) {// 移除广告
-            contentElement.childNodes().get(i).remove();
+        String title = body.select(QUERY_TITLE).text();
+        String source = body.select(QUERY_SOURCE).text();
+        source = source.substring(3, source.length());
+        String homeText = body.select(QUERY_SUMMARY).text();
+        String thumb = body.select(QUERY_THUMB).attr("src").replace("http://static.cnbetacdn.com", "");
+
+        String time = body.select(QUERY_TIME).text();
+        try {
+            time = TimeStringHelper.cnTime2DefaultTime(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
+        Element contentElement = body.select(QUERY_CONTENT).first();
+        contentElement.select(QUERY_RELATION).remove();
+        contentElement.select(QUERY_ADVERTISEMENT).remove();
         String bodyText = contentElement.html();
 
-        String author = body.getElementsByClass("author").text();
+        String author = body.select(QUERY_AUTHOR).text();
         author = author.substring(6, author.length() - 1);
         NewsContent newsContent = new NewsContent();
         newsContent.setTitle(title);

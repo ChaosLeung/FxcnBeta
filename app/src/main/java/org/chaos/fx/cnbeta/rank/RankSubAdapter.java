@@ -41,7 +41,7 @@ class RankSubAdapter extends BaseArticleAdapter {
         ArticleSummary summary = get(position);
         String subText = "";
         if (MobileApi.TYPE_COUNTER.equals(mType)) {
-            subText = TimeStringHelper.getTimeString(summary.getPublishTime());
+            subText = TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime());
         } else if (MobileApi.TYPE_DIG.equals(mType)) {
             subText = getSubText(R.string.read_count, summary.getCounter());
         } else if (MobileApi.TYPE_COMMENTS.equals(mType)) {

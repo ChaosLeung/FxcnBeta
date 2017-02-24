@@ -218,7 +218,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     @Override
     public void setTimeString(String formattedTime) {
-        mTimeView.setText(TimeStringHelper.getTimeString(formattedTime));
+        mTimeView.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(formattedTime));
     }
 
     @Override

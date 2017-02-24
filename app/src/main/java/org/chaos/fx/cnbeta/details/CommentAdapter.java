@@ -78,7 +78,7 @@ class CommentAdapter extends ListAdapter<Comment, ViewHolder> {
     public void onBindHolderInternal(ViewHolder holder, int position) {
         Comment c = get(position);
         holder.comment.setText(c.getContent());
-        holder.time.setText(TimeStringHelper.getTimeString(c.getCreatedTime()));
+        holder.time.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(c.getCreatedTime()));
         holder.username.setText(TextUtils.isEmpty(c.getUsername())
                 ? getContext().getString(R.string.anonymous) : c.getUsername());
         holder.replyComment.setVisibility(View.GONE);

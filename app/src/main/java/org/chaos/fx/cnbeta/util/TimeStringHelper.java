@@ -24,6 +24,7 @@ import org.chaos.fx.cnbeta.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -33,7 +34,8 @@ import java.util.Locale;
 public class TimeStringHelper {
 
     private static Resources sResources;
-    private static SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+    private static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+    private static final SimpleDateFormat CN_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日 HH:mm", Locale.CHINA);
 
     private static final long SECOND = 1000;
     private static final long MINUTE = 60 * SECOND;
@@ -47,39 +49,54 @@ public class TimeStringHelper {
         sResources = context.getApplicationContext().getResources();
     }
 
-    public static String getTimeString(String pubTime) {
+    public static String getTimeStrByDefaultTimeStr(String pubTime) {
         try {
-            long deltaTime = System.currentTimeMillis() - parseFormattedTimeStr(pubTime);
-            if (deltaTime >= YEAR) {
-                int year = (int) (deltaTime / YEAR);
-                pubTime = getResString(R.plurals.time_year, year);
-            } else if (deltaTime >= MONTH) {
-                int month = (int) (deltaTime / MONTH);
-                pubTime = getResString(R.plurals.time_month, month);
-            } else if (deltaTime >= WEEK) {
-                int week = (int) (deltaTime / WEEK);
-                pubTime = getResString(R.plurals.time_week, week);
-            } else if (deltaTime >= DAY) {
-                int day = (int) (deltaTime / DAY);
-                pubTime = getResString(R.plurals.time_day, day);
-            } else if (deltaTime >= HOUR) {
-                int hour = (int) (deltaTime / HOUR);
-                pubTime = getResString(R.plurals.time_hour, hour);
-            } else if (deltaTime >= MINUTE) {
-                int minute = (int) (deltaTime / MINUTE);
-                pubTime = getResString(R.plurals.time_minute, minute);
-            } else {
-                int second = (int) (deltaTime / SECOND);
-                pubTime = getResString(R.plurals.time_second, second);
-            }
+            return getTimeString(parseFormattedTimeStr(pubTime));
         } catch (ParseException e) {
-            // no-op
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String getTimeString(long time) {
+        String pubTime;
+        long deltaTime = System.currentTimeMillis() - time;
+        if (deltaTime >= YEAR) {
+            int year = (int) (deltaTime / YEAR);
+            pubTime = getResString(R.plurals.time_year, year);
+        } else if (deltaTime >= MONTH) {
+            int month = (int) (deltaTime / MONTH);
+            pubTime = getResString(R.plurals.time_month, month);
+        } else if (deltaTime >= WEEK) {
+            int week = (int) (deltaTime / WEEK);
+            pubTime = getResString(R.plurals.time_week, week);
+        } else if (deltaTime >= DAY) {
+            int day = (int) (deltaTime / DAY);
+            pubTime = getResString(R.plurals.time_day, day);
+        } else if (deltaTime >= HOUR) {
+            int hour = (int) (deltaTime / HOUR);
+            pubTime = getResString(R.plurals.time_hour, hour);
+        } else if (deltaTime >= MINUTE) {
+            int minute = (int) (deltaTime / MINUTE);
+            pubTime = getResString(R.plurals.time_minute, minute);
+        } else {
+            int second = (int) (deltaTime / SECOND);
+            pubTime = getResString(R.plurals.time_second, second);
         }
         return pubTime;
     }
 
-    private static long parseFormattedTimeStr(String formattedTime) throws ParseException {
-        return sDateFormat.parse(formattedTime).getTime();
+    public static long parseFormattedTimeStr(String formattedTime) throws ParseException {
+        return DEFAULT_DATE_FORMAT.parse(formattedTime).getTime();
+    }
+
+    public static long parseCNFormattedTimeStr(String cnFormattedTime) throws ParseException {
+        return CN_DATE_FORMAT.parse(cnFormattedTime).getTime();
+    }
+
+    public static String cnTime2DefaultTime(String cnFormattedTime) throws ParseException {
+        long time = parseCNFormattedTimeStr(cnFormattedTime);
+        return DEFAULT_DATE_FORMAT.format(new Date(time));
     }
 
     private static String getResString(@PluralsRes int pluralsId, int value) {

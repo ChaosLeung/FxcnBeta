@@ -19,6 +19,7 @@ package org.chaos.fx.cnbeta.net;
 import android.support.v4.util.ArrayMap;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,33 @@ public class CnBetaHttpClientProvider {
                         } else {
                             return Collections.emptyList();
                         }
+                    }
+                })
+                .addNetworkInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Response response = chain.proceed(chain.request());
+                        // cnBeta 改版后原 link 会报 301 直接挑战至新页面，由于新页面 url
+                        // 比旧 url 多了个 {topic}，暂未知参数从何而来。所以目前需要借助 OkHttp
+                        // 将 301 转为 308，这样才能获取跳转后的页面数据并传递给 Retrofit，
+                        // 301 转 308 相关请查看：https://github.com/square/retrofit/issues/1690
+                        if (response.code() == HttpURLConnection.HTTP_MOVED_PERM) {
+                            response = new Response.Builder()
+                                    .request(response.request())
+                                    .protocol(response.protocol())
+                                    .code(308)
+                                    .message(response.message())
+                                    .handshake(response.handshake())
+                                    .headers(response.headers())
+                                    .body(response.body())
+                                    .networkResponse(response.networkResponse())
+                                    .cacheResponse(response.cacheResponse())
+                                    .priorResponse(response.priorResponse())
+                                    .sentRequestAtMillis(response.sentRequestAtMillis())
+                                    .receivedResponseAtMillis(response.receivedResponseAtMillis())
+                                    .build();
+                        }
+                        return response;
                     }
                 })
                 .addInterceptor(new Interceptor() {

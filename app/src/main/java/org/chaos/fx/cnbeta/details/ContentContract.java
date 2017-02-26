@@ -34,7 +34,7 @@ interface ContentContract {
 
         void setupDetailsFragment(NewsContent content);
 
-        void setupCommentFragment(String sn);
+        void setupCommentFragment(String sn, String tokenForReadComment);
     }
 
     interface Presenter extends BasePresenter<View> {

@@ -49,6 +49,7 @@ public class CommentFragment extends BaseFragment implements
         SwipeLinearRecyclerView.OnRefreshListener, CommentContract.View {
 
     private static final String KEY_SID = "sid";
+
     private static final int ONE_PAGE_COMMENT_COUNT = 10;
 
     public static CommentFragment newInstance(int sid) {
@@ -125,8 +126,9 @@ public class CommentFragment extends BaseFragment implements
         mCommentAdapter.setOnItemChildClickListener(null);
     }
 
-    public void handleSN(String sn) {
+    public void handleSetupMessage(String sn, String tokenForReadComment) {
         mPresenter.setSN(sn);
+        mPresenter.setReadCommentToken(tokenForReadComment);
         mPresenter.loadComments();
     }
 
@@ -146,7 +148,7 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void showCommentDialog(final int pid) {
-        final CommentDialog commentDialog = CommentDialog.newInstance(mPresenter.getToken());
+        final CommentDialog commentDialog = CommentDialog.newInstance(mPresenter.getOperationToken());
         commentDialog.setPositiveListener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

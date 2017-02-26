@@ -238,13 +238,14 @@ public class CnBetaApiHelper {
     /**
      * 获取网页版的评论内容
      *
-     * Note: 可以使用该 API 获取到 token
+     * Note: 可以使用该 API 获取到评论用的 token
      *
-     * @param sid 文章 id
-     * @param sn  每篇文章的 sn 码
+     * @param sid   文章 id
+     * @param token 获取 Web 评论用的 token
+     * @param sn    每篇文章的 sn 码
      */
-    public static Observable<WebApi.Result<WebCommentResult>> getCommentJson(int sid, String sn) {
-        return sWebApi.getCommentJson("1," + sid + "," + sn);
+    public static Observable<WebApi.Result<WebCommentResult>> getCommentJson(int sid, String token, String sn) {
+        return sWebApi.getCommentJson(token, "1," + sid + "," + sn);
     }
 
     public static Observable<WebCaptcha> getCaptchaDataUrl(String token) {
@@ -255,6 +256,15 @@ public class CnBetaApiHelper {
         return replyComment(token, content, captcha, sid, 0);
     }
 
+    /**
+     * 回复或添加评论
+     *
+     * @param token   comment json 中的 token
+     * @param content 内容
+     * @param captcha 验证码
+     * @param sid     文章 id
+     * @param pid     引用的评论的 id，如为新增评论，该值需为 0
+     */
     public static Observable<WebApi.Result> replyComment(String token, String content, String captcha, int sid, int pid) {
         return sWebApi.addComment(token, "publish", content, captcha, sid, pid);
     }

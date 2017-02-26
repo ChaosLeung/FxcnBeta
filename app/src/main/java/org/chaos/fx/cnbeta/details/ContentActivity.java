@@ -175,8 +175,8 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     }
 
     @Override
-    public void setupCommentFragment(String sn) {
-        mPagerAdapter.commentFragment.handleSN(sn);
+    public void setupCommentFragment(String sn, String tokenForReadComment) {
+        mPagerAdapter.commentFragment.handleSetupMessage(sn, tokenForReadComment);
     }
 
     @Override

@@ -24,6 +24,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -52,6 +53,8 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class CommentDialog extends DialogFragment {
+
+    private static final String TAG = "CommentDialog";
 
     private static final String KEY_TOKEN = "token";
 
@@ -149,6 +152,7 @@ public class CommentDialog extends DialogFragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "flashCaptcha: ", e);
                         Toast.makeText(getActivity(), R.string.failed_to_get_captcha, Toast.LENGTH_SHORT).show();
                     }
                 });

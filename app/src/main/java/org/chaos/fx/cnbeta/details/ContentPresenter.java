@@ -16,6 +16,8 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.util.Log;
+
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
@@ -42,6 +44,8 @@ import okhttp3.ResponseBody;
  */
 
 class ContentPresenter implements ContentContract.Presenter {
+
+    private static final String TAG = "ContentPresenter";
 
     private static final String QUERY_TITLE = "header.title > h1";
     private static final String QUERY_SOURCE = "span.source";
@@ -98,6 +102,7 @@ class ContentPresenter implements ContentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "loadMobileApiContent: ", e);
                         mView.showLoadingView(false);
                         mView.showLoadingError(true);
                     }
@@ -120,8 +125,10 @@ class ContentPresenter implements ContentContract.Presenter {
                 .map(new Function<String, NewsContent>() {
                     @Override
                     public NewsContent apply(String html) throws Exception {
+                        Element head = Jsoup.parse(html).head();
+                        String token = head.select("meta[name=\"csrf-token\"]").attr("content");
                         String sn = CnBetaApiHelper.getSNFromArticleBody(html);
-//                        mView.setupCommentFragment(sn);
+                        mView.setupCommentFragment(sn, token);
                         return parseHtmlContent(html);
                     }
                 })
@@ -136,6 +143,7 @@ class ContentPresenter implements ContentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "loadWebApiContent: ", e);
                         mView.showLoadingView(false);
                         mView.showLoadingError(true);
                     }

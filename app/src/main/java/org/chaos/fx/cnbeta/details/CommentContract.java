@@ -59,6 +59,8 @@ interface CommentContract {
     interface Presenter extends BasePresenter<View> {
         void setSN(String sn);
 
+        void setReadCommentToken(String token);
+
         void loadComments();
 
         void refreshComments(int page);
@@ -75,6 +77,6 @@ interface CommentContract {
 
         boolean isCommentEnable();
 
-        String getToken();
+        String getOperationToken();
     }
 }

@@ -17,6 +17,7 @@
 package org.chaos.fx.cnbeta;
 
 import android.app.Application;
+import android.support.v7.app.AppCompatDelegate;
 
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
@@ -38,5 +39,7 @@ public class FxCBApplication extends Application {
         Realm.init(this);
         WXApiProvider.initialize(this);
         PreferenceHelper.initialize(this);
+        AppCompatDelegate.setDefaultNightMode(PreferenceHelper.getInstance().inNightMode() ?
+                AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
     }
 }

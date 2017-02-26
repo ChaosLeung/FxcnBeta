@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015 Chaos
+  ~ Copyright 2017 Chaos
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,41 +16,41 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#009688</color>
+    <color name="colorPrimary">#181818</color>
+    <color name="colorPrimaryDark">#121212</color>
+    <color name="colorAccent">#00796B</color>
 
     <color name="card_ripple_color_darken">#0a000000</color>
-    <color name="main_background">#ffffffff</color>
+    <color name="main_background">#212121</color>
 
-    <color name="card_text">#ff212121</color>
-    <color name="card_text_has_read">#ffa1a1a1</color>
-    <color name="card_time_text">#ff616161</color>
-    <color name="card_time_text_has_read">#ffc1c1c1</color>
+    <color name="card_text">#E0E0E0</color>
+    <color name="card_text_has_read">#616161</color>
+    <color name="card_time_text">#b0b0b0</color>
+    <color name="card_time_text_has_read">#515151</color>
 
-    <color name="content_text">@color/card_text</color>
-    <color name="content_title">#000000</color>
+    <color name="content_text">#f5f5f5</color>
+    <color name="content_title">#fafafa</color>
     <color name="content_source">@color/content_text</color>
-    <color name="content_author">#757575</color>
+    <color name="content_author">#B5B5B5</color>
     <color name="content_time">@color/content_author</color>
     <color name="content_comment_count">@color/content_time</color>
 
-    <color name="image_not_available">#fff4f4f4</color>
+    <color name="image_not_available">#424242</color>
 
-    <color name="reply_comment">#ffeeeeee</color>
+    <color name="reply_comment">#323232</color>
 
     <color name="divider">#1f000000</color>
 
     <color name="fb_content_length">#aaaaaa</color>
 
-    <color name="comment_ic_bg">#EEEEEE</color>
-    <color name="comment_ic_bg_pressed">#E0E0E0</color>
+    <color name="comment_ic_bg">#323232</color>
+    <color name="comment_ic_bg_pressed">#2B2B2B</color>
 
     <color name="inactive_tab_color">#FAFAFA</color>
     <color name="active_tab_color">#FFFFFF</color>
 
     <color name="gallery_action_bar">#7F000000</color>
 
-    <color name="holder_color">#FAFAFA</color>
+    <color name="holder_color">#424242</color>
 
 </resources>

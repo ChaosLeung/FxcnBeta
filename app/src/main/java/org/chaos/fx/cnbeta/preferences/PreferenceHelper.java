@@ -70,4 +70,8 @@ public class PreferenceHelper {
     public boolean inMobileApiMode() {
         return mPreferences.getBoolean(PreferenceKeys.MOBILE_API_MODE, false);
     }
+
+    public boolean inNightMode() {
+        return mPreferences.getBoolean(PreferenceKeys.NIGHT_MODE, false);
+    }
 }

@@ -18,6 +18,7 @@ package org.chaos.fx.cnbeta;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.TabLayout;
@@ -26,6 +27,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,13 +39,14 @@ import com.roughike.bottombar.OnTabSelectListener;
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
+import org.chaos.fx.cnbeta.preferences.PreferenceKeys;
 import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
 import org.chaos.fx.cnbeta.rank.RanksFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final int DURATION_EXPAND_TAB_LAYOUT = 300;
     private static final int DURATION_COLLAPSE_TAB_LAYOUT = 200;
@@ -107,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
                 mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId));
             }
         });
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private void expandTabLayout() {
@@ -160,6 +171,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (PreferenceKeys.NIGHT_MODE.equals(key)) {
+            recreate();
+        }
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

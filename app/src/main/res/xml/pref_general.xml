@@ -17,6 +17,11 @@
 <android.support.v7.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="night_mode"
+        android:title="@string/night_mode" />
+
     <android.support.v7.preference.PreferenceCategory
         android:key="basic"
         android:title="@string/basic_setting">

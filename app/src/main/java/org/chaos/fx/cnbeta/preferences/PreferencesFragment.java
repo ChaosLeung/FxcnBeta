@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.DialogPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -34,13 +35,15 @@ import org.chaos.fx.cnbeta.help.FeedbackActivity;
  */
 
 public class PreferencesFragment extends PreferenceFragmentCompat implements
-        Preference.OnPreferenceClickListener, PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback {
+        Preference.OnPreferenceClickListener, PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback,
+        Preference.OnPreferenceChangeListener {
 
     private static final String DIALOG_FRAGMENT_TAG = "PreferencesFragment.DIALOG";
 
     private static final String KEY_HELP_AND_FEEDBACK = "help_and_feedback";
     private static final String KEY_RELEASE_NOTE = "release_note";
     private static final String KEY_LICENSE = "license";
+    private static final String KEY_NIGHT_MODE = "night_mode";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -48,6 +51,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
 
         findPreference("version_name").setSummary(BuildConfig.VERSION_NAME);
         findPreference(KEY_HELP_AND_FEEDBACK).setOnPreferenceClickListener(this);
+        findPreference(KEY_NIGHT_MODE).setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -55,6 +59,18 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         String key = preference.getKey();
         if (KEY_HELP_AND_FEEDBACK.equals(key)) {
             startActivity(new Intent(getActivity(), FeedbackActivity.class));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        String key = preference.getKey();
+        if (KEY_NIGHT_MODE.equals(key)) {
+            AppCompatDelegate.setDefaultNightMode((boolean) newValue ?
+                    AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+            getActivity().recreate();
             return true;
         }
         return false;

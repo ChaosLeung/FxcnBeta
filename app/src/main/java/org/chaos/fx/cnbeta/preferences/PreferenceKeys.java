@@ -23,4 +23,5 @@ package org.chaos.fx.cnbeta.preferences;
 
 public class PreferenceKeys {
     public static final String SAFE_DATA_MODE = "safe_data_mode";
+    public static final String MOBILE_API_MODE = "mobile_api_mode";
 }

@@ -37,6 +37,6 @@ class ArticleAdapter extends BaseArticleAdapter {
     protected void onBindHolderInternal(ArticleHolder holder, int position) {
         super.onBindHolderInternal(holder, position);
         ArticleSummary summary = get(position);
-        holder.summary.setText(TimeStringHelper.getTimeString(summary.getPublishTime()));
+        holder.summary.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime()));
     }
 }

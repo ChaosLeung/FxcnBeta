@@ -18,6 +18,7 @@ package org.chaos.fx.cnbeta.details;
 
 import org.chaos.fx.cnbeta.BasePresenter;
 import org.chaos.fx.cnbeta.BaseView;
+import org.chaos.fx.cnbeta.net.model.NewsContent;
 
 /**
  * @author Chaos
@@ -31,12 +32,12 @@ interface ContentContract {
 
         void showLoadingError(boolean show);
 
-        void setupDetailsFragment(String html);
+        void setupDetailsFragment(NewsContent content);
 
-        void setupCommentFragment(String sn);
+        void setupCommentFragment(String sn, String tokenForReadComment);
     }
 
     interface Presenter extends BasePresenter<View> {
-        void loadArticleHtml();
+        void loadArticleContent();
     }
 }

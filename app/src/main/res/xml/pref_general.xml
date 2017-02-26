@@ -26,6 +26,13 @@
             android:key="safe_data_mode"
             android:summary="@string/auto_load_image_in_wifi_mode"
             android:title="@string/load_image" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="mobile_api_mode"
+            android:summary="@string/use_mobile_api"
+            android:title="@string/mobile_api_mode" />
+
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory

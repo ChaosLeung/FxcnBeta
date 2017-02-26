@@ -16,13 +16,16 @@
 
 package org.chaos.fx.cnbeta.details;
 
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import android.util.Log;
+
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.ModelUtil;
 
 import java.util.List;
@@ -43,9 +46,12 @@ import io.reactivex.schedulers.Schedulers;
 
 class CommentPresenter implements CommentContract.Presenter {
 
+    private static final String TAG = "CommentPresenter";
+
     private int mSid;
     private String mSN;
-    private String mToken;
+    private String mTokenForReadComment;
+    private String mOperationToken;
     private CommentContract.View mView;
 
     private CompositeDisposable mDisposables;
@@ -63,8 +69,17 @@ class CommentPresenter implements CommentContract.Presenter {
     }
 
     @Override
+    public void setReadCommentToken(String token) {
+        mTokenForReadComment = token;
+    }
+
+    @Override
     public void loadComments() {
-        mDisposables.add(CnBetaApiHelper.getCommentJson(mSid, mSN)
+        loadWebApiComments();
+    }
+
+    private void loadWebApiComments() {
+        mDisposables.add(CnBetaApiHelper.getCommentJson(mSid, mTokenForReadComment, mSN)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
                     @Override
@@ -98,21 +113,31 @@ class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(WebCommentResult result) throws Exception {
                         isCommentEnable = result.isOpen();
-                        mToken = result.getToken();
+                        mOperationToken = result.getToken();
                         List<Comment> comments = ModelUtil.toCommentList(result);
                         mView.addComments(comments);
                         mView.showNoCommentTipsIfNeed();
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "loadWebApiComments: ", e);
+                        mView.showNoCommentTipsIfNeed();
+                    }
                 }));
+    }
+
+    private void loadMobileApiComments() {
+        refreshComments(1);
     }
 
     @Override
     public void refreshComments(int page) {
         mDisposables.add(CnBetaApiHelper.comments(mSid, page)
                 .subscribeOn(Schedulers.io())
-                .map(new Function<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
+                .map(new Function<MobileApi.Result<List<Comment>>, List<Comment>>() {
                     @Override
-                    public List<Comment> apply(CnBetaApi.Result<List<Comment>> listResult) {
+                    public List<Comment> apply(MobileApi.Result<List<Comment>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -135,6 +160,7 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "refreshComments: ", e);
                         mView.showLoadingFailed();
                         mView.hideProgress();
                         mView.showNoCommentTipsIfNeed();
@@ -144,7 +170,7 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void against(final Comment c) {
-        mDisposables.add(CnBetaApiHelper.againstComment(mToken, mSid, c.getTid())
+        mDisposables.add(CnBetaApiHelper.againstComment(mOperationToken, mSid, c.getTid())
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
@@ -165,6 +191,7 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "againstComment: ", e);
                         mView.showOperationFailed();
                     }
                 }));
@@ -172,7 +199,7 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void support(final Comment c) {
-        mDisposables.add(CnBetaApiHelper.supportComment(mToken, mSid, c.getTid())
+        mDisposables.add(CnBetaApiHelper.supportComment(mOperationToken, mSid, c.getTid())
                 .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
                     public WebApi.Result apply(WebApi.Result result) {
@@ -193,6 +220,7 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "supportComment: ", e);
                         mView.showOperationFailed();
                     }
                 }));
@@ -210,7 +238,7 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void publishComment(String content, String captcha, int pid) {
-        mDisposables.add(CnBetaApiHelper.replyComment(mToken, content, captcha, mSid, pid)
+        mDisposables.add(CnBetaApiHelper.replyComment(mOperationToken, content, captcha, mSid, pid)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
@@ -231,6 +259,7 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "publishComment: ", e);
                         mView.showAddCommentFailed(e.getMessage());
                     }
                 }));
@@ -241,14 +270,17 @@ class CommentPresenter implements CommentContract.Presenter {
         return isCommentEnable;
     }
 
-    @Override
-    public String getToken() {
-        return mToken;
+    public String getOperationToken() {
+        return mOperationToken;
     }
 
     @Override
     public void subscribe(CommentContract.View view) {
         mView = view;
+
+        if (PreferenceHelper.getInstance().inMobileApiMode()) {
+            loadMobileApiComments();
+        }
     }
 
     @Override

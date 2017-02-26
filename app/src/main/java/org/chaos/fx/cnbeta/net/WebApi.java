@@ -36,21 +36,23 @@ import retrofit2.http.Query;
  */
 public interface WebApi {
     String HOST_URL = "http://www.cnbeta.com";
+    String COMMENT = "/comment";
+    String COMMENT_JSON_URL = "http://hot.cnbeta.com/comment/read";
 
     @GET("/articles/{sid}.htm")
     Observable<ResponseBody> getArticleHtml(@Path("sid") int sid);
 
-    @GET("/captcha.htm?refresh=1")
-    Observable<WebCaptcha> getCaptchaDataUrl(@Query("csrf_token") String token,
+    @GET(COMMENT + "/captcha?refresh=1")
+    Observable<WebCaptcha> getCaptchaDataUrl(@Query("_csrf") String token,
                                              @Query("_") long timestamp);
 
-    @FormUrlEncoded
-    @POST("/cmt")
-    Observable<Result<WebCommentResult>> getCommentJson(@Field("op") String op);
+    @GET(COMMENT_JSON_URL)
+    Observable<Result<WebCommentResult>> getCommentJson(@Query("_csrf") String token,
+                                                        @Query("op") String op);
 
     @FormUrlEncoded
-    @POST("/comment")
-    Observable<Result> addComment(@Field("csrf_token") String token,
+    @POST(COMMENT + "/do")
+    Observable<Result> addComment(@Field("_csrf") String token,
                                   @Field("op") String op,
                                   @Field("content") String content,
                                   @Field("seccode") String captcha,
@@ -58,8 +60,8 @@ public interface WebApi {
                                   @Field("pid") int pid);
 
     @FormUrlEncoded
-    @POST("/comment")
-    Observable<Result> opForComment(@Field("csrf_token") String token,
+    @POST(COMMENT + "/do")
+    Observable<Result> opForComment(@Field("_csrf") String token,
                                     @Field("op") String op,
                                     @Field("sid") int sid,
                                     @Field("tid") int tid);

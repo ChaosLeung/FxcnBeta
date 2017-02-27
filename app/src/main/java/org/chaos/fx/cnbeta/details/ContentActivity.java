@@ -151,7 +151,9 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void onCommentUpdated(int count) {
-        mPagerAdapter.detailsFragment.setCommentCount(count);
+        if (mPagerAdapter.detailsFragment.isAdded()) {
+            mPagerAdapter.detailsFragment.setCommentCount(count);
+        }
     }
 
     @OnClick(R.id.error_button)

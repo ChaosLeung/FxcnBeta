@@ -103,12 +103,8 @@ public class CnBetaHttpClientProvider {
                         Request.Builder builder = chain.request().newBuilder()
                                 .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                                 .addHeader("Origin", "http://www.cnbeta.com")
+                                .addHeader("Referer", "http://www.cnbeta.com/")
                                 .addHeader("X-Requested-With", "XMLHttpRequest");
-                        if (chain.request().url().toString().startsWith(WebApi.HOST_URL + "/comment/do")) {
-
-                        } else {
-                            builder.addHeader("Referer", "http://www.cnbeta.com/");
-                        }
                         return chain.proceed(builder.build());
                     }
                 })

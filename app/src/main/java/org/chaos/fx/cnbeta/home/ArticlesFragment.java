@@ -22,6 +22,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,14 +84,15 @@ public class ArticlesFragment extends BaseFragment
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                RecyclerView.ViewHolder holder = mArticlesView.getRecyclerView().findViewHolderForAdapterPosition(position);
                 mPreClickPosition = position;
                 ArticleSummary summary = mArticleAdapter.get(position);
 
-                View tv = v.findViewById(R.id.title);
+                View tv = holder.itemView.findViewById(R.id.title);
                 ActivityOptionsCompat options =
                         ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(v, getString(R.string.transition_details_background)),
-                                Pair.create(tv, getString(R.string.transition_details_title)));
+                                Pair.create(tv, getString(R.string.transition_details_title)),
+                                Pair.create(holder.itemView, getString(R.string.transition_details_background)));
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTitle(),
                         summary.getTopicLogo(), options);
             }

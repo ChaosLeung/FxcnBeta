@@ -62,7 +62,6 @@ public class ModelUtil {
         for (int i = 0; i < webComments.size() && wci.hasNext(); i++) {
             comments.add(toComment(wci.next()));
         }
-        Collections.sort(comments, CommentComparator.DEFAULT_COMPARATOR);
         return comments;
     }
 

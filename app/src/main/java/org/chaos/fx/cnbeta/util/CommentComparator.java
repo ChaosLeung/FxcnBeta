@@ -18,37 +18,18 @@ package org.chaos.fx.cnbeta.util;
 
 import org.chaos.fx.cnbeta.net.model.Comment;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
-import java.util.Locale;
 
 /**
  * @author Chaos
- *         13/02/2017
+ *         27/02/2017
  */
 
 public class CommentComparator implements Comparator<Comment> {
-
-    public static final CommentComparator DEFAULT_COMPARATOR = new CommentComparator();
-
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-
     @Override
     public int compare(Comment o1, Comment o2) {
-        try {
-            // DESC
-            long time1 = DATE_FORMAT.parse(o1.getCreatedTime()).getTime();
-            long time2 = DATE_FORMAT.parse(o2.getCreatedTime()).getTime();
-            if (time1 > time2) {
-                return -1;
-            } else if (time1 < time2) {
-                return 1;
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return 0;
+        int x = o1.getTid();
+        int y = o2.getTid();
+        return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 }

@@ -26,8 +26,10 @@ import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.util.CommentComparator;
 import org.chaos.fx.cnbeta.util.ModelUtil;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -115,6 +117,7 @@ class CommentPresenter implements CommentContract.Presenter {
                         isCommentEnable = result.isOpen();
                         mOperationToken = result.getToken();
                         List<Comment> comments = ModelUtil.toCommentList(result);
+                        Collections.sort(comments, new CommentComparator());
                         mView.addComments(comments);
                         mView.showNoCommentTipsIfNeed();
                     }

@@ -86,6 +86,7 @@
     <string name="auto_load_image_in_wifi_mode">仅在 Wi-Fi 环境下自动加载图片</string>
     <string name="mobile_api_mode">官方模式</string>
     <string name="use_mobile_api">与官方客户端数据保持一致</string>
+    <string name="night_mode">夜间模式</string>
     <string name="about">关于</string>
     <string name="version_name">版本号</string>
     <string name="update_log">更新日志</string>

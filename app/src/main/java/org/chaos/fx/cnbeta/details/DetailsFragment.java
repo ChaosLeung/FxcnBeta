@@ -115,6 +115,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         }
     };
 
+    private NewsContent mTmpNewsContent;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -150,6 +152,10 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
         mPresenter = new DetailsPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOPIC_LOGO));
         mPresenter.subscribe(this);
+        if (mTmpNewsContent != null) {
+            handleNewsContent(mTmpNewsContent);
+            mTmpNewsContent = null;
+        }
     }
 
     @Override
@@ -196,7 +202,11 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     }
 
     public void handleNewsContent(NewsContent content) {
-        mPresenter.loadContentByNewsContent(content);
+        if (mPresenter == null) {
+            mTmpNewsContent = content;
+        } else {
+            mPresenter.loadContentByNewsContent(content);
+        }
     }
 
     @Override

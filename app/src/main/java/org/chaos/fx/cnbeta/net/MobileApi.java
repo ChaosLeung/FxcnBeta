@@ -186,7 +186,7 @@ public interface MobileApi {
      */
     @Deprecated
     @GET(BASE_PARAMS + "Article.DoCmt&op=publish")
-    Observable<Result<Object>> replyComment(@Query("timestamp") long timestamp,
+    Observable<Result<String>> replyComment(@Query("timestamp") long timestamp,
                                             @Query("sign") String sign,
                                             @Query("sid") int sid,
                                             @Query("pid") int pid,

@@ -69,6 +69,9 @@ public class CommentFragment extends BaseFragment implements
 
     private CommentContract.Presenter mPresenter;
 
+    private String mTmpSN;
+    private String mTmpTokenForReadComment;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -117,6 +120,11 @@ public class CommentFragment extends BaseFragment implements
 
         mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID));
         mPresenter.subscribe(this);
+        if (mTmpSN != null && mTmpTokenForReadComment != null) {
+            handleSetupMessage(mTmpSN, mTmpTokenForReadComment);
+            mTmpSN = null;
+            mTmpTokenForReadComment = null;
+        }
     }
 
     @Override
@@ -127,9 +135,14 @@ public class CommentFragment extends BaseFragment implements
     }
 
     public void handleSetupMessage(String sn, String tokenForReadComment) {
-        mPresenter.setSN(sn);
-        mPresenter.setReadCommentToken(tokenForReadComment);
-        mPresenter.loadComments();
+        if (mPresenter == null) {
+            mTmpSN = sn;
+            mTmpTokenForReadComment = tokenForReadComment;
+        } else {
+            mPresenter.setSN(sn);
+            mPresenter.setReadCommentToken(tokenForReadComment);
+            mPresenter.loadComments();
+        }
     }
 
     @Override

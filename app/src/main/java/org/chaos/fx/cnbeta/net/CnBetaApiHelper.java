@@ -167,7 +167,7 @@ public class CnBetaApiHelper {
     }
 
     @Deprecated
-    public static Observable<MobileApi.Result<Object>> replyComment(int sid,
+    public static Observable<MobileApi.Result<String>> replyComment(int sid,
                                                                     int pid,
                                                                     String content) {
         long timestamp = System.currentTimeMillis();

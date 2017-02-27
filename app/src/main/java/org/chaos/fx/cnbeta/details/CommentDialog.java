@@ -38,6 +38,7 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,7 +110,13 @@ public class CommentDialog extends DialogFragment {
 
         mCaptchaView.setOnClickListener(mButtonClickListener);
 
-        flashCaptcha();
+        if (!PreferenceHelper.getInstance().inMobileApiMode()) {
+            flashCaptcha();
+        } else {
+            mCaptchaView.setVisibility(View.GONE);
+            mCaptchaText.setVisibility(View.GONE);
+            mCaptchaText.setText(R.string.default_captcha_for_mobile_api);
+        }
 
         return dialog;
     }
@@ -123,7 +130,9 @@ public class CommentDialog extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mCaptchaDisposable.dispose();
+        if (mCaptchaDisposable != null) {
+            mCaptchaDisposable.dispose();
+        }
     }
 
     private void flashCaptcha() {

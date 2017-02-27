@@ -36,13 +36,17 @@ import retrofit2.http.Query;
  */
 public interface WebApi {
     String HOST_URL = "http://www.cnbeta.com";
+    String HOT_HOST_URL = "http://hot.cnbeta.com";
     String COMMENT = "/comment";
-    String COMMENT_JSON_URL = "http://hot.cnbeta.com/comment/read";
+    String COMMENT_BASE_URL = HOST_URL + COMMENT;
+    String COMMENT_JSON_URL = COMMENT_BASE_URL + "/read";
+    String CAPTCHA_BASE_URL = COMMENT_BASE_URL + "/captcha";
+    String CAPTCHA_URL = CAPTCHA_BASE_URL + "?refresh=1";
 
     @GET("/articles/{sid}.htm")
     Observable<ResponseBody> getArticleHtml(@Path("sid") int sid);
 
-    @GET(COMMENT + "/captcha?refresh=1")
+    @GET(CAPTCHA_URL)
     Observable<WebCaptcha> getCaptchaDataUrl(@Query("_csrf") String token,
                                              @Query("_") long timestamp);
 

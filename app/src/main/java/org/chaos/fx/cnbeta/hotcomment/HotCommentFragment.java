@@ -71,16 +71,20 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         mHotCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                RecyclerView.ViewHolder holder = mHotCommentView.getRecyclerView().findViewHolderForAdapterPosition(position);
-
                 HotComment comment = mHotCommentAdapter.get(position);
 
-                View tv = holder.itemView.findViewById(R.id.title);
-                ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(holder.itemView, getString(R.string.transition_details_background)),
-                                Pair.create(tv, getString(R.string.transition_details_title)));
-                ContentActivity.start(getActivity(), comment.getSid(), comment.getSubject(), null, options);
+                if (comment.getSid() == 0) {
+                    showSnackBar(R.string.error_invalid_sid);
+                } else {
+                    RecyclerView.ViewHolder holder = mHotCommentView.getRecyclerView().findViewHolderForAdapterPosition(position);
+
+                    View tv = holder.itemView.findViewById(R.id.title);
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                                    Pair.create(holder.itemView, getString(R.string.transition_details_background)),
+                                    Pair.create(tv, getString(R.string.transition_details_title)));
+                    ContentActivity.start(getActivity(), comment.getSid(), comment.getSubject(), null, options);
+                }
             }
         });
 

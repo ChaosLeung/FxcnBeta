@@ -127,4 +127,6 @@
     <string name="transition_details_title" translatable="false">transition_details_title</string>
     <string name="default_captcha_for_mobile_api" translatable="false">0000</string>
 
+    <string name="error_invalid_sid">无效数据，不能查看详细内容</string>
+
 </resources>

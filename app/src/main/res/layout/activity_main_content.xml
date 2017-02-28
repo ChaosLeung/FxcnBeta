@@ -32,7 +32,7 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
@@ -48,7 +48,7 @@
                 android:layout_height="8dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/top_shadow" />
-        </FrameLayout>
+        </android.support.design.widget.CoordinatorLayout>
 
         <com.roughike.bottombar.BottomBar
             android:id="@+id/bottom_bar"

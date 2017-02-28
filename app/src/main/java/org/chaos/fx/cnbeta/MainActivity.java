@@ -39,6 +39,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
 import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceKeys;
 import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
 import org.chaos.fx.cnbeta.rank.RanksFragment;
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     };
 
+    private SharedPreferences mDefaultPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,13 +114,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         });
 
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+        mDefaultPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private void expandTabLayout() {
@@ -166,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.night_mode:
+                PreferenceHelper.getInstance().setNightMode(!PreferenceHelper.getInstance().inNightMode());
+                break;
             case R.id.nav_settings:
                 startActivity(new Intent(this, PreferencesActivity.class));
                 break;

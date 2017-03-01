@@ -23,12 +23,6 @@
               android:showDividers="middle"
               android:dividerPadding="@dimen/fb_edit_padding">
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

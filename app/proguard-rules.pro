@@ -31,3 +31,29 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# base configuration
+#-mergeinterfacesaggressively
+-keepattributes Signature, InnerClasses, Exceptions, SourceFile, LineNumberTable
+
+# For jsoup
+-keep class org.jsoup.nodes.Entities
+
+# For Okio
+-dontwarn java.nio.file.*
+-dontwarn org.codehaus.mojo.**
+
+# For retrofit
+-dontwarn retrofit2.**
+
+# For OkHttpDownloader
+-dontwarn com.squareup.okhttp.*
+
+# For umeng
+-dontwarn com.umeng.message.**
+-keep class org.chaos.fx.cnbeta.R$* {
+    public static final int umeng_*;
+}
+
+# For BottomBar
+-dontwarn com.roughike.bottombar.**

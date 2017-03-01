@@ -33,7 +33,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#000"
+            android:textColor="@color/content_title"
             android:textSize="30sp"
             android:transitionName="@string/transition_details_title"
             tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future" />
@@ -46,7 +46,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
-            android:src="@color/author_image"
+            android:src="@color/holder_color"
             tools:background="#000" />
 
         <TextView
@@ -56,7 +56,7 @@
             android:layout_alignTop="@+id/author_image"
             android:layout_toEndOf="@+id/author_image"
             android:layout_toRightOf="@+id/author_image"
-            android:textColor="@color/content_text"
+            android:textColor="@color/content_source"
             tools:text="The Washington Post" />
 
         <TextView
@@ -67,6 +67,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/author_image"
             android:singleLine="true"
+            android:textColor="@color/content_time"
             tools:text="3 hours ago" />
 
         <TextView
@@ -77,6 +78,7 @@
             android:layout_toEndOf="@+id/author_image"
             android:layout_toRightOf="@+id/author_image"
             android:singleLine="true"
+            android:textColor="@color/content_author"
             tools:text="Sean Sullivan and Katie Zezima" />
 
         <LinearLayout
@@ -98,7 +100,7 @@
             android:layout_alignParentRight="true"
             android:layout_below="@+id/content_layout"
             android:layout_marginTop="24dp"
-            android:textColor="@color/card_time_text"
+            android:textColor="@color/content_comment_count"
             tools:text="12 条评论" />
     </RelativeLayout>
 </ScrollView>

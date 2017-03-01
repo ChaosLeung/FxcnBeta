@@ -42,6 +42,7 @@ import com.squareup.picasso.RequestCreator;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
+import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 
@@ -114,11 +115,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         }
     };
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mPresenter = new DetailsPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOPIC_LOGO));
-    }
+    private NewsContent mTmpNewsContent;
 
     @Override
     public void onAttach(Activity activity) {
@@ -153,7 +150,12 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             }
         });
 
+        mPresenter = new DetailsPresenter(getArguments().getInt(KEY_SID), getArguments().getString(KEY_TOPIC_LOGO));
         mPresenter.subscribe(this);
+        if (mTmpNewsContent != null) {
+            handleNewsContent(mTmpNewsContent);
+            mTmpNewsContent = null;
+        }
     }
 
     @Override
@@ -199,8 +201,12 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
                 ((BitmapDrawable) authorImg.getDrawable()).getBitmap(), toTimeline);
     }
 
-    public void handleHtmlContent(String html) {
-        mPresenter.loadContentByHtml(html);
+    public void handleNewsContent(NewsContent content) {
+        if (mPresenter == null) {
+            mTmpNewsContent = content;
+        } else {
+            mPresenter.loadContentByNewsContent(content);
+        }
     }
 
     @Override
@@ -222,7 +228,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     @Override
     public void setTimeString(String formattedTime) {
-        mTimeView.setText(TimeStringHelper.getTimeString(formattedTime));
+        mTimeView.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(formattedTime));
     }
 
     @Override
@@ -263,11 +269,6 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             r.networkPolicy(NetworkPolicy.OFFLINE);
         }
         r.into(view, l);
-    }
-
-    @Override
-    public void showTransition() {
-        getActivity().supportStartPostponedEnterTransition();
     }
 
     public void onFragmentReenter(Intent data) {

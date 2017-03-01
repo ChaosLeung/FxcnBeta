@@ -16,15 +16,20 @@
 
 package org.chaos.fx.cnbeta.details;
 
-import org.chaos.fx.cnbeta.net.CnBetaApi;
+import android.util.Log;
+
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.util.CommentComparator;
 import org.chaos.fx.cnbeta.util.ModelUtil;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -43,14 +48,19 @@ import io.reactivex.schedulers.Schedulers;
 
 class CommentPresenter implements CommentContract.Presenter {
 
+    private static final String TAG = "CommentPresenter";
+
     private int mSid;
     private String mSN;
-    private String mToken;
+    private String mTokenForReadComment;
+    private String mOperationToken;
     private CommentContract.View mView;
 
     private CompositeDisposable mDisposables;
 
     private boolean isCommentEnable;
+
+    private boolean inMobileApiMode;
 
     CommentPresenter(int sid) {
         mSid = sid;
@@ -63,8 +73,17 @@ class CommentPresenter implements CommentContract.Presenter {
     }
 
     @Override
+    public void setReadCommentToken(String token) {
+        mTokenForReadComment = token;
+    }
+
+    @Override
     public void loadComments() {
-        mDisposables.add(CnBetaApiHelper.getCommentJson(mSid, mSN)
+        loadWebApiComments();
+    }
+
+    private void loadWebApiComments() {
+        mDisposables.add(CnBetaApiHelper.getCommentJson(mSid, mTokenForReadComment, mSN)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result<WebCommentResult>, WebCommentResult>() {
                     @Override
@@ -98,21 +117,34 @@ class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(WebCommentResult result) throws Exception {
                         isCommentEnable = result.isOpen();
-                        mToken = result.getToken();
+                        mOperationToken = result.getToken();
                         List<Comment> comments = ModelUtil.toCommentList(result);
+                        Collections.sort(comments, new CommentComparator());
                         mView.addComments(comments);
                         mView.showNoCommentTipsIfNeed();
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "loadWebApiComments: ", e);
+                        mView.showNoCommentTipsIfNeed();
+                    }
                 }));
+    }
+
+    private void loadMobileApiComments() {
+        // enable publish comment feature if current is in Mobile API mode
+        isCommentEnable = true;
+        refreshComments(1);
     }
 
     @Override
     public void refreshComments(int page) {
         mDisposables.add(CnBetaApiHelper.comments(mSid, page)
                 .subscribeOn(Schedulers.io())
-                .map(new Function<CnBetaApi.Result<List<Comment>>, List<Comment>>() {
+                .map(new Function<MobileApi.Result<List<Comment>>, List<Comment>>() {
                     @Override
-                    public List<Comment> apply(CnBetaApi.Result<List<Comment>> listResult) {
+                    public List<Comment> apply(MobileApi.Result<List<Comment>> listResult) {
                         if (!listResult.isSuccess()) {
                             throw new RequestFailedException();
                         }
@@ -135,6 +167,7 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "refreshComments: ", e);
                         mView.showLoadingFailed();
                         mView.hideProgress();
                         mView.showNoCommentTipsIfNeed();
@@ -144,7 +177,15 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void against(final Comment c) {
-        mDisposables.add(CnBetaApiHelper.againstComment(mToken, mSid, c.getTid())
+        if (inMobileApiMode) {
+            againstByMobileApi(c);
+        } else {
+            againstByWebApi(c);
+        }
+    }
+
+    private void againstByWebApi(final Comment c) {
+        mDisposables.add(CnBetaApiHelper.againstComment(mOperationToken, mSid, c.getTid())
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
@@ -165,6 +206,35 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "againstByWebApi: ", e);
+                        mView.showOperationFailed();
+                    }
+                }));
+    }
+
+    private void againstByMobileApi(final Comment c) {
+        mDisposables.add(CnBetaApiHelper.againstComment(c.getTid())
+                .subscribeOn(Schedulers.io())
+                .map(new Function<MobileApi.Result<String>, String>() {
+                    @Override
+                    public String apply(MobileApi.Result<String> result) {
+                        if (!result.isSuccess()) {
+                            throw new RequestFailedException();
+                        }
+                        return result.result;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String result) throws Exception {
+                        c.setAgainst(c.getAgainst() + 1);
+                        mView.notifyCommentChanged(c);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "againstByMobileApi: ", e);
                         mView.showOperationFailed();
                     }
                 }));
@@ -172,7 +242,15 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void support(final Comment c) {
-        mDisposables.add(CnBetaApiHelper.supportComment(mToken, mSid, c.getTid())
+        if (inMobileApiMode) {
+            supportByMobileApi(c);
+        } else {
+            supportByWebApi(c);
+        }
+    }
+
+    private void supportByWebApi(final Comment c) {
+        mDisposables.add(CnBetaApiHelper.supportComment(mOperationToken, mSid, c.getTid())
                 .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
                     public WebApi.Result apply(WebApi.Result result) {
@@ -193,6 +271,35 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "supportByWebApi: ", e);
+                        mView.showOperationFailed();
+                    }
+                }));
+    }
+
+    private void supportByMobileApi(final Comment c) {
+        mDisposables.add(CnBetaApiHelper.supportComment(c.getTid())
+                .map(new Function<MobileApi.Result<String>, String>() {
+                    @Override
+                    public String apply(MobileApi.Result<String> result) {
+                        if (!result.isSuccess()) {
+                            throw new RequestFailedException();
+                        }
+                        return result.result;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String result) throws Exception {
+                        c.setSupport(c.getSupport() + 1);
+                        mView.notifyCommentChanged(c);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "supportByMobileApi: ", e);
                         mView.showOperationFailed();
                     }
                 }));
@@ -210,7 +317,19 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public void publishComment(String content, String captcha, int pid) {
-        mDisposables.add(CnBetaApiHelper.replyComment(mToken, content, captcha, mSid, pid)
+        if (inMobileApiMode) {
+            if (pid == 0) {
+                addCommentByMobileApi(content);
+            } else {
+                replayCommentByMobileApi(content, pid);
+            }
+        } else {
+            publishCommentByWebApi(content, captcha, pid);
+        }
+    }
+
+    private void publishCommentByWebApi(String content, String captcha, final int pid) {
+        mDisposables.add(CnBetaApiHelper.replyComment(mOperationToken, content, captcha, mSid, pid)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<WebApi.Result, WebApi.Result>() {
                     @Override
@@ -218,7 +337,7 @@ class CommentPresenter implements CommentContract.Presenter {
                         if (result.isSuccess()) {
                             return result;
                         } else {
-                            throw new RequestFailedException();
+                            throw new RequestFailedException(result.error);
                         }
                     }
                 })
@@ -231,6 +350,63 @@ class CommentPresenter implements CommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "publishCommentByWebApi: pid = " + pid, e);
+                        mView.showAddCommentFailed(e.getMessage());
+                    }
+                }));
+    }
+
+    private void replayCommentByMobileApi(String content, int pid) {
+        mDisposables.add(CnBetaApiHelper.replyComment(mSid, pid, content)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<MobileApi.Result<String>, String>() {
+                    @Override
+                    public String apply(MobileApi.Result<String> result) throws Exception {
+                        if (result.isSuccess()) {
+                            return result.result;
+                        } else {
+                            throw new RequestFailedException(result.result);
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        mView.showAddCommentSucceed();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "replayCommentByMobileApi: ", e);
+                        mView.showAddCommentFailed(e.getMessage());
+                    }
+                }));
+    }
+
+    private void addCommentByMobileApi(String content) {
+        mDisposables.add(CnBetaApiHelper.addComment(mSid, content)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<MobileApi.Result<String>, String>() {
+                    @Override
+                    public String apply(MobileApi.Result<String> result) throws Exception {
+                        if (result.isSuccess()) {
+                            return result.result;
+                        } else {
+                            throw new RequestFailedException(result.result);
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        mView.showAddCommentSucceed();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "addCommentByMobileApi: ", e);
                         mView.showAddCommentFailed(e.getMessage());
                     }
                 }));
@@ -241,14 +417,18 @@ class CommentPresenter implements CommentContract.Presenter {
         return isCommentEnable;
     }
 
-    @Override
-    public String getToken() {
-        return mToken;
+    public String getOperationToken() {
+        return mOperationToken;
     }
 
     @Override
     public void subscribe(CommentContract.View view) {
         mView = view;
+
+        inMobileApiMode = PreferenceHelper.getInstance().inMobileApiMode();
+        if (inMobileApiMode) {
+            loadMobileApiComments();
+        }
     }
 
     @Override

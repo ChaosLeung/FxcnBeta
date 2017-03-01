@@ -23,12 +23,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.details.ContentActivity;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.widget.BaseAdapter;
 import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
@@ -47,7 +50,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     private static final String KEY_TYPE = "type";
 
     /**
-     * {@code type} 应为 {@link org.chaos.fx.cnbeta.net.CnBetaApi.RankType}
+     * {@code type} 应为 {@link MobileApi.RankType}
      * 然而直接加了这 annotation AS 语法提示飘红，所以直接砍了
      *
      * @param type 排行类型
@@ -61,39 +64,40 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
         return subFragment;
     }
 
-    private String mType;
-
     @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
+    @BindView(R.id.no_content) TextView mNoContentTipsView;
 
     private RankSubAdapter mArticleAdapter;
 
     private int mPreClickPosition;
     private RankSubContract.Presenter mPresenter;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mType = getArguments().getString(KEY_TYPE);
-        mPresenter = new RankSubPresenter(mType);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
-        ButterKnife.bind(this, rootView);
+        return inflater.inflate(R.layout.fragment_sub_rank, container, false);
+    }
 
-        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView.getRecyclerView(), mType);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
+
+        String type = getArguments().getString(KEY_TYPE);
+
+        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView.getRecyclerView(), type);
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                RecyclerView.ViewHolder holder = mArticlesView.getRecyclerView().findViewHolderForAdapterPosition(position);
                 mPreClickPosition = position;
                 ArticleSummary summary = mArticleAdapter.get(position);
 
-                View tv = v.findViewById(R.id.title);
+                View tv = holder.itemView.findViewById(R.id.title);
                 ActivityOptionsCompat options =
                         ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(v, getString(R.string.transition_details_background)),
+                                Pair.create(holder.itemView, getString(R.string.transition_details_background)),
                                 Pair.create(tv, getString(R.string.transition_details_title)));
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTitle(),
                         summary.getTopicLogo(), options);
@@ -102,12 +106,8 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
         mArticlesView.setAdapter(mArticleAdapter);
 
         mArticlesView.setOnRefreshListener(this);
-        return rootView;
-    }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        mPresenter = new RankSubPresenter(type);
         mPresenter.subscribe(this);
     }
 
@@ -145,6 +145,11 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     @Override
     public void showNoMoreContent() {
         showSnackBar(R.string.no_more_articles);
+        showNothingTipsIfNeed();
+    }
+
+    public void showNothingTipsIfNeed() {
+        mNoContentTipsView.setVisibility(mArticleAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -155,5 +160,6 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
         } else {
             showNoMoreContent();
         }
+        showNothingTipsIfNeed();
     }
 }

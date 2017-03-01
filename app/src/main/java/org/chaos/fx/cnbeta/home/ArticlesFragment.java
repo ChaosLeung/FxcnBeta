@@ -17,7 +17,6 @@
 package org.chaos.fx.cnbeta.home;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -28,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chaos.fx.cnbeta.MainActivity;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
@@ -48,16 +46,11 @@ import butterknife.ButterKnife;
 public class ArticlesFragment extends BaseFragment
         implements SwipeLinearRecyclerView.OnRefreshListener,
         SwipeLinearRecyclerView.OnLoadMoreListener,
-        MainActivity.OnActionBarDoubleClickListener,
         ArticlesContract.View {
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
     private static final int STORE_MAX_COUNT = 50;
-
-    private static Handler sHandler = new Handler();
-
-    private static final long RESET_ACTION_BAR_TITLE_DELAY_TIME = 3000;
 
     public static ArticlesFragment newInstance(String topicId) {
         ArticlesFragment fragment = new ArticlesFragment();
@@ -67,13 +60,6 @@ public class ArticlesFragment extends BaseFragment
         return fragment;
     }
 
-    private Runnable mResetActionBarTitleRunnable = new Runnable() {
-        @Override
-        public void run() {
-            setActionBarTitle(R.string.nav_home);
-        }
-    };
-
     @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
 
     private ArticleAdapter mArticleAdapter;
@@ -82,32 +68,31 @@ public class ArticlesFragment extends BaseFragment
 
     private int mPreClickPosition;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setActionBarTitle(R.string.nav_home);
-        String topicId = getArguments().getString(KEY_TOPIC_ID, "null");
-        mPresenter = new ArticlesPresenter(topicId);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
-        ButterKnife.bind(this, rootView);
+        return inflater.inflate(R.layout.fragment_articles, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
 
         mArticleAdapter = new ArticleAdapter(getActivity(), mArticlesView.getRecyclerView());
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
+                RecyclerView.ViewHolder holder = mArticlesView.getRecyclerView().findViewHolderForAdapterPosition(position);
                 mPreClickPosition = position;
                 ArticleSummary summary = mArticleAdapter.get(position);
 
-                View tv = v.findViewById(R.id.title);
+                View tv = holder.itemView.findViewById(R.id.title);
                 ActivityOptionsCompat options =
                         ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(v, getString(R.string.transition_details_background)),
-                                Pair.create(tv, getString(R.string.transition_details_title)));
+                                Pair.create(tv, getString(R.string.transition_details_title)),
+                                Pair.create(holder.itemView, getString(R.string.transition_details_background)));
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTitle(),
                         summary.getTopicLogo(), options);
             }
@@ -116,49 +101,30 @@ public class ArticlesFragment extends BaseFragment
                 LayoutInflater.from(getActivity()).inflate(
                         R.layout.layout_loading, mArticlesView, false));
         mArticlesView.setAdapter(mArticleAdapter);
-        mArticlesView.getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                float verticalOffset = recyclerView.computeVerticalScrollOffset();
-                float heightRatio = verticalOffset / getResources().getDisplayMetrics().heightPixels;
-                if (heightRatio <= 0.3f) {
-                    sHandler.post(mResetActionBarTitleRunnable);
-                }
-                if (Math.round(heightRatio) >= 6 && dy <= -180) {
-                    getSupportActionBar().setTitle(R.string.double_click_move_to_top);
-                    sHandler.removeCallbacks(mResetActionBarTitleRunnable);
-                    sHandler.postDelayed(mResetActionBarTitleRunnable, RESET_ACTION_BAR_TITLE_DELAY_TIME);
-                }
-            }
-        });
 
         mArticlesView.setOnRefreshListener(this);
         mArticlesView.setOnLoadMoreListener(this);
-        return rootView;
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mPresenter.unsubscribe();
-        ((MainActivity) getActivity()).removeOnActionBarDoubleClickListener(this);
+        String topicId = getArguments().getString(KEY_TOPIC_ID, "null");
+        mPresenter = new ArticlesPresenter(topicId);
+        mPresenter.subscribe(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.subscribe(this);
-        ((MainActivity) getActivity()).addOnActionBarDoubleClickListener(this);
         mArticleAdapter.notifyItemChanged(mPreClickPosition);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        sHandler.removeCallbacks(mResetActionBarTitleRunnable);
+
         int size = mArticleAdapter.listSize();
         List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
         mPresenter.saveArticles(storeArticles);
+
+        mPresenter.unsubscribe();
     }
 
     @Override
@@ -179,13 +145,6 @@ public class ArticlesFragment extends BaseFragment
 
     private void showSnackBar(@StringRes int strId) {
         Snackbar.make(mArticlesView, strId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onActionBarDoubleClick() {
-        sHandler.removeCallbacks(mResetActionBarTitleRunnable);
-        setActionBarTitle(R.string.nav_home);
-        mArticlesView.getRecyclerView().scrollToPosition(0);
     }
 
     @Override

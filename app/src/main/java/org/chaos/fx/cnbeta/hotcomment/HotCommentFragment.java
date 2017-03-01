@@ -22,6 +22,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,18 +55,17 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     private HotCommentContract.Presenter mPresenter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setActionBarTitle(R.string.nav_hot_comments);
-        mPresenter = new HotCommentPresenter();
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.layout_swipe_recycler_view, container, false);
-        ButterKnife.bind(this, rootView);
+        return inflater.inflate(R.layout.fragment_hot_comment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
 
         mHotCommentAdapter = new HotCommentAdapter(getActivity(), mHotCommentView.getRecyclerView());
         mHotCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
@@ -73,24 +73,26 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
             public void onItemClick(View v, int position) {
                 HotComment comment = mHotCommentAdapter.get(position);
 
-                View tv = v.findViewById(R.id.title);
-                ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(v, getString(R.string.transition_details_background)),
-                                Pair.create(tv, getString(R.string.transition_details_title)));
-                ContentActivity.start(getActivity(), comment.getSid(), comment.getSubject(), null, options);
+                if (comment.getSid() == 0) {
+                    showSnackBar(R.string.error_invalid_sid);
+                } else {
+                    RecyclerView.ViewHolder holder = mHotCommentView.getRecyclerView().findViewHolderForAdapterPosition(position);
+
+                    View tv = holder.itemView.findViewById(R.id.title);
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                                    Pair.create(holder.itemView, getString(R.string.transition_details_background)),
+                                    Pair.create(tv, getString(R.string.transition_details_title)));
+                    ContentActivity.start(getActivity(), comment.getSid(), comment.getSubject(), null, options);
+                }
             }
         });
 
         mHotCommentView.setAdapter(mHotCommentAdapter);
 
         mHotCommentView.setOnRefreshListener(this);
-        return rootView;
-    }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        mPresenter = new HotCommentPresenter();
         mPresenter.subscribe(this);
     }
 

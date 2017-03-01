@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'com.antfortune.freeline'
 
 buildscript {
     repositories {
@@ -36,7 +37,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -87,6 +90,8 @@ dependencies {
     compile 'com.github.chrisbanes:PhotoView:1.3.1'
 
     compile 'me.zhanghai.android.materialprogressbar:library:1.3.0'
+
+    compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
 
     compile project(':ThirdPartyLib')
 }

@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.HasReadArticle;
+import org.chaos.fx.cnbeta.net.model.NewsContent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -150,12 +151,14 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void onCommentUpdated(int count) {
-        mPagerAdapter.detailsFragment.setCommentCount(count);
+        if (mPagerAdapter.detailsFragment.isAdded()) {
+            mPagerAdapter.detailsFragment.setCommentCount(count);
+        }
     }
 
     @OnClick(R.id.error_button)
     public void requestArticleHtml() {
-        mPresenter.loadArticleHtml();
+        mPresenter.loadArticleContent();
     }
 
     @Override
@@ -169,13 +172,13 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     }
 
     @Override
-    public void setupDetailsFragment(String html) {
-        mPagerAdapter.detailsFragment.handleHtmlContent(html);
+    public void setupDetailsFragment(NewsContent content) {
+        mPagerAdapter.detailsFragment.handleNewsContent(content);
     }
 
     @Override
-    public void setupCommentFragment(String sn) {
-        mPagerAdapter.commentFragment.handleSN(sn);
+    public void setupCommentFragment(String sn, String tokenForReadComment) {
+        mPagerAdapter.commentFragment.handleSetupMessage(sn, tokenForReadComment);
     }
 
     @Override

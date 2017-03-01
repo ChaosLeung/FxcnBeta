@@ -84,10 +84,15 @@
     <string name="basic_setting">常规</string>
     <string name="load_image">图片加载</string>
     <string name="auto_load_image_in_wifi_mode">仅在 Wi-Fi 环境下自动加载图片</string>
+    <string name="mobile_api_mode">官方模式</string>
+    <string name="use_mobile_api">与官方客户端数据保持一致</string>
+    <string name="night_mode">夜间模式</string>
     <string name="about">关于</string>
     <string name="version_name">版本号</string>
-    <string name="author_email">联系邮箱</string>
+    <string name="update_log">更新日志</string>
+    <string name="license">开源许可</string>
     <string name="info_default">Unknown</string>
+    <string name="other">其他</string>
 
     <string name="hot_comment_content">%1$s：%2$s</string>
     <string name="anonymous">匿名网友</string>
@@ -120,5 +125,10 @@
 
     <string name="transition_details_background" translatable="false">transition_details_background</string>
     <string name="transition_details_title" translatable="false">transition_details_title</string>
+    <string name="default_captcha_for_mobile_api" translatable="false">0000</string>
+
+    <string name="error_invalid_sid">无效数据，不能查看详细内容</string>
+
+    <string name="email">lgf42031@gmail.com</string>
 
 </resources>

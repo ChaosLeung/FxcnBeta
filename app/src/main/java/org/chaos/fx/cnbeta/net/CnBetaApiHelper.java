@@ -48,14 +48,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class CnBetaApiHelper {
 
-    private static CnBetaApi sCnBetaApi;
+    private static MobileApi sMobileApi;
     private static WebApi sWebApi;
 
     private static OkHttp3Downloader sCookieDownloader;
 
     public static void initialize() {
-        sCnBetaApi = new Retrofit.Builder()
-                .baseUrl(CnBetaApi.BASE_URL)
+        sMobileApi = new Retrofit.Builder()
+                .baseUrl(MobileApi.BASE_URL)
                 .addConverterFactory(
                         GsonConverterFactory.create(
                                 new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
@@ -71,7 +71,7 @@ public class CnBetaApiHelper {
                                 }).create()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
-                .create(CnBetaApi.class);
+                .create(MobileApi.class);
 
         OkHttpClient okHttpClient = CnBetaHttpClientProvider.newCnBetaHttpClient();
 
@@ -90,41 +90,41 @@ public class CnBetaApiHelper {
         return sCookieDownloader;
     }
 
-    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> articles() {
+    public static Observable<MobileApi.Result<List<ArticleSummary>>> articles() {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.articles(timestamp, CnBetaSignUtil.articlesSign(timestamp));
+        return sMobileApi.articles(timestamp, CnBetaSignUtil.articlesSign(timestamp));
     }
 
-    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> topicArticles(String topicId) {
+    public static Observable<MobileApi.Result<List<ArticleSummary>>> topicArticles(String topicId) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.topicArticles(
+        return sMobileApi.topicArticles(
                 timestamp,
                 CnBetaSignUtil.topicArticlesSign(timestamp, topicId),
                 topicId);
     }
 
-    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> newArticles(String topicId, int startSid) {
+    public static Observable<MobileApi.Result<List<ArticleSummary>>> newArticles(String topicId, int startSid) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.newArticles(
+        return sMobileApi.newArticles(
                 timestamp,
                 CnBetaSignUtil.newArticlesSign(timestamp, topicId, startSid),
                 topicId,
                 startSid);
     }
 
-    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> oldArticles(String topicId,
+    public static Observable<MobileApi.Result<List<ArticleSummary>>> oldArticles(String topicId,
                                                                                  int endSid) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.oldArticles(
+        return sMobileApi.oldArticles(
                 timestamp,
                 CnBetaSignUtil.oldArticlesSign(timestamp, topicId, endSid),
                 topicId,
                 endSid);
     }
 
-    public static Observable<CnBetaApi.Result<NewsContent>> articleContent(int sid) {
+    public static Observable<MobileApi.Result<NewsContent>> articleContent(int sid) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.articleContent(
+        return sMobileApi.articleContent(
                 timestamp,
                 CnBetaSignUtil.articleContentSign(timestamp, sid),
                 sid);
@@ -138,10 +138,10 @@ public class CnBetaApiHelper {
      * @param sid  文章 id
      * @param page 页
      */
-    public static Observable<CnBetaApi.Result<List<Comment>>> comments(int sid,
+    public static Observable<MobileApi.Result<List<Comment>>> comments(int sid,
                                                                        int page) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.comments(
+        return sMobileApi.comments(
                 timestamp,
                 CnBetaSignUtil.commentsSign(timestamp, sid, page),
                 sid,
@@ -150,16 +150,16 @@ public class CnBetaApiHelper {
 
     public static Observable<List<ClosedComment>> closedComments(int sid) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.closedComments(
+        return sMobileApi.closedComments(
                 timestamp,
                 CnBetaSignUtil.closedCommentsSign(timestamp, sid),
                 sid);
     }
 
-    public static Observable<CnBetaApi.Result<Object>> addComment(int sid,
+    public static Observable<MobileApi.Result<String>> addComment(int sid,
                                                                   String content) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.addComment(
+        return sMobileApi.addComment(
                 timestamp,
                 CnBetaSignUtil.addCommentSign(timestamp, sid, content),
                 sid,
@@ -167,11 +167,11 @@ public class CnBetaApiHelper {
     }
 
     @Deprecated
-    public static Observable<CnBetaApi.Result<Object>> replyComment(int sid,
+    public static Observable<MobileApi.Result<String>> replyComment(int sid,
                                                                     int pid,
                                                                     String content) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.replyComment(
+        return sMobileApi.replyComment(
                 timestamp,
                 CnBetaSignUtil.replyCommentSign(timestamp, sid, pid, content),
                 sid,
@@ -180,44 +180,44 @@ public class CnBetaApiHelper {
     }
 
     @Deprecated
-    public static Observable<CnBetaApi.Result<String>> supportComment(int tid) {
+    public static Observable<MobileApi.Result<String>> supportComment(int tid) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.supportComment(
+        return sMobileApi.supportComment(
                 timestamp,
                 CnBetaSignUtil.supportCommentSign(timestamp, tid),
                 tid);
     }
 
     @Deprecated
-    public static Observable<CnBetaApi.Result<String>> againstComment(int tid) {
+    public static Observable<MobileApi.Result<String>> againstComment(int tid) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.againstComment(
+        return sMobileApi.againstComment(
                 timestamp,
                 CnBetaSignUtil.againstCommentSign(timestamp, tid),
                 tid);
     }
 
-    public static Observable<CnBetaApi.Result<List<HotComment>>> hotComment() {
+    public static Observable<MobileApi.Result<List<HotComment>>> hotComment() {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
+        return sMobileApi.hotComment(timestamp, CnBetaSignUtil.hotCommentSign(timestamp));
     }
 
-    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> todayRank(@CnBetaApi.RankType String type) {
+    public static Observable<MobileApi.Result<List<ArticleSummary>>> todayRank(@MobileApi.RankType String type) {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.todayRank(
+        return sMobileApi.todayRank(
                 timestamp,
                 CnBetaSignUtil.todayRankSign(timestamp, type),
                 type);
     }
 
-    public static Observable<CnBetaApi.Result<List<ArticleSummary>>> top10() {
+    public static Observable<MobileApi.Result<List<ArticleSummary>>> top10() {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.top10(timestamp, CnBetaSignUtil.top10Sign(timestamp));
+        return sMobileApi.top10(timestamp, CnBetaSignUtil.top10Sign(timestamp));
     }
 
-    public static Observable<CnBetaApi.Result<List<Topic>>> topics() {
+    public static Observable<MobileApi.Result<List<Topic>>> topics() {
         long timestamp = System.currentTimeMillis();
-        return sCnBetaApi.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
+        return sMobileApi.topics(timestamp, CnBetaSignUtil.topicsSign(timestamp));
     }
 
     public static final Pattern SN_PATTERN = Pattern.compile("SN:\"(.{5})\"");
@@ -238,13 +238,14 @@ public class CnBetaApiHelper {
     /**
      * 获取网页版的评论内容
      *
-     * Note: 可以使用该 API 获取到 token
+     * Note: 可以使用该 API 获取到评论用的 token
      *
-     * @param sid 文章 id
-     * @param sn  每篇文章的 sn 码
+     * @param sid   文章 id
+     * @param token 获取 Web 评论用的 token
+     * @param sn    每篇文章的 sn 码
      */
-    public static Observable<WebApi.Result<WebCommentResult>> getCommentJson(int sid, String sn) {
-        return sWebApi.getCommentJson("1," + sid + "," + sn);
+    public static Observable<WebApi.Result<WebCommentResult>> getCommentJson(int sid, String token, String sn) {
+        return sWebApi.getCommentJson(token, "1," + sid + "," + sn);
     }
 
     public static Observable<WebCaptcha> getCaptchaDataUrl(String token) {
@@ -255,6 +256,15 @@ public class CnBetaApiHelper {
         return replyComment(token, content, captcha, sid, 0);
     }
 
+    /**
+     * 回复或添加评论
+     *
+     * @param token   comment json 中的 token
+     * @param content 内容
+     * @param captcha 验证码
+     * @param sid     文章 id
+     * @param pid     引用的评论的 id，如为新增评论，该值需为 0
+     */
     public static Observable<WebApi.Result> replyComment(String token, String content, String captcha, int sid, int pid) {
         return sWebApi.addComment(token, "publish", content, captcha, sid, pid);
     }

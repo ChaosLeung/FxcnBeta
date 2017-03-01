@@ -17,6 +17,11 @@
 <android.support.v7.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="night_mode"
+        android:title="@string/night_mode" />
+
     <android.support.v7.preference.PreferenceCategory
         android:key="basic"
         android:title="@string/basic_setting">
@@ -26,6 +31,13 @@
             android:key="safe_data_mode"
             android:summary="@string/auto_load_image_in_wifi_mode"
             android:title="@string/load_image" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="mobile_api_mode"
+            android:summary="@string/use_mobile_api"
+            android:title="@string/mobile_api_mode" />
+
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory
@@ -34,16 +46,27 @@
 
         <android.support.v7.preference.Preference
             android:key="help_and_feedback"
-            android:title="@string/nav_help" />
+            android:title="@string/nav_help"
+            android:summary="@string/email" />
 
-        <android.support.v7.preference.Preference
-            android:key="author_email"
-            android:summary="@string/info_default"
-            android:title="@string/author_email" />
+        <org.chaos.fx.cnbeta.preferences.DialogPreference
+            android:key="license"
+            android:title="@string/license" />
+
+        <org.chaos.fx.cnbeta.preferences.DialogPreference
+            android:dialogIcon="@null"
+            android:dialogLayout="@layout/layout_release_note"
+            android:dialogMessage="@null"
+            android:dialogTitle="@null"
+            android:key="release_note"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/update_log" />
 
         <android.support.v7.preference.Preference
             android:key="version_name"
             android:summary="@string/info_default"
             android:title="@string/version_name" />
     </android.support.v7.preference.PreferenceCategory>
+
 </android.support.v7.preference.PreferenceScreen>

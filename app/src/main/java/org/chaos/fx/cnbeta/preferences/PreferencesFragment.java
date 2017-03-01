@@ -16,7 +16,6 @@
 
 package org.chaos.fx.cnbeta.preferences;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -27,7 +26,6 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 
 import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.help.FeedbackActivity;
 
 /**
  * @author Chaos
@@ -58,7 +56,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
         if (KEY_HELP_AND_FEEDBACK.equals(key)) {
-            startActivity(new Intent(getActivity(), FeedbackActivity.class));
+            // may be used in the future
+//            startActivity(new Intent(getActivity(), FeedbackActivity.class));
             return true;
         }
         return false;

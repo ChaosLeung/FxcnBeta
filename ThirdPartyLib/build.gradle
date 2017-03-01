@@ -6,7 +6,6 @@ android {
         versionCode 1
         versionName "1.0"
 
-        manifestPlaceholders = [UMENG_APPKEY: project.UMENG_APPKEY]
         buildConfigField "String", "WECHAT_APPID", "\"${project.WECHAT_APPID}\""
     }
     buildTypes {

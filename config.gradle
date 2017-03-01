@@ -20,8 +20,6 @@ File localProperties = project.rootProject.file('local.properties');
 if (localProperties.exists()) {
     properties.load(localProperties.newDataInputStream())
 }
-def umengKey = properties.getProperty('UMENG_APPKEY')
-ext.UMENG_APPKEY = umengKey != null ? umengKey : ""
 
 def wechatAppId = properties.getProperty('WECHAT_APPID')
 ext.WECHAT_APPID = wechatAppId != null ? wechatAppId : ""

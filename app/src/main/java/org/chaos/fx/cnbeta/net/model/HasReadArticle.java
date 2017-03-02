@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,34 @@
 
 package org.chaos.fx.cnbeta.net.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Unique;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
- * 已读文章
- *
  * @author Chaos
- *         3/27/16
+ *         02/03/2017
  */
-public class HasReadArticle extends RealmObject {
-    @PrimaryKey
-    private int mSid;
+
+@Entity
+public class HasReadArticle {
+    @Unique
+    private int sid;
+
+    @Generated(hash = 325982293)
+    public HasReadArticle(int sid) {
+        this.sid = sid;
+    }
+
+    @Generated(hash = 1063186214)
+    public HasReadArticle() {
+    }
 
     public int getSid() {
-        return mSid;
+        return sid;
     }
 
     public void setSid(int sid) {
-        mSid = sid;
+        this.sid = sid;
     }
 }

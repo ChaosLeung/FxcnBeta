@@ -16,12 +16,13 @@
 
 package org.chaos.fx.cnbeta.home;
 
-import org.chaos.fx.cnbeta.net.MobileApi;
+import org.chaos.fx.cnbeta.data.ArticlesDataSource;
+import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
+import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -30,9 +31,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * @author Chaos
@@ -44,7 +42,7 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
 
     private ArticlesContract.View mView;
 
-    private final Realm mRealm;
+    private final ArticlesDataSource mDataSource;
 
     private CompositeDisposable mDisposables;
 
@@ -52,7 +50,7 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
 
     ArticlesPresenter(String topicId) {
         mTopicId = topicId;
-        mRealm = Realm.getDefaultInstance();
+        mDataSource = ArticlesRepository.getInstance();
         mDisposables = new CompositeDisposable();
     }
 
@@ -60,7 +58,17 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
     public void subscribe(ArticlesContract.View view) {
         mView = view;
         if (mFirstLoad) {
-            mView.addArticles(getLocalArticles(), true);// load articles from local Repository
+            mDataSource.getSummaries(new ArticlesDataSource.LoadSummaryCallback() {
+                @Override
+                public void onTasksLoaded(List<ArticleSummary> summaries) {
+                    mView.addArticles(summaries, true);// load articles from local Repository
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+
+                }
+            });
             mView.setRefreshing(true);
             doRequest(CnBetaApiHelper.articles());
         }
@@ -69,12 +77,6 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
     @Override
     public void unsubscribe() {
         mDisposables.clear();
-    }
-
-    private List<ArticleSummary> getLocalArticles() {
-        RealmResults<ArticleSummary> results = mRealm.where(ArticleSummary.class).findAll();
-        results.sort("mSid", Sort.DESCENDING);
-        return new ArrayList<>(results);
     }
 
     @Override
@@ -154,10 +156,8 @@ class ArticlesPresenter implements ArticlesContract.Presenter {
     @Override
     public void saveArticles(List<ArticleSummary> articles) {
         if (!articles.isEmpty()) {
-            mRealm.beginTransaction();
-            mRealm.where(ArticleSummary.class).lessThan("mSid", articles.get(articles.size() - 1).getSid()).findAll().deleteAllFromRealm();
-            mRealm.copyToRealmOrUpdate(articles);
-            mRealm.commitTransaction();
+            mDataSource.deleteAllSummaries();
+            mDataSource.saveSummaries(articles);
         }
     }
 }

@@ -248,6 +248,7 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void showNoMoreComments() {
         showSnackBar(R.string.no_more_comments);
+        mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
     }
 
     @Override

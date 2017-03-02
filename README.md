@@ -39,6 +39,7 @@ STORE_PASSWORD=
 * [Gson](https://github.com/google/gson)
 * [jsoup](https://jsoup.org/)
 * [LicensesDialog](https://github.com/PSDev/LicensesDialog)
+* [GreenDao](http://greenrobot.org/greendao/)
 
 ## License
 

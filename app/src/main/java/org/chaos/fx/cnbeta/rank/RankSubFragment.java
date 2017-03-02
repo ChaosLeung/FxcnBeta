@@ -118,6 +118,14 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (isVisibleToUser && mArticleAdapter != null) {
+            mArticleAdapter.notifyDataSetChanged();
+        }
+        super.setUserVisibleHint(isVisibleToUser);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.unsubscribe();

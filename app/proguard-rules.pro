@@ -49,11 +49,16 @@
 # For OkHttpDownloader
 -dontwarn com.squareup.okhttp.*
 
-# For umeng
--dontwarn com.umeng.message.**
--keep class org.chaos.fx.cnbeta.R$* {
-    public static final int umeng_*;
-}
-
 # For BottomBar
 -dontwarn com.roughike.bottombar.**
+
+# For GreenDao
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+    public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+-dontwarn org.greenrobot.greendao.database.**
+-dontwarn rx.**
+
+#For Wechat
+-keep class com.tencent.mm.opensdk.**

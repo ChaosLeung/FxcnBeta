@@ -21,11 +21,9 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import org.chaos.fx.cnbeta.net.model.NewsContent;
-import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
@@ -38,8 +36,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author Chaos
@@ -125,12 +121,9 @@ class DetailsPresenter implements DetailsContract.Presenter {
         mView.setTitle(newsContent.getTitle());
         mView.setAuthor(newsContent.getAuthor());
         mView.setTimeString(newsContent.getTime());
-
-        if (PreferenceHelper.getInstance().inMobileApiMode()) {
-            // WebApi 转换的 NewsContent 的 comment count 永远是 0，
-            // 直接交给 CommentFragment 传过来。只有 MobileApi 才直接设置
-            mView.setCommentCount(newsContent.getCommentCount());
-        }
+        // WebApi 转换的 NewsContent 以及 MobileApi 的 comment count 都是 0，
+        // 直接交给 CommentFragment 传过来。只有 MobileApi 才直接设置
+//        mView.setCommentCount(newsContent.getCommentCount());
 
         String source = Jsoup.parse(newsContent.getSource()).text();
         newsContent.setSource(source);

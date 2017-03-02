@@ -116,6 +116,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     };
 
     private NewsContent mTmpNewsContent;
+    private int mTmpCount = -1;
 
     @Override
     public void onAttach(Activity activity) {
@@ -155,6 +156,11 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         if (mTmpNewsContent != null) {
             handleNewsContent(mTmpNewsContent);
             mTmpNewsContent = null;
+        }
+
+        if (mTmpCount != -1) {
+            setCommentCount(-1);
+            mTmpCount = -1;
         }
     }
 
@@ -233,7 +239,11 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     @Override
     public void setCommentCount(int count) {
-        mCommentCountView.setText(String.format(getString(R.string.content_comment_count), count));
+        if (isAdded()) {
+            mCommentCountView.setText(String.format(getString(R.string.content_comment_count), count));
+        } else {
+            mTmpCount = count;
+        }
     }
 
     @Override

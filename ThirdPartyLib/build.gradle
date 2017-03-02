@@ -21,4 +21,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile "${libs.appcompatV7}"
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.0.2'
 }

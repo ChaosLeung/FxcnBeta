@@ -49,11 +49,8 @@
 # For OkHttpDownloader
 -dontwarn com.squareup.okhttp.*
 
-# For umeng
--dontwarn com.umeng.message.**
--keep class org.chaos.fx.cnbeta.R$* {
-    public static final int umeng_*;
-}
-
 # For BottomBar
 -dontwarn com.roughike.bottombar.**
+
+#For Wechat
+-keep class com.tencent.mm.opensdk.**

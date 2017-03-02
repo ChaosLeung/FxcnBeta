@@ -32,13 +32,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
-import org.chaos.fx.cnbeta.net.model.HasReadArticle;
+import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.Realm;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
@@ -90,12 +89,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         mLogoLink = getIntent().getStringExtra(KEY_TOPIC_LOGO);
 
         if (mSid != -1) {
-            Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            HasReadArticle readArticle = new HasReadArticle();
-            readArticle.setSid(mSid);
-            realm.copyToRealmOrUpdate(readArticle);
-            realm.commitTransaction();
+            ArticlesRepository.getInstance().readArticle(mSid);
         }
 
         setupActionBar();

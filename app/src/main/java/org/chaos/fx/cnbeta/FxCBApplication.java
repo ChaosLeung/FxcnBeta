@@ -19,12 +19,11 @@ package org.chaos.fx.cnbeta;
 import android.app.Application;
 import android.support.v7.app.AppCompatDelegate;
 
+import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
-
-import io.realm.Realm;
 
 /**
  * @author Chaos
@@ -36,7 +35,7 @@ public class FxCBApplication extends Application {
         super.onCreate();
         CnBetaApiHelper.initialize();
         TimeStringHelper.initialize(this);
-        Realm.init(this);
+        ArticlesRepository.initialize(this);
         WXApiProvider.initialize(this);
         PreferenceHelper.initialize(this);
         AppCompatDelegate.setDefaultNightMode(PreferenceHelper.getInstance().inNightMode() ?

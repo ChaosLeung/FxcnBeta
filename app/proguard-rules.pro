@@ -52,5 +52,13 @@
 # For BottomBar
 -dontwarn com.roughike.bottombar.**
 
+# For GreenDao
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+    public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+-dontwarn org.greenrobot.greendao.database.**
+-dontwarn rx.**
+
 #For Wechat
 -keep class com.tencent.mm.opensdk.**

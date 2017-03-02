@@ -96,6 +96,15 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         mPresenter.subscribe(this);
     }
 
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mHotCommentAdapter != null) {
+            mHotCommentAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

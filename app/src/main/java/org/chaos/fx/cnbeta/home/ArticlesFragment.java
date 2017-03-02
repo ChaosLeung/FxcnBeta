@@ -117,6 +117,14 @@ public class ArticlesFragment extends BaseFragment
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mArticleAdapter != null) {
+            mArticleAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 

@@ -102,6 +102,14 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mTop10Adapter != null) {
+            mTop10Adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.unsubscribe();

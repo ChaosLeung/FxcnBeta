@@ -18,119 +18,141 @@ package org.chaos.fx.cnbeta.net.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Unique;
 
 /**
  * @author Chaos
  *         2015/11/01.
  */
-public class ArticleSummary extends RealmObject {
+@Entity
+public class ArticleSummary {
 
     @SerializedName("pubtime")
-    private String mPublishTime;
+    private String publishTime;
     @SerializedName("thumb")
-    private String mThumb;
+    private String thumb;
     @SerializedName("comments")
-    private int mComment;
-    @PrimaryKey
+    private int comment;
+    @Unique
     @SerializedName("sid")
-    private int mSid;
+    private int sid;
     @SerializedName("topic_logo")
-    private String mTopicLogo;
+    private String topicLogo;
     @SerializedName("summary")
-    private String mSummary;
+    private String summary;
     @SerializedName("topic")
-    private int mTopic;
+    private int topic;
     @SerializedName("title")
-    private String mTitle;
+    private String title;
     @SerializedName("counter")
-    private int mCounter;
+    private int counter;
 
-    public void setPublishTime(String publishTime) {
-        mPublishTime = publishTime;
+
+    @Generated(hash = 1441905147)
+    public ArticleSummary() {
+    }
+
+    @Generated(hash = 970982629)
+    public ArticleSummary(String publishTime, String thumb, int comment, int sid,
+            String topicLogo, String summary, int topic, String title,
+            int counter) {
+        this.publishTime = publishTime;
+        this.thumb = thumb;
+        this.comment = comment;
+        this.sid = sid;
+        this.topicLogo = topicLogo;
+        this.summary = summary;
+        this.topic = topic;
+        this.title = title;
+        this.counter = counter;
     }
 
     public String getPublishTime() {
-        return mPublishTime;
+        return publishTime;
     }
 
-    public void setThumb(String thumb) {
-        mThumb = thumb;
+    public void setPublishTime(String publishTime) {
+        this.publishTime = publishTime;
     }
 
     public String getThumb() {
-        return mThumb;
+        return thumb;
     }
 
-    public void setComment(int comment) {
-        mComment = comment;
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
     }
 
     public int getComment() {
-        return mComment;
+        return comment;
     }
 
-    public void setSid(int sid) {
-        mSid = sid;
+    public void setComment(int comment) {
+        this.comment = comment;
     }
 
     public int getSid() {
-        return mSid;
+        return sid;
     }
 
-    public void setTopicLogo(String topicLogo) {
-        mTopicLogo = topicLogo;
+    public void setSid(int sid) {
+        this.sid = sid;
     }
 
     public String getTopicLogo() {
-        return mTopicLogo;
+        return topicLogo;
     }
 
-    public void setSummary(String summary) {
-        mSummary = summary;
+    public void setTopicLogo(String topicLogo) {
+        this.topicLogo = topicLogo;
     }
 
     public String getSummary() {
-        return mSummary;
+        return summary;
     }
 
-    public void setTopic(int topic) {
-        mTopic = topic;
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public int getTopic() {
-        return mTopic;
+        return topic;
     }
 
-    public void setTitle(String title) {
-        mTitle = title;
+    public void setTopic(int topic) {
+        this.topic = topic;
     }
 
     public String getTitle() {
-        return mTitle;
+        return title;
     }
 
-    public void setCounter(int counter) {
-        mCounter = counter;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public int getCounter() {
-        return mCounter;
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
     }
 
     @Override
     public String toString() {
         return "ArticleSummary{" +
-                "mPublishTime='" + mPublishTime + '\'' +
-                ", mThumb='" + mThumb + '\'' +
-                ", mComment=" + mComment +
-                ", mSid=" + mSid +
-                ", mTopicLogo='" + mTopicLogo + '\'' +
-                ", mSummary='" + mSummary + '\'' +
-                ", mTopic=" + mTopic +
-                ", mTitle='" + mTitle + '\'' +
-                ", mCounter=" + mCounter +
+                "publishTime='" + publishTime + '\'' +
+                ", thumb='" + thumb + '\'' +
+                ", comment=" + comment +
+                ", sid=" + sid +
+                ", topicLogo='" + topicLogo + '\'' +
+                ", summary='" + summary + '\'' +
+                ", topic=" + topic +
+                ", title='" + title + '\'' +
+                ", counter=" + counter +
                 '}';
     }
 
@@ -141,7 +163,7 @@ public class ArticleSummary extends RealmObject {
         }
         if (o instanceof ArticleSummary) {
             ArticleSummary a = (ArticleSummary) o;
-            if (a.mSid == this.mSid) {
+            if (a.sid == this.sid) {
                 return true;
             }
         }

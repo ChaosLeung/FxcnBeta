@@ -15,7 +15,7 @@
  */
 
 apply plugin: 'com.android.application'
-apply plugin: 'realm-android'
+apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'com.antfortune.freeline'
 
 buildscript {
@@ -25,7 +25,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.realm:realm-gradle-plugin:2.3.1"
+        classpath "org.greenrobot:greendao-gradle-plugin:3.2.1"
     }
 }
 
@@ -92,6 +92,8 @@ dependencies {
     compile 'me.zhanghai.android.materialprogressbar:library:1.3.0'
 
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
+
+    compile 'org.greenrobot:greendao:3.2.0'
 
     compile project(':ThirdPartyLib')
 }

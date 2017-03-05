@@ -83,7 +83,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
                             ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
                                     Pair.create(holder.itemView, getString(R.string.transition_details_background)),
                                     Pair.create(tv, getString(R.string.transition_details_title)));
-                    ContentActivity.start(getActivity(), comment.getSid(), comment.getSubject(), null, options);
+                    ContentActivity.start(getActivity(), comment.getSid(), comment.getTitle(), null, options);
                 }
             }
         });

@@ -16,10 +16,11 @@
 
 package org.chaos.fx.cnbeta.hotcomment;
 
-import org.chaos.fx.cnbeta.net.MobileApi;
+import android.util.Log;
+
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
-import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
 import org.chaos.fx.cnbeta.net.model.HotComment;
+import org.chaos.fx.cnbeta.util.HtmlParser;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 
 /**
  * @author Chaos
@@ -35,25 +37,32 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 class HotCommentPresenter implements HotCommentContract.Presenter {
+
+    private static final String TAG = "HotCommentPresenter";
+
     private HotCommentContract.View mView;
     private Disposable mDisposable;
+    private HtmlParser<List<HotComment>> mParser = new MWebHotCommentParser();
 
     HotCommentPresenter() {
     }
 
     @Override
     public void loadHotComments() {
-        mDisposable = CnBetaApiHelper.hotComment()
-                .subscribeOn(Schedulers.io())
-                .map(new Function<MobileApi.Result<List<HotComment>>, List<HotComment>>() {
+        mDisposable = CnBetaApiHelper.getHotCommentsByPage(1) // 暂时只加载第一页
+                .map(new Function<ResponseBody, String>() {
                     @Override
-                    public List<HotComment> apply(MobileApi.Result<List<HotComment>> listResult) {
-                        if (!listResult.isSuccess()) {
-                            throw new RequestFailedException();
-                        }
-                        return listResult.result;
+                    public String apply(ResponseBody responseBody) throws Exception {
+                        return responseBody.string();
                     }
                 })
+                .map(new Function<String, List<HotComment>>() {
+                    @Override
+                    public List<HotComment> apply(String html) throws Exception {
+                        return mParser.parse(html);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<HotComment>>() {
                     @Override
@@ -68,6 +77,7 @@ class HotCommentPresenter implements HotCommentContract.Presenter {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "loadHotComments: ", e);
                         mView.showLoadFailed();
                         mView.showRefreshing(false);
                     }

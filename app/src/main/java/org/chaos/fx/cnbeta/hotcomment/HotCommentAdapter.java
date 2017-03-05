@@ -49,7 +49,7 @@ class HotCommentAdapter extends ListAdapter<HotComment, ViewHolder> {
     @Override
     public final void onBindHolderInternal(ViewHolder holder, int position) {
         HotComment comment = get(position);
-        holder.title.setText(comment.getSubject());
+        holder.title.setText(comment.getTitle());
         String username = TextUtils.isEmpty(comment.getUsername())
                 ? getContext().getString(R.string.anonymous) : comment.getUsername();
         holder.comment.setText(String.format(

@@ -79,11 +79,20 @@ class CommentAdapter extends ListAdapter<Comment, ViewHolder> {
         Comment c = get(position);
         holder.comment.setText(c.getContent());
         holder.time.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(c.getCreatedTime()));
-        holder.username.setText(TextUtils.isEmpty(c.getUsername())
-                ? getContext().getString(R.string.anonymous) : c.getUsername());
+
+        String username = TextUtils.isEmpty(c.getUsername()) ?
+                getContext().getString(R.string.anonymous) : c.getUsername();
+        if ((getContext().getString(R.string.anonymous).equals(username)
+                || getContext().getString(R.string.anonymous_web).equals(username))
+                && !TextUtils.isEmpty(c.getAddress())) {
+            username = String.format(getContext().getString(R.string.anonymous_format), c.getAddress());
+        }
+        holder.username.setText(username);
+
         holder.replyComment.setVisibility(View.GONE);
-        holder.support.setText(Integer.toString(c.getSupport()));
-        holder.against.setText(Integer.toString(c.getAgainst()));
+        String intFormat = getContext().getString(R.string.int_format);
+        holder.support.setText(String.format(intFormat, c.getSupport()));
+        holder.against.setText(String.format(intFormat, c.getAgainst()));
         if (c.getPid() > 0) {
             Comment replyComment = new Comment();
             replyComment.setTid(c.getPid());

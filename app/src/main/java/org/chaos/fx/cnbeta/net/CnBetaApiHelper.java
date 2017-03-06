@@ -24,7 +24,6 @@ import com.jakewharton.picasso.OkHttp3Downloader;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
@@ -156,7 +155,7 @@ public class CnBetaApiHelper {
                 page);
     }
 
-    public static Observable<List<ClosedComment>> closedComments(int sid) {
+    public static Observable<List<Comment>> closedComments(int sid) {
         long timestamp = System.currentTimeMillis();
         return sMobileApi.closedComments(
                 timestamp,

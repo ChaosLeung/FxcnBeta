@@ -27,20 +27,32 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Comment implements Parcelable {
 
-    @SerializedName("username")
+    /**
+     * Closed comment
+     * name :
+     * comment : 你偶尔买几个游戏就是死宅 多买点建个房子放就是收藏家
+     * date : 2017-01-31 18:17:55
+     * tid : 13906221
+     * support : 92
+     * against : 2
+     */
+
+    @SerializedName(value = "username", alternate = {"name"})
     private String mUsername;
     @SerializedName("pid")
     private int mPid;
-    @SerializedName("created_time")
+    @SerializedName(value = "created_time", alternate = {"date"})
     private String mCreatedTime;
-    @SerializedName("support")
+    @SerializedName(value = "support", alternate = {"score"})
     private int mSupport;
-    @SerializedName("against")
+    @SerializedName(value = "against", alternate = {"reason"})
     private int mAgainst;
-    @SerializedName("content")
+    @SerializedName(value = "content", alternate = {"comment"})
     private String mContent;
     @SerializedName("tid")
     private int mTid;
+    @SerializedName("host_name")
+    private String mAddress;
 
     public void setUsername(String username) {
         mUsername = username;
@@ -98,6 +110,14 @@ public class Comment implements Parcelable {
         return mTid;
     }
 
+    public String getAddress() {
+        return mAddress;
+    }
+
+    public void setAddress(String address) {
+        mAddress = address;
+    }
+
     @Override
     public String toString() {
         return "username = " + mUsername +
@@ -135,6 +155,7 @@ public class Comment implements Parcelable {
         dest.writeInt(this.mAgainst);
         dest.writeString(this.mContent);
         dest.writeInt(this.mTid);
+        dest.writeString(this.mAddress);
     }
 
     public Comment() {
@@ -148,9 +169,10 @@ public class Comment implements Parcelable {
         this.mAgainst = in.readInt();
         this.mContent = in.readString();
         this.mTid = in.readInt();
+        this.mAddress = in.readString();
     }
 
-    public static final Parcelable.Creator<Comment> CREATOR = new Parcelable.Creator<Comment>() {
+    public static final Creator<Comment> CREATOR = new Creator<Comment>() {
         @Override
         public Comment createFromParcel(Parcel source) {
             return new Comment(source);

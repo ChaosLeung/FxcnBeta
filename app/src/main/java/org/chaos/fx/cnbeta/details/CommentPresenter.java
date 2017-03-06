@@ -22,7 +22,6 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
-import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
@@ -102,9 +101,9 @@ class CommentPresenter implements CommentContract.Presenter {
                             return Observable.just(result);
                         } else {
                             return CnBetaApiHelper.closedComments(mSid)
-                                    .map(new Function<List<ClosedComment>, WebCommentResult>() {
+                                    .map(new Function<List<Comment>, WebCommentResult>() {
                                         @Override
-                                        public WebCommentResult apply(List<ClosedComment> comments) throws Exception {
+                                        public WebCommentResult apply(List<Comment> comments) throws Exception {
                                             result.setComments(ModelUtil.toWebCommentMap(comments));
                                             return result;
                                         }

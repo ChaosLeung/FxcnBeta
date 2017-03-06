@@ -23,7 +23,7 @@ import java.util.Map;
 public class WebCommentResult {
 
     @SerializedName("cmntstore")
-    private Map<String, WebComment> comments;
+    private Map<String, Comment> comments;
     @SerializedName("comment_num")
     private int commentCount;// 评论数量
     @SerializedName("open")
@@ -33,11 +33,11 @@ public class WebCommentResult {
     @SerializedName("sid")
     private String sid;
 
-    public Map<String, WebComment> getComments() {
+    public Map<String, Comment> getComments() {
         return comments;
     }
 
-    public void setComments(Map<String, WebComment> comments) {
+    public void setComments(Map<String, Comment> comments) {
         this.comments = comments;
     }
 

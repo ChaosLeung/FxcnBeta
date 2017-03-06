@@ -96,6 +96,9 @@
 
     <string name="hot_comment_content">%1$s：%2$s</string>
     <string name="anonymous">匿名网友</string>
+    <string name="anonymous_web">匿名人士</string>
+    <string name="anonymous_format">%s网友</string>
+    <string name="int_format">%d</string>
 
     <string name="hint_captcha">输入验证码</string>
     <string name="hint_comment">评论正文</string>

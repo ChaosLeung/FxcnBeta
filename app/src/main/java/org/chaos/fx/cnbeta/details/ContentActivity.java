@@ -105,6 +105,13 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         mPresenter.unsubscribe();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!backToPreviousFragment()) {
+            super.onBackPressed();
+        }
+    }
+
     private void setupActionBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -132,10 +139,22 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                scrollToFinishActivity();
+                if (!backToPreviousFragment()) {
+                    scrollToFinishActivity();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean backToPreviousFragment() {
+        int currentItem = mViewPager.getCurrentItem();
+        if (currentItem == 0) {
+            return false;
+        } else {
+            mViewPager.setCurrentItem(currentItem - 1);
+            return true;
+        }
     }
 
     @Override

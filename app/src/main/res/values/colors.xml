@@ -53,4 +53,6 @@
 
     <color name="holder_color">#FAFAFA</color>
 
+    <color name="scrollbar_color">#BDBDBD</color>
+
 </resources>

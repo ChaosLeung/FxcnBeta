@@ -53,4 +53,6 @@
 
     <color name="holder_color">#424242</color>
 
+    <color name="scrollbar_color">#84BDBDBD</color>
+
 </resources>

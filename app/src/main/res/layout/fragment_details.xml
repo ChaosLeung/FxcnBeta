@@ -20,6 +20,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/horizontal_border"
+    android:scrollbarStyle="insideOverlay"
+    android:scrollbarThumbVertical="@drawable/scrollbar_handle_material"
     android:transitionName="@string/transition_details_background">
 
     <RelativeLayout

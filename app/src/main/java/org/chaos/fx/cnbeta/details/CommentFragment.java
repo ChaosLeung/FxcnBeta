@@ -229,7 +229,6 @@ public class CommentFragment extends BaseFragment implements
 
         if (mCommentAdapter.listSize() != previousSize) {
             mCommentView.getRecyclerView().scrollToPosition(0);
-            mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
         } else if (previousSize != 0) {
             showNoMoreComments();
         }
@@ -248,7 +247,6 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void showNoMoreComments() {
         showSnackBar(R.string.no_more_comments);
-        mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
     }
 
     @Override
@@ -269,6 +267,11 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void notifyCommentChanged(Comment c) {
         mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
+    }
+
+    @Override
+    public void updateCommentCount() {
+        mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
     }
 
     public interface OnCommentUpdateListener {

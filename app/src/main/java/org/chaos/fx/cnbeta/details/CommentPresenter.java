@@ -121,12 +121,18 @@ class CommentPresenter implements CommentContract.Presenter {
                         List<Comment> comments = ModelUtil.toCommentList(result);
                         Collections.sort(comments, new CommentComparator());
                         mView.addComments(comments);
+
+                        mView.updateCommentCount();
+
                         mView.showNoCommentTipsIfNeed();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
                         Log.e(TAG, "loadWebApiComments: ", e);
+
+                        mView.updateCommentCount();
+
                         mView.showNoCommentTipsIfNeed();
                     }
                 }));
@@ -179,6 +185,8 @@ class CommentPresenter implements CommentContract.Presenter {
                             mView.showNoMoreComments();
                         }
 
+                        mView.updateCommentCount();
+
                         mView.hideProgress();
                         mView.showNoCommentTipsIfNeed();
                     }
@@ -187,6 +195,8 @@ class CommentPresenter implements CommentContract.Presenter {
                     public void accept(Throwable e) throws Exception {
                         Log.e(TAG, "refreshComments: ", e);
                         isLoadingClosedComments = false;
+
+                        mView.updateCommentCount();
 
                         mView.showLoadingFailed();
                         mView.hideProgress();

@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.ReselectedDispatcher;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
@@ -46,7 +47,7 @@ import butterknife.ButterKnife;
 public class ArticlesFragment extends BaseFragment
         implements SwipeLinearRecyclerView.OnRefreshListener,
         SwipeLinearRecyclerView.OnLoadMoreListener,
-        ArticlesContract.View {
+        ArticlesContract.View, ReselectedDispatcher.OnReselectListener {
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
@@ -68,6 +69,8 @@ public class ArticlesFragment extends BaseFragment
 
     private int mPreClickPosition;
 
+    private ReselectedDispatcher mReselectedDispatcher;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +82,9 @@ public class ArticlesFragment extends BaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         ButterKnife.bind(this, view);
+
+        mReselectedDispatcher = (ReselectedDispatcher) getActivity();
+        mReselectedDispatcher.addOnReselectListener(R.id.nav_home, this);
 
         mArticleAdapter = new ArticleAdapter(getActivity(), mArticlesView.getRecyclerView());
         mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
@@ -127,6 +133,8 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        mReselectedDispatcher.removeOnReselectListener(this);
 
         int size = mArticleAdapter.listSize();
         List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
@@ -213,5 +221,10 @@ public class ArticlesFragment extends BaseFragment
         showSnackBar(R.string.load_articles_failed);
         setLoading(false);
         setRefreshing(false);
+    }
+
+    @Override
+    public void onReselect() {
+        mArticlesView.smoothScrollToTop();
     }
 }

@@ -37,6 +37,8 @@ import butterknife.ButterKnife;
  */
 public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefreshLayout.OnRefreshListener {
 
+    private static final int SMOOTH_SCROLL_NEED_FASTER_POSITION = 25;
+
     @BindView(R.id.swipe) SwipeRefreshLayout mSwipeLayout;
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
 
@@ -168,6 +170,15 @@ public class SwipeLinearRecyclerView extends FrameLayout implements SwipeRefresh
             setLoading(true);
             mOnLoadMoreListener.onLoadMore();
         }
+    }
+
+    public void smoothScrollToTop() {
+        int firstVisibleItem = ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                .findFirstVisibleItemPosition();
+        if (firstVisibleItem > SMOOTH_SCROLL_NEED_FASTER_POSITION) {
+            mRecyclerView.scrollToPosition(SMOOTH_SCROLL_NEED_FASTER_POSITION);
+        }
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
     @Override

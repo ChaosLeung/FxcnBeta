@@ -21,18 +21,23 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
+
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.widget.BaseAdapter;
-import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
+import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 
 import java.util.List;
 
@@ -44,15 +49,16 @@ import butterknife.ButterKnife;
  *         2015/11/15.
  */
 public class Top10Fragment extends BaseFragment implements Top10Contract.View,
-        SwipeLinearRecyclerView.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener {
 
     public static Top10Fragment newInstance() {
         return new Top10Fragment();
     }
 
-    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mTop10View;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
 
-    private Top10Adapter mTop10Adapter;
+    private Top10Adapter mAdapter;
 
     private Top10Presenter mPresenter;
 
@@ -70,13 +76,17 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
 
         ButterKnife.bind(this, view);
 
-        mTop10Adapter = new Top10Adapter(getActivity(), mTop10View.getRecyclerView());
-        mTop10Adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        mAdapter = new Top10Adapter();
+        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
-                RecyclerView.ViewHolder holder = mTop10View.getRecyclerView().findViewHolderForAdapterPosition(position);
+            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
                 mPreClickPosition = position;
-                ArticleSummary summary = mTop10Adapter.get(position);
+                ArticleSummary summary = mAdapter.get(position);
 
                 View tv = holder.itemView.findViewById(R.id.title);
                 ActivityOptionsCompat options =
@@ -87,9 +97,10 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
                         summary.getTopicLogo(), options);
             }
         });
-        mTop10View.setAdapter(mTop10Adapter);
 
-        mTop10View.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(
+                ResourcesCompat.getColor(getResources(), R.color.colorAccent, getContext().getTheme()));
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mPresenter = new Top10Presenter();
         mPresenter.subscribe(this);
@@ -98,14 +109,14 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     @Override
     public void onResume() {
         super.onResume();
-        mTop10Adapter.notifyItemChanged(mPreClickPosition);
+        mAdapter.notifyItemChanged(mPreClickPosition);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && mTop10Adapter != null) {
-            mTop10Adapter.notifyDataSetChanged();
+        if (isVisibleToUser && mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -116,7 +127,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     }
 
     private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mTop10View, strId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -126,7 +137,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
 
     @Override
     public void showRefreshing(boolean refreshing) {
-        mTop10View.setRefreshing(refreshing);
+        mSwipeRefreshLayout.setRefreshing(refreshing);
     }
 
     @Override
@@ -141,9 +152,9 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
 
     @Override
     public void addArticleSummary(List<ArticleSummary> summaries) {
-        if (!mTop10Adapter.containsAll(summaries)) {
-            mTop10Adapter.clear();
-            mTop10Adapter.addAll(0, summaries);
+        if (!mAdapter.containsAll(summaries)) {
+            mAdapter.clear();
+            mAdapter.addAll(0, summaries);
         } else {
             showNoMoreContent();
         }

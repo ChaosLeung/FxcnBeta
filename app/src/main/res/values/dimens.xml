@@ -41,4 +41,7 @@
 
     <dimen name="release_note_text">14sp</dimen>
 
+    <dimen name="load_more_progress_size">42dp</dimen>
+    <dimen name="load_more_progress_padding">6dp</dimen>
+
 </resources>

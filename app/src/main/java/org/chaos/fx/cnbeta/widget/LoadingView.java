@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,35 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta.home;
+package org.chaos.fx.cnbeta.widget;
 
-import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.util.TimeStringHelper;
-import org.chaos.fx.cnbeta.widget.ArticleHolder;
-import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
+import com.chad.library.adapter.base.loadmore.LoadMoreView;
+
+import org.chaos.fx.cnbeta.R;
 
 /**
  * @author Chaos
- *         2015/11/15.
+ *         10/03/2017
  */
-class ArticleAdapter extends BaseArticleAdapter {
+
+public class LoadingView extends LoadMoreView {
+    @Override
+    public int getLayoutId() {
+        return R.layout.layout_loading_more_view;
+    }
 
     @Override
-    protected void convert(ArticleHolder holder, ArticleSummary summary) {
-        super.convert(holder, summary);
-        holder.summary.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime()));
+    protected int getLoadingViewId() {
+        return R.id.loading_view;
+    }
+
+    @Override
+    protected int getLoadFailViewId() {
+        return R.id.empty;
+    }
+
+    @Override
+    protected int getLoadEndViewId() {
+        return R.id.empty;
     }
 }

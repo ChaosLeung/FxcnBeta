@@ -22,6 +22,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,10 +34,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemChildClickListener;
+
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.model.Comment;
-import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
+import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 
 import java.util.List;
 
@@ -46,7 +52,7 @@ import butterknife.ButterKnife;
  *         4/2/16
  */
 public class CommentFragment extends BaseFragment implements
-        SwipeLinearRecyclerView.OnRefreshListener, CommentContract.View {
+        SwipeRefreshLayout.OnRefreshListener, CommentContract.View {
 
     private static final String KEY_SID = "sid";
 
@@ -64,8 +70,9 @@ public class CommentFragment extends BaseFragment implements
 
     @BindView(R.id.no_content) TextView mNoContentTipView;
 
-    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mCommentView;
-    private CommentAdapter mCommentAdapter;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
+    private CommentAdapter mAdapter;
 
     private CommentContract.Presenter mPresenter;
 
@@ -90,17 +97,19 @@ public class CommentFragment extends BaseFragment implements
 
         ButterKnife.bind(this, view);
 
-        mCommentAdapter = new CommentAdapter(getActivity(), mCommentView.getRecyclerView());
-        mCommentAdapter.addFooterView(
-                getActivity().getLayoutInflater().inflate(R.layout.layout_loading, mCommentView, false));
-        mCommentAdapter.setOnItemChildClickListener(new CommentAdapter.OnItemChildClickListener() {
+        mAdapter = new CommentAdapter();
+        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
-            public void onItemChildClick(View v, int position) {
+            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View v, int position) {
                 if (!mPresenter.isCommentEnable()) {
                     return;
                 }
 
-                Comment c = mCommentAdapter.get(position);
+                Comment c = mAdapter.get(position);
                 switch (v.getId()) {
                     case R.id.support:
                         mPresenter.support(c);
@@ -114,8 +123,10 @@ public class CommentFragment extends BaseFragment implements
                 }
             }
         });
-        mCommentView.setAdapter(mCommentAdapter);
-        mCommentView.setOnRefreshListener(this);
+
+        mSwipeRefreshLayout.setColorSchemeColors(
+                ResourcesCompat.getColor(getResources(), R.color.colorAccent, getContext().getTheme()));
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         showNoCommentTipsIfNeed();
 
         mPresenter = new CommentPresenter(getArguments().getInt(KEY_SID));
@@ -131,7 +142,6 @@ public class CommentFragment extends BaseFragment implements
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.unsubscribe();
-        mCommentAdapter.setOnItemChildClickListener(null);
     }
 
     public void handleSetupMessage(String sn, String tokenForReadComment) {
@@ -154,7 +164,7 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void onRefresh() {
-        int size = mCommentAdapter.listSize();
+        int size = mAdapter.size();
         int page = (size / ONE_PAGE_COMMENT_COUNT) + 1;
         mPresenter.refreshComments(page);
     }
@@ -188,12 +198,12 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void hideProgress() {
-        mCommentView.setRefreshing(false);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void showNoCommentTipsIfNeed() {
-        mNoContentTipView.setVisibility(mCommentAdapter.isEmpty() ? View.VISIBLE : View.GONE);
+        mNoContentTipView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -201,7 +211,7 @@ public class CommentFragment extends BaseFragment implements
     }
 
     private void showSnackBar(CharSequence c) {
-        Snackbar.make(mCommentView, c, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRecyclerView, c, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -220,15 +230,15 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void addComments(List<Comment> comments) {
-        int previousSize = mCommentAdapter.listSize();
+        int previousSize = mAdapter.size();
         for (Comment comment : comments) {
-            if (!mCommentAdapter.getList().contains(comment)) {
-                mCommentAdapter.add(0, comment);
+            if (!mAdapter.contains(comment)) {
+                mAdapter.add(0, comment);
             }
         }
 
-        if (mCommentAdapter.listSize() != previousSize) {
-            mCommentView.getRecyclerView().scrollToPosition(0);
+        if (mAdapter.size() != previousSize) {
+            mRecyclerView.scrollToPosition(0);
         } else if (previousSize != 0) {
             showNoMoreComments();
         }
@@ -266,12 +276,12 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void notifyCommentChanged(Comment c) {
-        mCommentAdapter.notifyItemChanged(mCommentAdapter.indexOf(c));
+        mAdapter.notifyItemChanged(mAdapter.indexOf(c));
     }
 
     @Override
     public void updateCommentCount() {
-        mOnCommentUpdateListener.onCommentUpdated(mCommentAdapter.listSize());
+        mOnCommentUpdateListener.onCommentUpdated(mAdapter.size());
     }
 
     public interface OnCommentUpdateListener {

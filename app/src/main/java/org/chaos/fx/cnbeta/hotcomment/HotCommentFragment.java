@@ -21,18 +21,23 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
+
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.HotComment;
-import org.chaos.fx.cnbeta.widget.BaseAdapter;
-import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
+import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 
 import java.util.List;
 
@@ -43,15 +48,17 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         2015/11/15.
  */
-public class HotCommentFragment extends BaseFragment implements HotCommentContract.View, SwipeLinearRecyclerView.OnRefreshListener {
+public class HotCommentFragment extends BaseFragment implements HotCommentContract.View,
+        SwipeRefreshLayout.OnRefreshListener {
 
     public static HotCommentFragment newInstance() {
         return new HotCommentFragment();
     }
 
-    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mHotCommentView;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
 
-    private HotCommentAdapter mHotCommentAdapter;
+    private HotCommentAdapter mAdapter;
 
     private HotCommentContract.Presenter mPresenter;
 
@@ -67,16 +74,20 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
         ButterKnife.bind(this, view);
 
-        mHotCommentAdapter = new HotCommentAdapter(getActivity(), mHotCommentView.getRecyclerView());
-        mHotCommentAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        mAdapter = new HotCommentAdapter();
+        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
-                HotComment comment = mHotCommentAdapter.get(position);
+            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                HotComment comment = mAdapter.get(position);
 
                 if (comment.getSid() == 0) {
                     showSnackBar(R.string.error_invalid_sid);
                 } else {
-                    RecyclerView.ViewHolder holder = mHotCommentView.getRecyclerView().findViewHolderForAdapterPosition(position);
+                    RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
 
                     View tv = holder.itemView.findViewById(R.id.title);
                     ActivityOptionsCompat options =
@@ -88,9 +99,9 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
             }
         });
 
-        mHotCommentView.setAdapter(mHotCommentAdapter);
-
-        mHotCommentView.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(
+                ResourcesCompat.getColor(getResources(), R.color.colorAccent, getContext().getTheme()));
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mPresenter = new HotCommentPresenter();
         mPresenter.subscribe(this);
@@ -100,8 +111,8 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && mHotCommentAdapter != null) {
-            mHotCommentAdapter.notifyDataSetChanged();
+        if (isVisibleToUser && mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -112,7 +123,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     }
 
     private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mHotCommentView, strId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -122,7 +133,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     @Override
     public void showRefreshing(boolean refreshing) {
-        mHotCommentView.setRefreshing(refreshing);
+        mSwipeRefreshLayout.setRefreshing(refreshing);
     }
 
     @Override
@@ -137,9 +148,9 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     @Override
     public void addComments(List<HotComment> comments) {
-        if (!mHotCommentAdapter.containsAll(comments)) {
-            mHotCommentAdapter.clear();
-            mHotCommentAdapter.addAll(0, comments);
+        if (!mAdapter.containsAll(comments)) {
+            mAdapter.clear();
+            mAdapter.addAll(0, comments);
         } else {
             showNoMoreContent();
         }

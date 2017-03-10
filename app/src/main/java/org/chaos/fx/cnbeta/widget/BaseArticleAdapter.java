@@ -16,15 +16,7 @@
 
 package org.chaos.fx.cnbeta.widget;
 
-import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.CallSuper;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -32,54 +24,27 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * @author Chaos
  *         2015/11/14.
  */
-public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, BaseArticleAdapter.ArticleHolder> {
+public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, ArticleHolder> {
 
-    public BaseArticleAdapter(Context context, RecyclerView bindView) {
-        super(context, bindView);
+    public BaseArticleAdapter() {
+        super(R.layout.article_item);
     }
 
     @Override
-    protected ArticleHolder onCreateHolderInternal(ViewGroup parent, int viewType) {
-        return new ArticleHolder(LayoutInflater.from(getContext()).inflate(R.layout.article_item, parent, false));
-    }
-
-    @CallSuper
-    @Override
-    protected void onBindHolderInternal(ArticleHolder holder, int position) {
-        ArticleSummary summary = get(position);
+    protected void convert(ArticleHolder holder, ArticleSummary summary) {
         holder.title.setText(summary.getTitle());
-        Picasso.with(getContext()).load(summary.getThumb()).into(holder.image);
-        Resources res = getContext().getResources();
+        Picasso.with(mContext).load(summary.getThumb()).into(holder.image);
+        Resources res = mContext.getResources();
         if (ArticlesRepository.getInstance().hasReadArticle(summary)) {
             holder.title.setTextColor(res.getColor(R.color.card_text_has_read));
             holder.summary.setTextColor(res.getColor(R.color.card_time_text_has_read));
         } else {
             holder.title.setTextColor(res.getColor(R.color.card_text));
             holder.summary.setTextColor(res.getColor(R.color.card_time_text));
-        }
-    }
-
-    @Override
-    protected int getItemCountInternal() {
-        return listSize();
-    }
-
-    public class ArticleHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.title) public TextView title;
-        @BindView(R.id.summary) public TextView summary;
-        @BindView(R.id.image) public ImageView image;
-
-        public ArticleHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
         }
     }
 }

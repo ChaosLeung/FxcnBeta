@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta.home;
+package org.chaos.fx.cnbeta.hotcomment;
 
-import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.util.TimeStringHelper;
-import org.chaos.fx.cnbeta.widget.ArticleHolder;
-import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
+import android.view.View;
+import android.widget.TextView;
+
+import com.chad.library.adapter.base.BaseViewHolder;
+
+import org.chaos.fx.cnbeta.R;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * @author Chaos
- *         2015/11/15.
+ *         10/03/2017
  */
-class ArticleAdapter extends BaseArticleAdapter {
+public class HotCommentViewHolder extends BaseViewHolder {
 
-    @Override
-    protected void convert(ArticleHolder holder, ArticleSummary summary) {
-        super.convert(holder, summary);
-        holder.summary.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime()));
+    @BindView(R.id.title) public TextView title;
+    @BindView(R.id.comment) public TextView comment;
+
+    public HotCommentViewHolder(View itemView) {
+        super(itemView);
+        ButterKnife.bind(this, itemView);
     }
 }

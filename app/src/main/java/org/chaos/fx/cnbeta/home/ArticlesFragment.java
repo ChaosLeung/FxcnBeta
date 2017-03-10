@@ -21,19 +21,25 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.ReselectedDispatcher;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.widget.BaseAdapter;
-import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
+import org.chaos.fx.cnbeta.widget.FxRecyclerView;
+import org.chaos.fx.cnbeta.widget.LoadingView;
 
 import java.util.List;
 
@@ -45,8 +51,8 @@ import butterknife.ButterKnife;
  *         2015/11/14.
  */
 public class ArticlesFragment extends BaseFragment
-        implements SwipeLinearRecyclerView.OnRefreshListener,
-        SwipeLinearRecyclerView.OnLoadMoreListener,
+        implements SwipeRefreshLayout.OnRefreshListener,
+        BaseQuickAdapter.RequestLoadMoreListener,
         ArticlesContract.View, ReselectedDispatcher.OnReselectListener {
 
     private static final String KEY_TOPIC_ID = "topic_id";
@@ -61,9 +67,10 @@ public class ArticlesFragment extends BaseFragment
         return fragment;
     }
 
-    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
 
-    private ArticleAdapter mArticleAdapter;
+    private ArticleAdapter mAdapter;
 
     private ArticlesContract.Presenter mPresenter;
 
@@ -86,13 +93,19 @@ public class ArticlesFragment extends BaseFragment
         mReselectedDispatcher = (ReselectedDispatcher) getActivity();
         mReselectedDispatcher.addOnReselectListener(R.id.nav_home, this);
 
-        mArticleAdapter = new ArticleAdapter(getActivity(), mArticlesView.getRecyclerView());
-        mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        mAdapter = new ArticleAdapter();
+        mAdapter.setOnLoadMoreListener(this);
+        mAdapter.setLoadMoreView(new LoadingView());
+        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
-                RecyclerView.ViewHolder holder = mArticlesView.getRecyclerView().findViewHolderForAdapterPosition(position);
+            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
                 mPreClickPosition = position;
-                ArticleSummary summary = mArticleAdapter.get(position);
+                ArticleSummary summary = mAdapter.get(position);
 
                 View tv = holder.itemView.findViewById(R.id.title);
                 ActivityOptionsCompat options =
@@ -103,13 +116,10 @@ public class ArticlesFragment extends BaseFragment
                         summary.getTopicLogo(), options);
             }
         });
-        mArticleAdapter.addFooterView(
-                LayoutInflater.from(getActivity()).inflate(
-                        R.layout.layout_loading, mArticlesView, false));
-        mArticlesView.setAdapter(mArticleAdapter);
 
-        mArticlesView.setOnRefreshListener(this);
-        mArticlesView.setOnLoadMoreListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(
+                ResourcesCompat.getColor(getResources(), R.color.colorAccent, getContext().getTheme()));
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         String topicId = getArguments().getString(KEY_TOPIC_ID, "null");
         mPresenter = new ArticlesPresenter(topicId);
@@ -119,14 +129,14 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        mArticleAdapter.notifyItemChanged(mPreClickPosition);
+        mAdapter.notifyItemChanged(mPreClickPosition);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && mArticleAdapter != null) {
-            mArticleAdapter.notifyDataSetChanged();
+        if (isVisibleToUser && mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -136,8 +146,9 @@ public class ArticlesFragment extends BaseFragment
 
         mReselectedDispatcher.removeOnReselectListener(this);
 
-        int size = mArticleAdapter.listSize();
-        List<ArticleSummary> storeArticles = mArticleAdapter.getList().subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
+        int size = mAdapter.size();
+        List<ArticleSummary> storeArticles =
+                mAdapter.subList(0, size >= STORE_MAX_COUNT ? STORE_MAX_COUNT : size);
         mPresenter.saveArticles(storeArticles);
 
         mPresenter.unsubscribe();
@@ -146,69 +157,65 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void onRefresh() {
         int sid;
-        if (mArticleAdapter.getItemCount() == 0) {
+        if (mAdapter.isEmpty()) {
             sid = -1;
         } else {
-            sid = mArticleAdapter.get(0).getSid();
+            sid = mAdapter.get(0).getSid();
         }
         mPresenter.loadNewArticles(sid);
     }
 
     @Override
-    public void onLoadMore() {
-        mPresenter.loadOldArticles(mArticleAdapter.get(mArticleAdapter.getItemCount() - 1).getSid());
+    public void onLoadMoreRequested() {
+        mPresenter.loadOldArticles(mAdapter.get(mAdapter.size() - 1).getSid());
     }
 
     private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mArticlesView, strId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void setRefreshing(boolean refreshing) {
-        mArticlesView.setRefreshing(refreshing);
+        mSwipeRefreshLayout.setRefreshing(refreshing);
+        mAdapter.setEnableLoadMore(!refreshing);
     }
 
     @Override
     public boolean isRefreshing() {
-        return mArticlesView.isRefreshing();
+        return mSwipeRefreshLayout.isRefreshing();
     }
 
     @Override
     public void setLoading(boolean loading) {
-        mArticlesView.setLoading(loading);
-        mArticleAdapter.getFooterView().setVisibility(loading ? View.VISIBLE : View.INVISIBLE);
-
-        if (loading) {
-            mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount());
-            mArticlesView.getRecyclerView().smoothScrollToPosition(mArticleAdapter.getItemCount() - 1);
+        mSwipeRefreshLayout.setEnabled(!loading);
+        if (!loading) {
+            mAdapter.loadMoreComplete();
         }
     }
 
     @Override
     public boolean isLoading() {
-        return mArticlesView.isLoading();
+        return mAdapter.isLoading();
     }
 
     @Override
     public void addArticles(List<ArticleSummary> articles, boolean addToTop) {
         if (addToTop) {
-            mArticleAdapter.addAll(0, articles);
-            mArticlesView.getRecyclerView().scrollToPosition(0);
+            mAdapter.addAll(0, articles);
+            mRecyclerView.scrollToPosition(0);
         } else {
-            mArticleAdapter.getList().addAll(articles);
-            mArticleAdapter.notifyDataSetChanged();
+            mAdapter.addAll(articles);
         }
     }
 
     @Override
     public void clearArticles() {
-        mArticleAdapter.clear();
-        mArticleAdapter.notifyDataSetChanged();
+        mAdapter.clear();
     }
 
     @Override
     public boolean isEmpty() {
-        return mArticleAdapter.isEmpty();
+        return mAdapter.isEmpty();
     }
 
     @Override
@@ -225,6 +232,6 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onReselect() {
-        mArticlesView.smoothScrollToTop();
+        mRecyclerView.smoothScrollToFirstItem();
     }
 }

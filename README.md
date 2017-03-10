@@ -40,6 +40,7 @@ STORE_PASSWORD=
 * [jsoup](https://jsoup.org/)
 * [LicensesDialog](https://github.com/PSDev/LicensesDialog)
 * [GreenDao](http://greenrobot.org/greendao/)
+* [BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
 
 ## License
 

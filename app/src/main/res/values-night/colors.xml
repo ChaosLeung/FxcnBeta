@@ -20,34 +20,38 @@
     <color name="colorPrimaryDark">#121212</color>
     <color name="colorAccent">#00796B</color>
 
+    <color name="textColorPrimary">#c0c0c0</color>
+    <color name="textColorSecondary">#909090</color>
+
     <color name="card_ripple_color_darken">#0a000000</color>
     <color name="main_background">#212121</color>
 
-    <color name="card_text">#E0E0E0</color>
+    <color name="card_text">@color/textColorPrimary</color>
     <color name="card_text_has_read">#616161</color>
     <color name="card_time_text">#b0b0b0</color>
     <color name="card_time_text_has_read">#515151</color>
 
-    <color name="content_text">#f5f5f5</color>
-    <color name="content_title">#fafafa</color>
+    <color name="content_text">@color/textColorPrimary</color>
+    <color name="content_title">#c5c5c5</color>
     <color name="content_source">@color/content_text</color>
-    <color name="content_author">#B5B5B5</color>
-    <color name="content_time">@color/content_author</color>
-    <color name="content_comment_count">@color/content_time</color>
+    <color name="content_author">@color/textColorSecondary</color>
+    <color name="content_time">@color/textColorSecondary</color>
+    <color name="content_comment_count">@color/textColorSecondary</color>
 
     <color name="image_not_available">#424242</color>
 
     <color name="reply_comment">#323232</color>
 
-    <color name="divider">#1f000000</color>
+    <color name="divider">#303030</color>
 
     <color name="fb_content_length">#aaaaaa</color>
 
     <color name="comment_ic_bg">#323232</color>
     <color name="comment_ic_bg_pressed">#2B2B2B</color>
+    <color name="comment_ic_tint">#c5c5c5</color>
 
-    <color name="inactive_tab_color">#FAFAFA</color>
-    <color name="active_tab_color">#FFFFFF</color>
+    <color name="inactive_tab_color">#9E9E9E</color>
+    <color name="active_tab_color">#E0E0E0</color>
 
     <color name="gallery_action_bar">#7F000000</color>
 

@@ -19,7 +19,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/add_comment"
-        android:icon="@drawable/ic_add_white_36dp"
+        android:icon="@drawable/ic_add"
         android:title="@string/add_comment"
         app:showAsAction="ifRoom" />
 </menu>

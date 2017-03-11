@@ -54,11 +54,8 @@
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
     <string name="no_more_comments">没有更多评论</string>
-    <string name="comment_closed">评论已关闭</string>
 
     <string name="no_content">暂无内容</string>
-
-    <string name="double_click_move_to_top">双击可返回顶部</string>
 
     <string name="nav_home">最新资讯</string>
     <string name="nav_rank">今日排行</string>
@@ -92,7 +89,6 @@
     <string name="update_log">更新日志</string>
     <string name="license">开源许可</string>
     <string name="info_default">Unknown</string>
-    <string name="other">其他</string>
 
     <string name="hot_comment_content">%1$s：%2$s</string>
     <string name="anonymous">匿名网友</string>

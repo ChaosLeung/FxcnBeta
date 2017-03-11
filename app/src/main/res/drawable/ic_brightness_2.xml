@@ -15,9 +15,6 @@
   ~ limitations under the License.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/main_background" />
-    <stroke
-        android:width="1dp"
-        android:color="@color/divider" />
-</shape>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+        android:src="@drawable/ic_brightness_2_white_24dp"
+        android:tint="@color/active_tab_color" />

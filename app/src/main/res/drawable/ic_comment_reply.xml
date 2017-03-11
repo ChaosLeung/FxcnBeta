@@ -15,8 +15,6 @@
   ~ limitations under the License.
   -->
 
-<android.support.v4.view.ViewPager
-    android:id="@+id/pager"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+        android:src="@drawable/ic_reply_grey_200_18dp"
+        android:tint="@color/comment_ic_tint" />

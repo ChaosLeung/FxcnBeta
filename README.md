@@ -2,15 +2,21 @@
 
 目前市场中的 cnBeta 官方客户端及其他第三方客户端的设计风格大体上未能向 Material Design 靠拢，于是就有了这个项目。
 
+<a href='https://play.google.com/store/apps/details?id=org.chaos.fx.cnbeta&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' height='90' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+
+<a href='http://www.coolapk.com/apk/org.chaos.fx.cnbeta'><img alt='Get it on Cool Apk' height='90' src='http://image.coolapk.com/apk_logo/2016/0108/12202_1452248424_4592.png'/></a>
+
 ## 预览图
 
 **日间模式**
-<p><img src="screenshots/0.png" width="33%" />
-<img src="screenshots/1.png" width="33%" /></p>
+<p><img src="screenshots/0.png" width="28%" />
+<img src="screenshots/1.png" width="28%" />
+<img src="screenshots/2.png" width="28%" /></p>
 
 **夜间模式**
-<p><img src="screenshots/2.png" width="33%" />
-<img src="screenshots/3.png" width="33%" /></p>
+<p><img src="screenshots/3.png" width="28%" />
+<img src="screenshots/4.png" width="28%" />
+<img src="screenshots/5.png" width="28%" /></p>
 
 ## release 配置
 
@@ -23,6 +29,10 @@ KEY_PASSWORD=
 STORE_FILE=
 STORE_PASSWORD=
 ```
+
+## Thanks
+
+* 应用图标设计师 __By__ (Thinkoffuture@gmail.com)
 
 ## 开源库 
 

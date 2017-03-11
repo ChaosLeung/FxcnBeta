@@ -62,3 +62,8 @@
 
 #For Wechat
 -keep class com.tencent.mm.opensdk.**
+
+#For BaseRecyclerViewAdapterHelper
+-keep class * extends com.chad.library.adapter.** {
+   *;
+}

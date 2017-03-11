@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,112 +16,98 @@
 
 package org.chaos.fx.cnbeta.widget;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author Chaos
- *         2015/11/23.
+ *         10/03/2017
  */
-public abstract class ListAdapter<E, VH extends RecyclerView.ViewHolder> extends BaseAdapter<VH> {
 
-    private final List<E> mList = new ArrayList<>();
+public abstract class ListAdapter<T, VH extends BaseViewHolder> extends BaseQuickAdapter<T, VH> {
 
-    public ListAdapter(Context context, RecyclerView bindView) {
-        super(context, bindView);
+    public ListAdapter(int layoutResId, List<T> data) {
+        super(layoutResId, data);
     }
 
-    public void add(int location, E object) {
-        mList.add(location, object);
-        notifyItemInserted(location);
+    public ListAdapter(List<T> data) {
+        super(data);
     }
 
-    public boolean add(E object) {
-        boolean b = mList.add(object);
-        if (b) {
-            notifyItemInserted(mList.size() - 1);
-        }
-        return b;
+    public ListAdapter(int layoutResId) {
+        super(layoutResId);
     }
 
-    public boolean addAll(int location, @NonNull Collection<? extends E> collection) {
-        boolean b = mList.addAll(location, collection);
-        if (b) {
-            notifyItemRangeInserted(location, collection.size());
-        }
-        return b;
-    }
-
-    public boolean addAll(@NonNull Collection<? extends E> collection) {
-        boolean b = mList.addAll(collection);
-        if (b) {
-            notifyItemRangeInserted(mList.size() - collection.size(), collection.size());
-        }
-        return b;
-    }
-
-    public void clear() {
-        int len = mList.size();
-        mList.clear();
-        notifyItemRangeRemoved(0, len);
-    }
-
-    public boolean contains(Object object) {
-        return mList.contains(object);
-    }
-
-    public boolean containsAll(@NonNull Collection<?> collection) {
-        return mList.containsAll(collection);
-    }
-
-    public E get(int location) {
-        return mList.get(location);
-    }
-
-    public int indexOf(Object object) {
-        return mList.indexOf(object);
+    public int size() {
+        return getData().size();
     }
 
     public boolean isEmpty() {
-        return mList.isEmpty();
+        return getData().isEmpty();
     }
 
-    public int lastIndexOf(Object object) {
-        return mList.lastIndexOf(object);
+    public boolean contains(Object o) {
+        return getData().contains(o);
     }
 
-    public E remove(int location) {
-        E o = mList.remove(location);
-        if (o != null) {
-            notifyItemRemoved(location);
-        }
-        return o;
+    @NonNull
+    public Iterator<T> iterator() {
+        return getData().iterator();
     }
 
-    public boolean remove(Object object) {
-        int index = mList.indexOf(object);
-        boolean b = mList.remove(object);
-        if (b) {
-            notifyItemRemoved(index);
-        }
-        return b;
+    @NonNull
+    public Object[] toArray() {
+        return getData().toArray();
     }
 
-    public boolean removeAll(@NonNull Collection<?> collection) {
+    @NonNull
+    public <T1> T1[] toArray(@NonNull T1[] a) {
+        return getData().toArray(a);
+    }
+
+    public void add(T t) {
+        addData(t);
+    }
+
+    public void add(int index, T t) {
+        addData(index, t);
+    }
+
+    public boolean containsAll(@NonNull Collection<?> c) {
+        return getData().containsAll(c);
+    }
+
+    public boolean addAll(@NonNull Collection<? extends T> c) {
+        boolean result = getData().addAll(c);
+        notifyItemRangeInserted(getData().size() - c.size() + getHeaderLayoutCount(), c.size());
+        compatibilityDataSizeChanged(c.size());
+        return result;
+    }
+
+    public boolean addAll(int index, @NonNull Collection<? extends T> c) {
+        boolean result = getData().addAll(index, c);
+        notifyItemRangeInserted(index + getHeaderLayoutCount(), c.size());
+        compatibilityDataSizeChanged(c.size());
+        return result;
+    }
+
+    public boolean removeAll(@NonNull Collection<?> c) {
         boolean modified = false;
 
-        Iterator<E> iterator = mList.iterator();
+        Iterator<T> iterator = iterator();
         for (int i = 0; iterator.hasNext(); i++) {
             Object object = iterator.next();
-            if (collection.contains(object)) {
+            if (c.contains(object)) {
                 iterator.remove();
-                notifyItemRemoved(i);
+                notifyItemRemoved(i + getHeaderLayoutCount());
+                compatibilityDataSizeChanged(0);
                 modified = true;
             }
         }
@@ -129,37 +115,64 @@ public abstract class ListAdapter<E, VH extends RecyclerView.ViewHolder> extends
         return modified;
     }
 
-    public boolean retainAll(@NonNull Collection<?> collection) {
+    public boolean retainAll(@NonNull Collection<?> c) {
         boolean modified = false;
 
-        Iterator<E> iterator = mList.iterator();
+        Iterator<T> iterator = iterator();
         for (int i = 0; iterator.hasNext(); i++) {
             Object object = iterator.next();
-            if (!collection.contains(object)) {
+            if (!c.contains(object)) {
                 iterator.remove();
-                notifyItemRemoved(i);
+                notifyItemRemoved(i + getHeaderLayoutCount());
+                compatibilityDataSizeChanged(0);
                 modified = true;
             }
         }
-
         return modified;
     }
 
-    public E set(int location, E object) {
-        E origin = mList.set(location, object);
-        notifyItemChanged(location);
-        return origin;
+    public void clear() {
+        int len = size();
+        getData().clear();
+        notifyItemRangeRemoved(0, len);
     }
 
-    public List<E> subList(int start, int end) {
-        return mList.subList(start, end);
+    public T get(int index) {
+        return getItem(index);
     }
 
-    public List<E> getList() {
-        return mList;
+    public T set(int index, T element) {
+        T result = getData().set(index, element);
+        notifyItemChanged(index + getHeaderLayoutCount());
+        return result;
     }
 
-    public int listSize() {
-        return mList.size();
+    public int indexOf(Object o) {
+        return getData().indexOf(o);
+    }
+
+    public int lastIndexOf(Object o) {
+        return getData().lastIndexOf(o);
+    }
+
+    public ListIterator<T> listIterator() {
+        return getData().listIterator();
+    }
+
+    @NonNull
+    public ListIterator<T> listIterator(int index) {
+        return getData().listIterator(index);
+    }
+
+    @NonNull
+    public List<T> subList(int fromIndex, int toIndex) {
+        return getData().subList(fromIndex, toIndex);
+    }
+
+    private void compatibilityDataSizeChanged(int size) {
+        final int dataSize = getData() == null ? 0 : size();
+        if (dataSize == size) {
+            notifyDataSetChanged();
+        }
     }
 }

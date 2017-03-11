@@ -54,6 +54,8 @@ interface CommentContract {
         void hideProgress();
 
         void notifyCommentChanged(Comment c);
+
+        void updateCommentCount();
     }
 
     interface Presenter extends BasePresenter<View> {

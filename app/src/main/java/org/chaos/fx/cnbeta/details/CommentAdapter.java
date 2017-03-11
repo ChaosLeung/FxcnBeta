@@ -16,74 +16,41 @@
 
 package org.chaos.fx.cnbeta.details;
 
-import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.ListAdapter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * @author Chaos
  *         2015/11/22.
  */
-class CommentAdapter extends ListAdapter<Comment, ViewHolder> {
-
-    CommentAdapter(Context context, RecyclerView bindView) {
-        super(context, bindView);
-    }
-
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (getBindView() != null && mOnItemChildClickListener != null) {
-                View childView;
-                switch (v.getId()) {
-                    case R.id.support:
-                    case R.id.against:
-                    case R.id.reply:
-                        childView = (View) v.getParent();
-                        break;
-                    default:
-                        childView = v;
-                        break;
-                }
-                mOnItemChildClickListener.onItemChildClick(v, getBindView().getChildAdapterPosition(childView));
-            }
-        }
-    };
-
-    private OnItemChildClickListener mOnItemChildClickListener;
-
-    @Override
-    public ViewHolder onCreateHolderInternal(ViewGroup parent, int viewType) {
-        ViewHolder holder = new ViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.article_comment_item, parent, false));
-        holder.support.setOnClickListener(mOnClickListener);
-        holder.against.setOnClickListener(mOnClickListener);
-        holder.reply.setOnClickListener(mOnClickListener);
-        return holder;
+class CommentAdapter extends ListAdapter<Comment, CommentViewHolder> {
+    CommentAdapter() {
+        super(R.layout.article_comment_item);
     }
 
     @Override
-    public void onBindHolderInternal(ViewHolder holder, int position) {
-        Comment c = get(position);
+    protected void convert(CommentViewHolder holder, Comment c) {
         holder.comment.setText(c.getContent());
         holder.time.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(c.getCreatedTime()));
-        holder.username.setText(TextUtils.isEmpty(c.getUsername())
-                ? getContext().getString(R.string.anonymous) : c.getUsername());
+
+        String username = TextUtils.isEmpty(c.getUsername()) ?
+                mContext.getString(R.string.anonymous) : c.getUsername();
+        if ((mContext.getString(R.string.anonymous).equals(username)
+                || mContext.getString(R.string.anonymous_web).equals(username))
+                && !TextUtils.isEmpty(c.getAddress())) {
+            username = String.format(mContext.getString(R.string.anonymous_format), c.getAddress());
+        }
+        holder.username.setText(username);
+
         holder.replyComment.setVisibility(View.GONE);
-        holder.support.setText(Integer.toString(c.getSupport()));
-        holder.against.setText(Integer.toString(c.getAgainst()));
+        String intFormat = mContext.getString(R.string.int_format);
+        holder.support.setText(String.format(intFormat, c.getSupport()));
+        holder.against.setText(String.format(intFormat, c.getAgainst()));
         if (c.getPid() > 0) {
             Comment replyComment = new Comment();
             replyComment.setTid(c.getPid());
@@ -94,33 +61,5 @@ class CommentAdapter extends ListAdapter<Comment, ViewHolder> {
             }
         }
     }
-
-    @Override
-    protected int getItemCountInternal() {
-        return getList().size();
-    }
-
-    public void setOnItemChildClickListener(OnItemChildClickListener listener) {
-        mOnItemChildClickListener = listener;
-    }
-
-    interface OnItemChildClickListener {
-        void onItemChildClick(View v, int position);
-    }
 }
 
-class ViewHolder extends RecyclerView.ViewHolder {
-
-    @BindView(R.id.comment) TextView comment;
-    @BindView(R.id.username) TextView username;
-    @BindView(R.id.reply_comment) TextView replyComment;
-    @BindView(R.id.time) TextView time;
-    @BindView(R.id.support) TextView support;
-    @BindView(R.id.against) TextView against;
-    @BindView(R.id.reply) ImageButton reply;
-
-    ViewHolder(View itemView) {
-        super(itemView);
-        ButterKnife.bind(this, itemView);
-    }
-}

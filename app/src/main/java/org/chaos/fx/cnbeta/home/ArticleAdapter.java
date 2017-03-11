@@ -16,12 +16,10 @@
 
 package org.chaos.fx.cnbeta.home;
 
-import android.content.Context;
-import android.support.v7.widget.RecyclerView;
-
-import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.widget.ArticleHolder;
+import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 
 /**
  * @author Chaos
@@ -29,14 +27,9 @@ import org.chaos.fx.cnbeta.util.TimeStringHelper;
  */
 class ArticleAdapter extends BaseArticleAdapter {
 
-    ArticleAdapter(Context context, RecyclerView bindView) {
-        super(context, bindView);
-    }
-
     @Override
-    protected void onBindHolderInternal(ArticleHolder holder, int position) {
-        super.onBindHolderInternal(holder, position);
-        ArticleSummary summary = get(position);
+    protected void convert(ArticleHolder holder, ArticleSummary summary) {
+        super.convert(holder, summary);
         holder.summary.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime()));
     }
 }

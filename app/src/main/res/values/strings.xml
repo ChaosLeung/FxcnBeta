@@ -18,6 +18,10 @@
     <string name="app_name">FxcnBeta</string>
 
     <string name="card_image_content_description">Thumb image of the article.</string>
+    <string name="content_image_description">Image associated with the article.</string>
+    <string name="author_image_description">Thumb image of the author.</string>
+    <string name="captcha_image_description">The verification code required to add a comment.</string>
+    <string name="reply_image_description">Button for reply comment.</string>
 
     <plurals name="time_second">
         <item quantity="one">1 second ago</item>
@@ -54,11 +58,8 @@
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
     <string name="no_more_comments">没有更多评论</string>
-    <string name="comment_closed">评论已关闭</string>
 
     <string name="no_content">暂无内容</string>
-
-    <string name="double_click_move_to_top">双击可返回顶部</string>
 
     <string name="nav_home">最新资讯</string>
     <string name="nav_rank">今日排行</string>
@@ -92,10 +93,13 @@
     <string name="update_log">更新日志</string>
     <string name="license">开源许可</string>
     <string name="info_default">Unknown</string>
-    <string name="other">其他</string>
 
     <string name="hot_comment_content">%1$s：%2$s</string>
     <string name="anonymous">匿名网友</string>
+    <string name="anonymous_web">匿名人士</string>
+    <string name="anonymous_format">%s网友</string>
+    <string name="int_format">%d</string>
+    <string name="author_format">By %s</string>
 
     <string name="hint_captcha">输入验证码</string>
     <string name="hint_comment">评论正文</string>
@@ -110,6 +114,8 @@
     <string name="fb_contact_hint">QQ 或 Email (可选)</string>
     <string name="fb_feedback_hint">请填写您的问题或建议</string>
     <string name="send">发送</string>
+
+    <string name="feedback_subject">[Feedback] 关于 FxcnBeta 的一些问题</string>
 
     <string name="feedback_content_should_not_empty">反馈内容不能为空</string>
     <string name="sent">已发送，感谢您的反馈</string>

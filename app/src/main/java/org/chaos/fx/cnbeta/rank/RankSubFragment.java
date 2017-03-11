@@ -22,19 +22,24 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
+
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.widget.BaseAdapter;
-import org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView;
+import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 
 import java.util.List;
 
@@ -45,7 +50,8 @@ import butterknife.ButterKnife;
  * @author Chaos
  *         2015/11/17.
  */
-public class RankSubFragment extends Fragment implements RankSubContract.View, SwipeLinearRecyclerView.OnRefreshListener {
+public class RankSubFragment extends Fragment implements RankSubContract.View,
+        SwipeRefreshLayout.OnRefreshListener {
 
     private static final String KEY_TYPE = "type";
 
@@ -64,10 +70,11 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
         return subFragment;
     }
 
-    @BindView(R.id.swipe_recycler_view) SwipeLinearRecyclerView mArticlesView;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
     @BindView(R.id.no_content) TextView mNoContentTipsView;
 
-    private RankSubAdapter mArticleAdapter;
+    private RankSubAdapter mAdapter;
 
     private int mPreClickPosition;
     private RankSubContract.Presenter mPresenter;
@@ -86,13 +93,17 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
 
         String type = getArguments().getString(KEY_TYPE);
 
-        mArticleAdapter = new RankSubAdapter(getActivity(), mArticlesView.getRecyclerView(), type);
-        mArticleAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        mAdapter = new RankSubAdapter(type);
+        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
-                RecyclerView.ViewHolder holder = mArticlesView.getRecyclerView().findViewHolderForAdapterPosition(position);
+            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
                 mPreClickPosition = position;
-                ArticleSummary summary = mArticleAdapter.get(position);
+                ArticleSummary summary = mAdapter.get(position);
 
                 View tv = holder.itemView.findViewById(R.id.title);
                 ActivityOptionsCompat options =
@@ -103,9 +114,10 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
                         summary.getTopicLogo(), options);
             }
         });
-        mArticlesView.setAdapter(mArticleAdapter);
 
-        mArticlesView.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(
+                ResourcesCompat.getColor(getResources(), R.color.colorAccent, getContext().getTheme()));
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mPresenter = new RankSubPresenter(type);
         mPresenter.subscribe(this);
@@ -114,13 +126,13 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     @Override
     public void onResume() {
         super.onResume();
-        mArticleAdapter.notifyItemChanged(mPreClickPosition);
+        mAdapter.notifyItemChanged(mPreClickPosition);
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        if (isVisibleToUser && mArticleAdapter != null) {
-            mArticleAdapter.notifyDataSetChanged();
+        if (isVisibleToUser && mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
         }
         super.setUserVisibleHint(isVisibleToUser);
     }
@@ -132,7 +144,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
     }
 
     private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mArticlesView, strId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -142,32 +154,33 @@ public class RankSubFragment extends Fragment implements RankSubContract.View, S
 
     @Override
     public void showRefreshing(boolean refreshing) {
-        mArticlesView.setRefreshing(refreshing);
+        mSwipeRefreshLayout.setRefreshing(refreshing);
     }
 
     @Override
     public void showLoadFailed() {
+        showNothingTipsIfNeed();
         showSnackBar(R.string.load_articles_failed);
     }
 
     @Override
     public void showNoMoreContent() {
-        showSnackBar(R.string.no_more_articles);
         showNothingTipsIfNeed();
+        showSnackBar(R.string.no_more_articles);
     }
 
     public void showNothingTipsIfNeed() {
-        mNoContentTipsView.setVisibility(mArticleAdapter.isEmpty() ? View.VISIBLE : View.GONE);
+        mNoContentTipsView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void addArticles(List<ArticleSummary> summaries) {
-        if (!mArticleAdapter.containsAll(summaries)) {
-            mArticleAdapter.clear();
-            mArticleAdapter.addAll(0, summaries);
+        if (!mAdapter.containsAll(summaries)) {
+            mAdapter.clear();
+            mAdapter.addAll(0, summaries);
+            showNothingTipsIfNeed();
         } else {
             showNoMoreContent();
         }
-        showNothingTipsIfNeed();
     }
 }

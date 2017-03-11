@@ -24,7 +24,6 @@ import com.jakewharton.picasso.OkHttp3Downloader;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
@@ -49,6 +48,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CnBetaApiHelper {
 
     private static MobileApi sMobileApi;
+    private static MWebApi sMWebApi;
     private static WebApi sWebApi;
 
     private static OkHttp3Downloader sCookieDownloader;
@@ -72,6 +72,13 @@ public class CnBetaApiHelper {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
                 .create(MobileApi.class);
+
+        sMWebApi = new Retrofit.Builder()
+                .baseUrl(MWebApi.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+                .create(MWebApi.class);
 
         OkHttpClient okHttpClient = CnBetaHttpClientProvider.newCnBetaHttpClient();
 
@@ -148,7 +155,7 @@ public class CnBetaApiHelper {
                 page);
     }
 
-    public static Observable<List<ClosedComment>> closedComments(int sid) {
+    public static Observable<List<Comment>> closedComments(int sid) {
         long timestamp = System.currentTimeMillis();
         return sMobileApi.closedComments(
                 timestamp,
@@ -275,5 +282,9 @@ public class CnBetaApiHelper {
 
     public static Observable<WebApi.Result> againstComment(String token, int sid, int tid) {
         return sWebApi.opForComment(token, "against", sid, tid);
+    }
+
+    public static Observable<ResponseBody> getHotCommentsByPage(int page) {
+        return sMWebApi.getHotCommentsByPage(page);
     }
 }

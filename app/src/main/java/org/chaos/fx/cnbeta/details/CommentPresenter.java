@@ -22,7 +22,6 @@ import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.WebApi;
 import org.chaos.fx.cnbeta.net.exception.RequestFailedException;
-import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
@@ -58,6 +57,7 @@ class CommentPresenter implements CommentContract.Presenter {
 
     private CompositeDisposable mDisposables;
 
+    private boolean isLoadingClosedComments;
     private boolean isCommentEnable;
 
     private boolean inMobileApiMode;
@@ -102,9 +102,9 @@ class CommentPresenter implements CommentContract.Presenter {
                             return Observable.just(result);
                         } else {
                             return CnBetaApiHelper.closedComments(mSid)
-                                    .map(new Function<List<ClosedComment>, WebCommentResult>() {
+                                    .map(new Function<List<Comment>, WebCommentResult>() {
                                         @Override
-                                        public WebCommentResult apply(List<ClosedComment> comments) throws Exception {
+                                        public WebCommentResult apply(List<Comment> comments) throws Exception {
                                             result.setComments(ModelUtil.toWebCommentMap(comments));
                                             return result;
                                         }
@@ -121,12 +121,18 @@ class CommentPresenter implements CommentContract.Presenter {
                         List<Comment> comments = ModelUtil.toCommentList(result);
                         Collections.sort(comments, new CommentComparator());
                         mView.addComments(comments);
+
+                        mView.updateCommentCount();
+
                         mView.showNoCommentTipsIfNeed();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable e) throws Exception {
                         Log.e(TAG, "loadWebApiComments: ", e);
+
+                        mView.updateCommentCount();
+
                         mView.showNoCommentTipsIfNeed();
                     }
                 }));
@@ -139,7 +145,7 @@ class CommentPresenter implements CommentContract.Presenter {
     }
 
     @Override
-    public void refreshComments(int page) {
+    public void refreshComments(final int page) {
         mDisposables.add(CnBetaApiHelper.comments(mSid, page)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<MobileApi.Result<List<Comment>>, List<Comment>>() {
@@ -151,15 +157,35 @@ class CommentPresenter implements CommentContract.Presenter {
                         return listResult.result;
                     }
                 })
+                .flatMap(new Function<List<Comment>, ObservableSource<List<Comment>>>() {
+                    @Override
+                    public ObservableSource<List<Comment>> apply(List<Comment> comments) throws Exception {
+                        // TODO: 06/03/2017 page == 1 且 adapter.itemCount > 0 时，可以直接返回
+                        if (comments.isEmpty() && page == 1) {
+                            isLoadingClosedComments = true;
+                            return CnBetaApiHelper.closedComments(mSid);
+                        } else {
+                            return Observable.just(comments);
+                        }
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Comment>>() {
                     @Override
                     public void accept(List<Comment> result) throws Exception {
+                        boolean isClosedComments = isLoadingClosedComments;
+                        isLoadingClosedComments = false;
                         if (!result.isEmpty()) {
+                            if (isClosedComments) {
+                                isCommentEnable = false;
+                            }
+                            Collections.sort(result, new CommentComparator());
                             mView.addComments(result);
                         } else {
                             mView.showNoMoreComments();
                         }
+
+                        mView.updateCommentCount();
 
                         mView.hideProgress();
                         mView.showNoCommentTipsIfNeed();
@@ -168,6 +194,10 @@ class CommentPresenter implements CommentContract.Presenter {
                     @Override
                     public void accept(Throwable e) throws Exception {
                         Log.e(TAG, "refreshComments: ", e);
+                        isLoadingClosedComments = false;
+
+                        mView.updateCommentCount();
+
                         mView.showLoadingFailed();
                         mView.hideProgress();
                         mView.showNoCommentTipsIfNeed();

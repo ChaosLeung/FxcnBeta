@@ -25,7 +25,7 @@
                 </shape>
             </item>
             <item android:bottom="@dimen/comment_ic_padding"
-                  android:drawable="@drawable/ic_exposure_plus_1_grey_600_18dp"
+                  android:drawable="@drawable/ic_comment_plus"
                   android:left="@dimen/comment_ic_padding"
                   android:right="@dimen/comment_ic_padding"
                   android:top="@dimen/comment_ic_padding" />
@@ -41,7 +41,7 @@
                 </shape>
             </item>
             <item android:bottom="@dimen/comment_ic_padding"
-                  android:drawable="@drawable/ic_exposure_plus_1_grey_600_18dp"
+                  android:drawable="@drawable/ic_comment_plus"
                   android:left="@dimen/comment_ic_padding"
                   android:right="@dimen/comment_ic_padding"
                   android:top="@dimen/comment_ic_padding" />

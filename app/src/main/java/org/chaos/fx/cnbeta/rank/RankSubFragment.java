@@ -159,13 +159,14 @@ public class RankSubFragment extends Fragment implements RankSubContract.View,
 
     @Override
     public void showLoadFailed() {
+        showNothingTipsIfNeed();
         showSnackBar(R.string.load_articles_failed);
     }
 
     @Override
     public void showNoMoreContent() {
-        showSnackBar(R.string.no_more_articles);
         showNothingTipsIfNeed();
+        showSnackBar(R.string.no_more_articles);
     }
 
     public void showNothingTipsIfNeed() {
@@ -177,9 +178,9 @@ public class RankSubFragment extends Fragment implements RankSubContract.View,
         if (!mAdapter.containsAll(summaries)) {
             mAdapter.clear();
             mAdapter.addAll(0, summaries);
+            showNothingTipsIfNeed();
         } else {
             showNoMoreContent();
         }
-        showNothingTipsIfNeed();
     }
 }

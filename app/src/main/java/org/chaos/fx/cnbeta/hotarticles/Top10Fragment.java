@@ -29,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
@@ -57,6 +58,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
 
     @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
+    @BindView(R.id.no_content) TextView mNoContentTipsView;
 
     private Top10Adapter mAdapter;
 
@@ -142,11 +144,13 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
 
     @Override
     public void showNoMoreContent() {
+        showNothingTipsIfNeed();
         showSnackBar(R.string.no_more_articles);
     }
 
     @Override
     public void showLoadFailed() {
+        showNothingTipsIfNeed();
         showSnackBar(R.string.load_articles_failed);
     }
 
@@ -155,8 +159,13 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         if (!mAdapter.containsAll(summaries)) {
             mAdapter.clear();
             mAdapter.addAll(0, summaries);
+            showNothingTipsIfNeed();
         } else {
             showNoMoreContent();
         }
+    }
+
+    public void showNothingTipsIfNeed() {
+        mNoContentTipsView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }

@@ -16,7 +16,7 @@
   -->
 
 <resources>
-    <item name="fragment_articles" type="layout">@layout/layout_swipe_recycler_view</item>
+    <item name="fragment_articles" type="layout">@layout/fragment_comment</item>
     <item name="fragment_hot_comment" type="layout">@layout/fragment_articles</item>
     <item name="fragment_top10" type="layout">@layout/fragment_articles</item>
     <item name="fragment_sub_rank" type="layout">@layout/fragment_comment</item>

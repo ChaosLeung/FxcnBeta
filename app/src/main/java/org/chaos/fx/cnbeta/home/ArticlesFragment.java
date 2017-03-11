@@ -29,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
@@ -69,6 +70,7 @@ public class ArticlesFragment extends BaseFragment
 
     @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view) FxRecyclerView mRecyclerView;
+    @BindView(R.id.no_content) TextView mNoContentTipsView;
 
     private ArticleAdapter mAdapter;
 
@@ -206,6 +208,7 @@ public class ArticlesFragment extends BaseFragment
         } else {
             mAdapter.addAll(articles);
         }
+        showNothingTipsIfNeed();
     }
 
     @Override
@@ -220,11 +223,13 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void showNoArticles() {
+        showNothingTipsIfNeed();
         showSnackBar(R.string.no_more_articles);
     }
 
     @Override
     public void showLoadingArticlesError() {
+        showNothingTipsIfNeed();
         showSnackBar(R.string.load_articles_failed);
         setLoading(false);
         setRefreshing(false);
@@ -233,5 +238,9 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void onReselect() {
         mRecyclerView.smoothScrollToFirstItem();
+    }
+
+    public void showNothingTipsIfNeed() {
+        mNoContentTipsView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }

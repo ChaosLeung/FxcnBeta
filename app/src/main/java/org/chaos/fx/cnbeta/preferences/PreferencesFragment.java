@@ -16,6 +16,7 @@
 
 package org.chaos.fx.cnbeta.preferences;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.DialogPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.util.Log;
 
 import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
@@ -44,6 +46,19 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     private static final String KEY_RELEASE_NOTE = "release_note";
     private static final String KEY_LICENSE = "license";
     private static final String KEY_NIGHT_MODE = "night_mode";
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // Note: http://stackoverflow.com/a/38548386/3351990
+        // DialogFragment keeps holding a reference to PreferencesFragment which
+        // doesn't exist anymore when device rotation. In this case, we have to
+        // reset DialogFragment's target to be the new PreferencesFragment instance.
+        Fragment dialog = getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG);
+        if (dialog != null) {
+            dialog.setTargetFragment(this, 0);
+        }
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

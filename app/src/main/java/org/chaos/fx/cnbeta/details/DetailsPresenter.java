@@ -19,6 +19,7 @@ package org.chaos.fx.cnbeta.details;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
@@ -43,6 +44,8 @@ import io.reactivex.functions.Consumer;
  */
 
 class DetailsPresenter implements DetailsContract.Presenter {
+
+    private static final String TAG = "DetailsPresenter";
 
     private int mSid;
     private String mLogoLink;
@@ -100,6 +103,11 @@ class DetailsPresenter implements DetailsContract.Presenter {
                     @Override
                     public void accept(NewsContent content) throws Exception {
                         parseNewsContent(content);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        Log.e(TAG, "loadContentByNewsContent: ", e);
                     }
                 });
     }

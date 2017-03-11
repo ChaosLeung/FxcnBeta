@@ -29,11 +29,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
+
+import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -105,6 +108,13 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         mPresenter.unsubscribe();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!backToPreviousFragment()) {
+            super.onBackPressed();
+        }
+    }
+
     private void setupActionBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -132,10 +142,22 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                scrollToFinishActivity();
+                if (!backToPreviousFragment()) {
+                    scrollToFinishActivity();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean backToPreviousFragment() {
+        int currentItem = mViewPager.getCurrentItem();
+        if (currentItem == 0) {
+            return false;
+        } else {
+            mViewPager.setCurrentItem(currentItem - 1);
+            return true;
+        }
     }
 
     @Override
@@ -145,7 +167,10 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void onCommentUpdated(int count) {
-        mPagerAdapter.detailsFragment.setCommentCount(count);
+        DetailsFragment f = mPagerAdapter.detailsFragmentRef.get();
+        if (f != null) {
+            f.setCommentCount(count);
+        }
     }
 
     @OnClick(R.id.error_button)
@@ -165,39 +190,47 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void setupDetailsFragment(NewsContent content) {
-        mPagerAdapter.detailsFragment.handleNewsContent(content);
+        DetailsFragment f = mPagerAdapter.detailsFragmentRef.get();
+        if (f != null) {
+            f.handleNewsContent(content);
+        }
     }
 
     @Override
     public void setupCommentFragment(String sn, String tokenForReadComment) {
-        mPagerAdapter.commentFragment.handleSetupMessage(sn, tokenForReadComment);
+        CommentFragment f = mPagerAdapter.commentFragmentRef.get();
+        if (f != null) {
+            f.handleSetupMessage(sn, tokenForReadComment);
+        }
     }
 
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
-        mPagerAdapter.detailsFragment.onFragmentReenter(data);
+        DetailsFragment f = mPagerAdapter.detailsFragmentRef.get();
+        if (f != null) {
+            f.onFragmentReenter(data);
+        }
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] contentTitles = new String[]{getString(R.string.details), getString(R.string.comment)};
-        DetailsFragment detailsFragment;
-        CommentFragment commentFragment;
+
+        WeakReference<DetailsFragment> detailsFragmentRef;
+        WeakReference<CommentFragment> commentFragmentRef;
 
         private SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            commentFragment = CommentFragment.newInstance(mSid);
-            detailsFragment = DetailsFragment.newInstance(mSid, mTitle, mLogoLink);
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return detailsFragment;
+                    return DetailsFragment.newInstance(mSid, mTitle, mLogoLink);
                 case 1:
-                    return commentFragment;
+                    return CommentFragment.newInstance(mSid);
             }
             return new Fragment();
         }
@@ -210,6 +243,17 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         @Override
         public CharSequence getPageTitle(int position) {
             return contentTitles[position];
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Object o = super.instantiateItem(container, position);
+            if (o instanceof DetailsFragment) {
+                detailsFragmentRef = new WeakReference<>((DetailsFragment) o);
+            } else if (o instanceof CommentFragment) {
+                commentFragmentRef = new WeakReference<>((CommentFragment) o);
+            }
+            return o;
         }
     }
 }

@@ -21,7 +21,6 @@ import android.support.annotation.StringDef;
 import com.google.gson.annotations.SerializedName;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
-import org.chaos.fx.cnbeta.net.model.ClosedComment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
@@ -155,7 +154,7 @@ public interface MobileApi {
      * @return 成功则返回评论数据
      */
     @GET(BASE_PARAMS + "phone.Comment")
-    Observable<List<ClosedComment>> closedComments(@Query("timestamp") long timestamp,
+    Observable<List<Comment>> closedComments(@Query("timestamp") long timestamp,
                                                    @Query("sign") String sign,
                                                    @Query("article") int article);
 

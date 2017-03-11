@@ -22,4 +22,5 @@
            android:layout_marginBottom="@dimen/article_item_img_margin"
            android:layout_marginTop="@dimen/article_item_img_margin"
            android:adjustViewBounds="true"
+           android:contentDescription="@string/content_image_description"
            android:src="@drawable/default_content_image_holder" />

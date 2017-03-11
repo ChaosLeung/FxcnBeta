@@ -29,11 +29,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.DecelerateInterpolator;
 
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
@@ -47,7 +49,8 @@ import org.chaos.fx.cnbeta.rank.RanksFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener, ReselectedDispatcher {
 
     private static final int DURATION_EXPAND_TAB_LAYOUT = 300;
     private static final int DURATION_COLLAPSE_TAB_LAYOUT = 200;
@@ -79,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private SharedPreferences mDefaultPreferences;
 
+    private SparseArray<OnReselectListener> mOnReselectListeners;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         mPageTitles = new String[]{getString(R.string.nav_home), getString(R.string.nav_rank),
                 getString(R.string.nav_hot_articles), getString(R.string.nav_hot_comments)};
+        mOnReselectListeners = new SparseArray<>(mPageTitles.length);
 
         setTitle(mPageTitles[0]);
         mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
@@ -111,6 +117,15 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             @Override
             public void onTabSelected(@IdRes int tabId) {
                 mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId));
+            }
+        });
+        mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(@IdRes int tabId) {
+                OnReselectListener l = mOnReselectListeners.get(tabId);
+                if (l != null) {
+                    l.onReselect();
+                }
             }
         });
 
@@ -185,6 +200,17 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (PreferenceKeys.NIGHT_MODE.equals(key)) {
             recreate();
         }
+    }
+
+    @Override
+    public void addOnReselectListener(@IdRes int interestItemId, OnReselectListener l) {
+        mOnReselectListeners.put(interestItemId, l);
+    }
+
+    @Override
+    public void removeOnReselectListener(OnReselectListener l) {
+        int key = mOnReselectListeners.indexOfValue(l);
+        mOnReselectListeners.remove(key);
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

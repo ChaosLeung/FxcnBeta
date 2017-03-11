@@ -19,13 +19,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/comment"
-        android:icon="@drawable/ic_comment_white_24dp"
+        android:icon="@drawable/ic_comment"
         android:title="@string/comment"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/share"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share"
         android:title="@string/share"
         app:showAsAction="never">
         <menu>
@@ -43,7 +43,7 @@
 
     <item
         android:id="@+id/open_in_browser"
-        android:icon="@drawable/ic_open_in_browser_white_24dp"
+        android:icon="@drawable/ic_open_in_browser"
         android:title="@string/open_in_browser"
         app:showAsAction="never" />
 </menu>

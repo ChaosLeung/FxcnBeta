@@ -30,8 +30,6 @@
     <dimen name="article_text_content">16sp</dimen>
     <dimen name="article_text_comment">14sp</dimen>
 
-    <dimen name="appbar_elevation">4dp</dimen>
-
     <dimen name="fb_edit_padding">8dp</dimen>
     <dimen name="fb_text">16sp</dimen>
 
@@ -40,5 +38,8 @@
     <dimen name="tab_layout_height">48dp</dimen>
 
     <dimen name="release_note_text">14sp</dimen>
+
+    <dimen name="load_more_progress_size">42dp</dimen>
+    <dimen name="load_more_progress_padding">6dp</dimen>
 
 </resources>

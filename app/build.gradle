@@ -18,17 +18,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'com.antfortune.freeline'
 
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.greenrobot:greendao-gradle-plugin:3.2.1"
-    }
-}
-
 android {
 
     defaultConfig {
@@ -94,6 +83,8 @@ dependencies {
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
 
     compile 'org.greenrobot:greendao:3.2.0'
+
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.8.5'
 
     compile project(':ThirdPartyLib')
 }

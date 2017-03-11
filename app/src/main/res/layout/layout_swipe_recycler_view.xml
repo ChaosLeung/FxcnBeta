@@ -15,8 +15,22 @@
   ~ limitations under the License.
   -->
 
-<org.chaos.fx.cnbeta.widget.SwipeLinearRecyclerView
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/swipe"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/swipe_recycler_view"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <org.chaos.fx.cnbeta.widget.FxRecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbarStyle="insideOverlay"
+        android:scrollbarThumbVertical="@drawable/scrollbar_handle_material"
+        android:scrollbars="vertical"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/article_item" />
+
+</android.support.v4.widget.SwipeRefreshLayout>

@@ -16,60 +16,30 @@
 
 package org.chaos.fx.cnbeta.hotcomment;
 
-import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.widget.ListAdapter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * @author Chaos
  *         2015/11/14.
  */
-class HotCommentAdapter extends ListAdapter<HotComment, ViewHolder> {
+class HotCommentAdapter extends ListAdapter<HotComment, HotCommentViewHolder> {
 
-    HotCommentAdapter(Context context, RecyclerView bindView) {
-        super(context, bindView);
+    HotCommentAdapter() {
+        super(R.layout.hot_comment_item);
     }
 
     @Override
-    public ViewHolder onCreateHolderInternal(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.hot_comment_item, parent, false));
-    }
-
-    @Override
-    public final void onBindHolderInternal(ViewHolder holder, int position) {
-        HotComment comment = get(position);
-        holder.title.setText(comment.getSubject());
+    protected void convert(HotCommentViewHolder holder, HotComment comment) {
+        holder.title.setText(comment.getTitle());
         String username = TextUtils.isEmpty(comment.getUsername())
-                ? getContext().getString(R.string.anonymous) : comment.getUsername();
+                ? mContext.getString(R.string.anonymous) : comment.getUsername();
         holder.comment.setText(String.format(
-                getContext().getString(R.string.hot_comment_content), username, comment.getComment()));
-    }
-
-    @Override
-    public int getItemCountInternal() {
-        return listSize();
+                mContext.getString(R.string.hot_comment_content), username, comment.getComment()));
     }
 
 }
 
-class ViewHolder extends RecyclerView.ViewHolder {
-
-    @BindView(R.id.title) public TextView title;
-    @BindView(R.id.comment) public TextView comment;
-
-    ViewHolder(View itemView) {
-        super(itemView);
-        ButterKnife.bind(this, itemView);
-    }
-}

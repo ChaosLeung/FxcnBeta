@@ -22,12 +22,6 @@
 
     <include layout="@layout/layout_swipe_recycler_view" />
 
-    <TextView
-        android:id="@+id/no_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/no_content"
-        android:textColor="@color/content_text"
-        android:visibility="gone" />
+    <include layout="@layout/layout_no_content" />
+
 </android.support.design.widget.CoordinatorLayout>

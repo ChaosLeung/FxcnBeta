@@ -29,13 +29,15 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/captcha_text"
         android:layout_alignTop="@+id/captcha_text"
+        android:contentDescription="@string/captcha_image_description"
         android:scaleType="fitXY" />
 
     <EditText
         android:id="@+id/captcha_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/captcha"
+        android:layout_toEndOf="@+id/captcha"
+        android:layout_toRightOf="@+id/captcha"
         android:hint="@string/hint_captcha"
         android:maxLines="1"
         android:minWidth="64dp" />

@@ -27,9 +27,7 @@ public class HotComment {
     @SerializedName("username")
     private String mUsername;
     @SerializedName("subject")
-    private String mSubject;
-    @SerializedName("cid")
-    private int mCid;
+    private String mTitle;
     @SerializedName("comment")
     private String mComment;
     @SerializedName("sid")
@@ -43,20 +41,12 @@ public class HotComment {
         return mUsername;
     }
 
-    public void setSubject(String subject) {
-        mSubject = subject;
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
-    public String getSubject() {
-        return mSubject;
-    }
-
-    public void setCid(int cid) {
-        mCid = cid;
-    }
-
-    public int getCid() {
-        return mCid;
+    public String getTitle() {
+        return mTitle;
     }
 
     public void setComment(String comment) {
@@ -78,8 +68,7 @@ public class HotComment {
     @Override
     public String toString() {
         return "username = " + mUsername +
-                ", subject = " + mSubject +
-                ", cid = " + mCid +
+                ", subject = " + mTitle +
                 ", comment = " + mComment +
                 ", sid = " + mSid;
     }
@@ -91,7 +80,7 @@ public class HotComment {
         }
         if (o instanceof HotComment) {
             HotComment h = (HotComment) o;
-            if (h.mCid == this.mCid) {
+            if (h.mComment.equals(this.mComment)) {
                 return true;
             }
         }

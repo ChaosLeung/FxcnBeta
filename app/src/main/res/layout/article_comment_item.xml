@@ -110,5 +110,6 @@
         android:layout_alignTop="@+id/support"
         android:layout_below="@id/comment"
         android:background="@null"
-        android:src="@drawable/comment_ic_reply" />
+        android:src="@drawable/comment_ic_reply"
+        android:contentDescription="@string/reply_image_description" />
 </RelativeLayout>

@@ -16,29 +16,26 @@
 
 package org.chaos.fx.cnbeta.rank;
 
-import android.content.Context;
 import android.support.annotation.StringRes;
-import android.support.v7.widget.RecyclerView;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.MobileApi;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
+import org.chaos.fx.cnbeta.widget.ArticleHolder;
 import org.chaos.fx.cnbeta.widget.BaseArticleAdapter;
 
 class RankSubAdapter extends BaseArticleAdapter {
 
     private String mType;
 
-    RankSubAdapter(Context context, RecyclerView bindView, String type) {
-        super(context, bindView);
+    RankSubAdapter(String type) {
         mType = type;
     }
 
     @Override
-    protected void onBindHolderInternal(ArticleHolder holder, int position) {
-        super.onBindHolderInternal(holder, position);
-        ArticleSummary summary = get(position);
+    protected void convert(ArticleHolder holder, ArticleSummary summary) {
+        super.convert(holder, summary);
         String subText = "";
         if (MobileApi.TYPE_COUNTER.equals(mType)) {
             subText = TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime());
@@ -51,6 +48,6 @@ class RankSubAdapter extends BaseArticleAdapter {
     }
 
     private String getSubText(@StringRes int strId, int value) {
-        return String.format(getContext().getString(strId), value);
+        return String.format(mContext.getString(strId), value);
     }
 }

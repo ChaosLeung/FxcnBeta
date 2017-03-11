@@ -25,6 +25,10 @@
         <item name="android:windowBackground">@color/main_background</item>
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay</item>
         <item name="android:listDivider">@drawable/list_divider</item>
+        <!-- For Preferences -->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="alertDialogTheme">@style/AppTheme.Dialog</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -32,13 +36,22 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorControlNormal">@color/active_tab_color</item>
+        <item name="android:textColorPrimary">@color/active_tab_color</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:colorBackground">@color/main_background</item>
+    </style>
 
     <style name="AppTheme.ActionBar.Translucent" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/gallery_action_bar</item>
         <item name="windowActionBarOverlay">true</item>
+        <item name="android:textColorPrimary">@color/active_tab_color</item>
+        <item name="android:windowBackground">?colorPrimary</item>
     </style>
 
     <style name="AppTheme.Preference" parent="Preference">
@@ -78,7 +91,9 @@
         <item name="android:widgetLayout">@layout/preference_widget_checkbox</item>
     </style>
 
-    <style name="AppTheme.PreferenceFragment" parent="PreferenceFragment.Material" />
+    <style name="AppTheme.PreferenceFragment" parent="PreferenceFragment.Material">
+        <item name="android:divider">?android:attr/listDivider</item>
+    </style>
 
     <style name="AppTheme.PreferenceFragmentList" parent="PreferenceFragmentList" />
 
@@ -97,4 +112,8 @@
     </style>
 
     <style name="AppTheme.Content" parent="AppTheme.NoActionBar" />
+
+    <style name="AppTheme.Dialog" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/fx_dialog_material_background</item>
+    </style>
 </resources>

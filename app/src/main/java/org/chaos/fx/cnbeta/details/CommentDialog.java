@@ -16,6 +16,7 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -94,6 +95,7 @@ public class CommentDialog extends DialogFragment {
 
     private Disposable mCaptchaDisposable;
 
+    @SuppressLint("InflateParams")
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

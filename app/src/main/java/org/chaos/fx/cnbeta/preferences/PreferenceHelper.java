@@ -48,7 +48,7 @@ public class PreferenceHelper {
 
     private PreferenceHelper(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        mWifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
     public static PreferenceHelper getInstance() {

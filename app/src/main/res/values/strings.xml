@@ -18,6 +18,10 @@
     <string name="app_name">FxcnBeta</string>
 
     <string name="card_image_content_description">Thumb image of the article.</string>
+    <string name="content_image_description">Image associated with the article.</string>
+    <string name="author_image_description">Thumb image of the author.</string>
+    <string name="captcha_image_description">The verification code required to add a comment.</string>
+    <string name="reply_image_description">Button for reply comment.</string>
 
     <plurals name="time_second">
         <item quantity="one">1 second ago</item>
@@ -95,6 +99,7 @@
     <string name="anonymous_web">匿名人士</string>
     <string name="anonymous_format">%s网友</string>
     <string name="int_format">%d</string>
+    <string name="author_format">By %s</string>
 
     <string name="hint_captcha">输入验证码</string>
     <string name="hint_comment">评论正文</string>

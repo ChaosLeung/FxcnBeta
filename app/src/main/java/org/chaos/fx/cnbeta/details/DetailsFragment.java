@@ -229,7 +229,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     @Override
     public void setAuthor(String author) {
-        mAuthorView.setText("By " + author);
+        mAuthorView.setText(String.format(getString(R.string.author_format), author));
     }
 
     @Override

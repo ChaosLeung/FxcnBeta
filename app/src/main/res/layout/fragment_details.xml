@@ -21,7 +21,8 @@
     android:layout_height="match_parent"
     android:scrollbarStyle="insideOverlay"
     android:scrollbarThumbVertical="@drawable/scrollbar_handle_material"
-    android:transitionName="@string/transition_details_background">
+    android:transitionName="@string/transition_details_background"
+    tools:targetApi="lollipop">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -37,7 +38,8 @@
             android:textColor="@color/content_title"
             android:textSize="30sp"
             android:transitionName="@string/transition_details_title"
-            tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future" />
+            tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future"
+            tools:targetApi="lollipop" />
 
         <ImageView
             android:id="@+id/author_image"
@@ -48,6 +50,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
             android:src="@color/holder_color"
+            android:contentDescription="@string/author_image_description"
             tools:background="#000" />
 
         <TextView
@@ -67,7 +70,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/author_image"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textColor="@color/content_time"
             tools:text="3 hours ago" />
 
@@ -78,7 +81,7 @@
             android:layout_below="@+id/source"
             android:layout_toEndOf="@+id/author_image"
             android:layout_toRightOf="@+id/author_image"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textColor="@color/content_author"
             tools:text="Sean Sullivan and Katie Zezima" />
 

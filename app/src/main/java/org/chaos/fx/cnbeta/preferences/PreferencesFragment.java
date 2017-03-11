@@ -16,6 +16,8 @@
 
 package org.chaos.fx.cnbeta.preferences;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -58,6 +60,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         if (KEY_HELP_AND_FEEDBACK.equals(key)) {
             // may be used in the future
 //            startActivity(new Intent(getActivity(), FeedbackActivity.class));
+            composeEmail(getString(R.string.email), getString(R.string.feedback_subject));
             return true;
         }
         return false;
@@ -102,5 +105,15 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     @Override
     public Fragment getCallbackFragment() {
         return this;
+    }
+
+    private void composeEmail(String address, String subject) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{address});
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 }

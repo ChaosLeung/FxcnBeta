@@ -115,6 +115,8 @@
     <string name="fb_feedback_hint">请填写您的问题或建议</string>
     <string name="send">发送</string>
 
+    <string name="feedback_subject">[Feedback] 关于 FxcnBeta 的一些问题</string>
+
     <string name="feedback_content_should_not_empty">反馈内容不能为空</string>
     <string name="sent">已发送，感谢您的反馈</string>
     <string name="fb_feedback_max_length">200</string>

@@ -81,4 +81,8 @@ public class PreferenceHelper {
     public boolean inNightMode() {
         return mPreferences.getBoolean(PreferenceKeys.NIGHT_MODE, false);
     }
+
+    public boolean inAnimationMode() {
+        return mPreferences.getBoolean(PreferenceKeys.ANIMATION_MODE, true);
+    }
 }

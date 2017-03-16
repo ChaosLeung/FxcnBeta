@@ -88,6 +88,8 @@
     <string name="mobile_api_mode">官方模式</string>
     <string name="use_mobile_api">与官方客户端数据保持一致</string>
     <string name="night_mode">夜间模式</string>
+    <string name="animation_mode">列表动画</string>
+    <string name="animation_mode_summary">加载列表时显示动画</string>
     <string name="about">关于</string>
     <string name="version_name">版本号</string>
     <string name="update_log">更新日志</string>

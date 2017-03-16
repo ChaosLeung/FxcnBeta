@@ -38,7 +38,9 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.HotComment;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
+import org.chaos.fx.cnbeta.widget.NonAnimation;
 
 import java.util.List;
 
@@ -77,7 +79,6 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         ButterKnife.bind(this, view);
 
         mAdapter = new HotCommentAdapter();
-        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -109,6 +110,16 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         mPresenter.subscribe(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (PreferenceHelper.getInstance().inAnimationMode()) {
+            mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+        } else {
+            mAdapter.openLoadAnimation(NonAnimation.INSTANCE);
+        }
+    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {

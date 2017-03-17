@@ -36,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/content_title"
+            android:textIsSelectable="true"
             android:textSize="30sp"
             android:transitionName="@string/transition_details_title"
             tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future"

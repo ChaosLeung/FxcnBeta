@@ -17,6 +17,10 @@
 package org.chaos.fx.cnbeta.preferences;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.annotation.ColorInt;
+import android.support.v4.content.res.ResourcesCompat;
 
 import org.chaos.fx.cnbeta.R;
 
@@ -35,6 +39,30 @@ class LicenseDialogFragmentProvider {
                 .setShowFullLicenseText(false)
                 .setUseAppCompat(true)
                 .setIncludeOwnLicense(true)
+                .setNoticesCssStyle(newCssStyle(context))
                 .build();
+    }
+
+    private static String newCssStyle(Context context) {
+        Resources res = context.getResources();
+        String format = res.getString(R.string.custom_notices_format_style);
+        int background = ResourcesCompat.getColor(res, R.color.css_body_background, context.getTheme());
+        int preBackground = ResourcesCompat.getColor(res, R.color.css_pre_background, context.getTheme());
+        int liColor = ResourcesCompat.getColor(res, R.color.css_li_color, context.getTheme());
+        int aColor = ResourcesCompat.getColor(res, R.color.css_a_color, context.getTheme());
+
+        String body = getRGBAString(context, background);
+        String pre = getRGBAString(context, preBackground);
+        String li = getRGBAString(context, liColor);
+        String a = getRGBAString(context, aColor);
+        return String.format(format, body, pre, li/*pre text*/, li, a);
+    }
+
+    private static String getRGBAString(Context context, @ColorInt int color) {
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        float alpha = ((float) Color.alpha(color) / 255);
+        return String.format(context.getString(R.string.rgba_format), red, green, blue, alpha);
     }
 }

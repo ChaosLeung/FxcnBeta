@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2015 Chaos
+  ~ Copyright 2017 Chaos Leong
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -146,4 +146,30 @@
 
     <string name="email">lgf42031@gmail.com</string>
 
+    <string name="rgba_format" translatable="false">rgba(%1$d,%2$d,%3$d,%4$1f)</string>
+    <string name="custom_notices_format_style" translatable="false">
+        body {
+            font-family: sans-serif;
+            overflow-wrap: break-word;
+            background-color: %1$s;
+        }
+        pre {
+            background-color: %2$s;
+            color: %3$s;
+            padding: 1em;
+            white-space: pre-wrap;
+        }
+        ul {
+            padding-left: 1em;
+            padding-right: 1em;
+            margin: 0px;
+        }
+        li {
+            color: %4$s;
+            list-style: none;
+        }
+        li a {
+            color: %5$s;
+        }
+    </string>
 </resources>

@@ -26,4 +26,6 @@ public class PreferenceKeys {
     public static final String MOBILE_API_MODE = "mobile_api_mode";
     public static final String NIGHT_MODE = "night_mode";
     public static final String ANIMATION_MODE = "animation_mode";
+    public static final String CONTENT_TEXT_LEVEL = "content_text_level";
+    public static final String CONTENT_TEXT_LEVEL_INT = "content_text_level_int";
 }

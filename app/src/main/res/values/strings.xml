@@ -83,6 +83,13 @@
     <string name="retry">重试</string>
 
     <string name="basic_setting">常规</string>
+    <string name="content_text_level">文章字体大小</string>
+    <string name="default_content_text_level">中</string>
+    <string-array name="content_text_levels">
+        <item>小</item>
+        <item>中</item>
+        <item>大</item>
+    </string-array>
     <string name="load_image">图片加载</string>
     <string name="auto_load_image_in_wifi_mode">仅在 Wi-Fi 环境下自动加载图片</string>
     <string name="mobile_api_mode">官方模式</string>

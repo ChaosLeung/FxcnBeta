@@ -59,4 +59,9 @@
 
     <color name="scrollbar_color">#84BDBDBD</color>
 
+    <color name="css_body_background">@color/main_background</color>
+    <color name="css_pre_background">#313131</color>
+    <color name="css_pre_color">@color/main_background</color>
+    <color name="css_li_color">@color/textColorPrimary</color>
+    <color name="css_a_color">@color/colorAccent</color>
 </resources>

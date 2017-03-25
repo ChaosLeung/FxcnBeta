@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.text.util.Linkify;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -76,6 +77,10 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     public static final String EXTRA_START_IMAGE_POSITION = "start_image_position";
     public static final String EXTRA_CURRENT_IMAGE_POSITION = "current_image_position";
 
+    private static final float[] TEXT_SIZES = {
+            0.8f, 1f, 1.2f
+    };
+
     private int mSid;
 
     @BindView(R.id.title) TextView mTitleView;
@@ -83,7 +88,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     @BindView(R.id.author) TextView mAuthorView;
     @BindView(R.id.time) TextView mTimeView;
     @BindView(R.id.comment_count) TextView mCommentCountView;
-    @BindView(R.id.author_image) ImageView authorImg;
+    @BindView(R.id.author_image) ImageView mAuthorImg;
 
     @BindView(R.id.content_layout) LinearLayout mContentLayout;
 
@@ -118,6 +123,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     private NewsContent mTmpNewsContent;
     private int mTmpCount = -1;
 
+    private float mTextRelativeSize;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -138,6 +145,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         ButterKnife.bind(this, view);
 
         getActivity().setExitSharedElementCallback(mSharedElementCallback);// for ImagePagerActivity
+
+        setupTextSize();
 
         mSid = getArguments().getInt(KEY_SID);
         mTitleView.setText(getArguments().getString(KEY_TITLE));
@@ -162,6 +171,24 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             setCommentCount(-1);
             mTmpCount = -1;
         }
+    }
+
+    private void setupTextSize() {
+        mTextRelativeSize = TEXT_SIZES[PreferenceHelper.getInstance().getContentTextLevel()];
+        scaleTextSize(mTitleView, mTextRelativeSize);
+        scaleTextSize(mSourceView, mTextRelativeSize);
+        scaleTextSize(mTimeView, mTextRelativeSize);
+        scaleTextSize(mAuthorView, mTextRelativeSize);
+        scaleTextSize(mCommentCountView, mTextRelativeSize);
+
+        ViewGroup.LayoutParams params = mAuthorImg.getLayoutParams();
+        int size = Math.round(params.width * mTextRelativeSize);
+        params.width = params.height = size;
+        mAuthorImg.setLayoutParams(params);
+    }
+
+    private void scaleTextSize(TextView v, float relativeSize) {
+        v.setTextSize(TypedValue.COMPLEX_UNIT_PX, v.getTextSize() * relativeSize);
     }
 
     @Override
@@ -204,7 +231,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     private void shareUrlToWechat(boolean toTimeline) {
         mPresenter.shareUrlToWechat(
-                ((BitmapDrawable) authorImg.getDrawable()).getBitmap(), toTimeline);
+                ((BitmapDrawable) mAuthorImg.getDrawable()).getBitmap(), toTimeline);
     }
 
     public void handleNewsContent(NewsContent content) {
@@ -219,7 +246,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     public void loadAuthorImage(String authorImgLink) {
         Picasso.with(getActivity())
                 .load(authorImgLink)
-                .into(authorImg);
+                .into(mAuthorImg);
     }
 
     @Override
@@ -260,6 +287,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     public void addTextToContent(String text) {
         TextView view = (TextView) getActivity().getLayoutInflater().inflate(R.layout.article_content_text_item, mContentLayout, false);
         mContentLayout.addView(view);
+        scaleTextSize(view, mTextRelativeSize);
         view.setText(text);
         Linkify.addLinks(view, Linkify.WEB_URLS);
     }

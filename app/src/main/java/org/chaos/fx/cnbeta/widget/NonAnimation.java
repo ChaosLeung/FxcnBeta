@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Chaos
+ * Copyright 2017 Chaos Leong
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta.preferences;
+package org.chaos.fx.cnbeta.widget;
+
+import android.animation.Animator;
+import android.view.View;
+
+import com.chad.library.adapter.base.animation.BaseAnimation;
 
 /**
- * @author Chaos
- *         14/02/2017
+ * @author Chaos Leong
+ *         16/03/2017
  */
 
-public class PreferenceKeys {
-    public static final String SAFE_DATA_MODE = "safe_data_mode";
-    public static final String MOBILE_API_MODE = "mobile_api_mode";
-    public static final String NIGHT_MODE = "night_mode";
-    public static final String ANIMATION_MODE = "animation_mode";
-    public static final String CONTENT_TEXT_LEVEL = "content_text_level";
-    public static final String CONTENT_TEXT_LEVEL_INT = "content_text_level_int";
+public class NonAnimation implements BaseAnimation {
+
+    public static final NonAnimation INSTANCE = new NonAnimation();
+
+    private NonAnimation() {
+    }
+
+    @Override
+    public Animator[] getAnimators(View view) {
+        return new Animator[0];
+    }
 }

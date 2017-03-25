@@ -81,4 +81,16 @@ public class PreferenceHelper {
     public boolean inNightMode() {
         return mPreferences.getBoolean(PreferenceKeys.NIGHT_MODE, false);
     }
+
+    public boolean inAnimationMode() {
+        return mPreferences.getBoolean(PreferenceKeys.ANIMATION_MODE, true);
+    }
+
+    public void setContentTextLevel(int level) {
+        mPreferences.edit().putInt(PreferenceKeys.CONTENT_TEXT_LEVEL_INT, level).apply();
+    }
+
+    public int getContentTextLevel() {
+        return mPreferences.getInt(PreferenceKeys.CONTENT_TEXT_LEVEL_INT, 1);
+    }
 }

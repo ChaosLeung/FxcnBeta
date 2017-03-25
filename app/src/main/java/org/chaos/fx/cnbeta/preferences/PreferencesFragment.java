@@ -24,9 +24,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.DialogPreference;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.util.Log;
 
 import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
@@ -67,6 +67,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         findPreference("version_name").setSummary(BuildConfig.VERSION_NAME);
         findPreference(KEY_HELP_AND_FEEDBACK).setOnPreferenceClickListener(this);
         findPreference(KEY_NIGHT_MODE).setOnPreferenceChangeListener(this);
+        findPreference(PreferenceKeys.CONTENT_TEXT_LEVEL).setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -89,6 +90,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
                     AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             getActivity().recreate();
             return true;
+        } else if (PreferenceKeys.CONTENT_TEXT_LEVEL.equals(key)) {
+            ListPreference p = (ListPreference) preference;
+            PreferenceHelper.getInstance().setContentTextLevel(p.findIndexOfValue((String) newValue));
+            return true;
         }
         return false;
     }
@@ -108,7 +113,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
             } else if (KEY_LICENSE.equals(key)) {
                 f = LicenseDialogFragmentProvider.newFragment(getActivity());
             } else {
-                throw new IllegalArgumentException("Tried to display dialog for unknown preference key.");
+                return false;
             }
             f.setTargetFragment(this, 0);
             f.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);

@@ -40,6 +40,7 @@ import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.model.Comment;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 
 import java.util.List;
@@ -98,7 +99,9 @@ public class CommentFragment extends BaseFragment implements
         ButterKnife.bind(this, view);
 
         mAdapter = new CommentAdapter();
-        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+        if (PreferenceHelper.getInstance().inAnimationMode()) {
+            mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+        }
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));

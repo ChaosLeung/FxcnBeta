@@ -29,28 +29,29 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="@dimen/article_padding">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/content_title"
-            android:textSize="30sp"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/article_text_title"
             android:transitionName="@string/transition_details_title"
-            tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future"
-            tools:targetApi="lollipop" />
+            tools:targetApi="lollipop"
+            tools:text="It's on: Rubio and Cruz elash over immigration and the GOP's future" />
 
         <ImageView
             android:id="@+id/author_image"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="@dimen/author_img_size"
+            android:layout_height="@dimen/author_img_size"
             android:layout_below="@+id/title"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
-            android:src="@color/holder_color"
             android:contentDescription="@string/author_image_description"
+            android:src="@color/holder_color"
             tools:background="#000" />
 
         <TextView
@@ -61,6 +62,7 @@
             android:layout_toEndOf="@+id/author_image"
             android:layout_toRightOf="@+id/author_image"
             android:textColor="@color/content_source"
+            android:textSize="@dimen/article_text_secondary"
             tools:text="The Washington Post" />
 
         <TextView
@@ -72,6 +74,7 @@
             android:layout_alignTop="@+id/author_image"
             android:maxLines="1"
             android:textColor="@color/content_time"
+            android:textSize="@dimen/article_text_secondary"
             tools:text="3 hours ago" />
 
         <TextView
@@ -83,6 +86,7 @@
             android:layout_toRightOf="@+id/author_image"
             android:maxLines="1"
             android:textColor="@color/content_author"
+            android:textSize="@dimen/article_text_secondary"
             tools:text="Sean Sullivan and Katie Zezima" />
 
         <LinearLayout
@@ -90,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/author"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/article_padding"
             android:gravity="center_horizontal"
             android:orientation="vertical" />
 
@@ -103,7 +107,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/content_layout"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/article_padding"
             android:textColor="@color/content_comment_count"
             tools:text="12 条评论" />
     </RelativeLayout>

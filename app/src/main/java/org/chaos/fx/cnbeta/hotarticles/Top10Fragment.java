@@ -38,7 +38,9 @@ import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
+import org.chaos.fx.cnbeta.widget.NonAnimation;
 
 import java.util.List;
 
@@ -79,7 +81,6 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         ButterKnife.bind(this, view);
 
         mAdapter = new Top10Adapter();
-        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -112,6 +113,12 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     public void onResume() {
         super.onResume();
         mAdapter.notifyItemChanged(mPreClickPosition);
+
+        if (PreferenceHelper.getInstance().inAnimationMode()) {
+            mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+        } else {
+            mAdapter.openLoadAnimation(NonAnimation.INSTANCE);
+        }
     }
 
     @Override

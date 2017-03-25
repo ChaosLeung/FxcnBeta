@@ -44,5 +44,10 @@ public class CommentViewHolder extends BaseViewHolder {
     public CommentViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+
+        // for handle child view onClick event
+        addOnClickListener(R.id.support);
+        addOnClickListener(R.id.against);
+        addOnClickListener(R.id.reply);
     }
 }

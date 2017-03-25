@@ -59,4 +59,8 @@
 
     <color name="scrollbar_color">#BDBDBD</color>
 
+    <color name="css_body_background">@color/main_background</color>
+    <color name="css_pre_background">#EEEEEE</color>
+    <color name="css_li_color">@color/textColorPrimary</color>
+    <color name="css_a_color">@color/colorAccent</color>
 </resources>

@@ -39,8 +39,10 @@ import org.chaos.fx.cnbeta.ReselectedDispatcher;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
+import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 import org.chaos.fx.cnbeta.widget.LoadingView;
+import org.chaos.fx.cnbeta.widget.NonAnimation;
 
 import java.util.List;
 
@@ -98,7 +100,6 @@ public class ArticlesFragment extends BaseFragment
         mAdapter = new ArticleAdapter();
         mAdapter.setOnLoadMoreListener(this);
         mAdapter.setLoadMoreView(new LoadingView());
-        mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -132,6 +133,12 @@ public class ArticlesFragment extends BaseFragment
     public void onResume() {
         super.onResume();
         mAdapter.notifyItemChanged(mPreClickPosition);
+
+        if (PreferenceHelper.getInstance().inAnimationMode()) {
+            mAdapter.openLoadAnimation(BaseQuickAdapter.SLIDEIN_BOTTOM);
+        } else {
+            mAdapter.openLoadAnimation(NonAnimation.INSTANCE);
+        }
     }
 
     @Override

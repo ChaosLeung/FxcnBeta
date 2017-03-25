@@ -26,6 +26,14 @@
         android:key="basic"
         android:title="@string/basic_setting">
 
+        <android.support.v7.preference.ListPreference
+            android:defaultValue="@string/default_content_text_level"
+            android:entries="@array/content_text_levels"
+            android:entryValues="@array/content_text_levels"
+            android:key="content_text_level"
+            android:summary="%s"
+            android:title="@string/content_text_level" />
+
         <android.support.v7.preference.SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="safe_data_mode"
@@ -38,6 +46,12 @@
             android:summary="@string/use_mobile_api"
             android:title="@string/mobile_api_mode" />
 
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="animation_mode"
+            android:summary="@string/animation_mode_summary"
+            android:title="@string/animation_mode" />
+
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory
@@ -46,8 +60,8 @@
 
         <android.support.v7.preference.Preference
             android:key="help_and_feedback"
-            android:title="@string/nav_help"
-            android:summary="@string/email" />
+            android:summary="@string/email"
+            android:title="@string/nav_help" />
 
         <org.chaos.fx.cnbeta.preferences.DialogPreference
             android:key="license"

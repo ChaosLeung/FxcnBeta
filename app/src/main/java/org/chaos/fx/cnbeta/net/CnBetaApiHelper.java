@@ -238,6 +238,10 @@ public class CnBetaApiHelper {
         }
     }
 
+    public static Observable<ResponseBody> getHomeHtml() {
+        return sWebApi.getHomeHtml();
+    }
+
     public static Observable<ResponseBody> getArticleHtml(int sid) {
         return sWebApi.getArticleHtml(sid);
     }
@@ -282,6 +286,10 @@ public class CnBetaApiHelper {
 
     public static Observable<WebApi.Result> againstComment(String token, int sid, int tid) {
         return sWebApi.opForComment(token, "against", sid, tid);
+    }
+
+    public static Observable<WebApi.Result<List<HotComment>>> getHotComments(String token, int page) {
+        return sWebApi.getHotComments(page, token, System.currentTimeMillis());
     }
 
     public static Observable<ResponseBody> getHotCommentsByPage(int page) {

@@ -155,14 +155,14 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         if (currentItem == 0) {
             return false;
         } else {
-            mViewPager.setCurrentItem(currentItem - 1);
+            mViewPager.setCurrentItem(currentItem - 1, false);
             return true;
         }
     }
 
     @Override
     public void onShowComment() {
-        mViewPager.setCurrentItem(1, true);
+        mViewPager.setCurrentItem(1, false);
     }
 
     @Override

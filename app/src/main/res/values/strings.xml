@@ -134,6 +134,7 @@
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
     <string name="add_comment">添加评论</string>
+    <string name="comment_closed">评论已关闭</string>
     <string name="share">分享</string>
     <string name="wechat_friends">微信好友</string>
     <string name="wechat_timeline">朋友圈</string>

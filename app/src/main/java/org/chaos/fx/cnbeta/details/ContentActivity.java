@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,13 +42,12 @@ import java.lang.ref.WeakReference;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
-public class ContentActivity extends SwipeBackActivity implements ContentContract.View,
+public class ContentActivity extends AppCompatActivity implements ContentContract.View,
         DetailsFragment.OnShowCommentListener, CommentFragment.OnCommentUpdateListener {
 
     private static final String TAG = "ContentActivity";
@@ -132,7 +132,6 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                setSwipeBackEnable(position == 0);
                 setTitle(mPagerAdapter.getPageTitle(position));
             }
         });
@@ -143,7 +142,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (!backToPreviousFragment()) {
-                    scrollToFinishActivity();
+                    supportFinishAfterTransition();
                 }
                 return true;
         }

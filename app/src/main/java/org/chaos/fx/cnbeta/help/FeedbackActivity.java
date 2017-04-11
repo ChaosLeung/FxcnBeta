@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,13 +34,12 @@ import org.chaos.fx.cnbeta.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         2015/11/29.
  */
-public class FeedbackActivity extends SwipeBackActivity implements TextWatcher {
+public class FeedbackActivity extends AppCompatActivity implements TextWatcher {
 
     private static final int MAX_CONTENT_LEN = 200;
 
@@ -77,7 +77,7 @@ public class FeedbackActivity extends SwipeBackActivity implements TextWatcher {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                scrollToFinishActivity();
+                finish();
                 return true;
             case R.id.send:
                 sendFeedback();

@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-                mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId));
+                mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId), false);
             }
         });
         mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {

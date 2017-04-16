@@ -18,8 +18,11 @@ package org.chaos.fx.cnbeta.net;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.net.model.WebCaptcha;
 import org.chaos.fx.cnbeta.net.model.WebCommentResult;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
@@ -42,6 +45,9 @@ public interface WebApi {
     String COMMENT_JSON_URL = COMMENT_BASE_URL + "/read";
     String CAPTCHA_BASE_URL = COMMENT_BASE_URL + "/captcha";
     String CAPTCHA_URL = CAPTCHA_BASE_URL + "?refresh=1";
+
+    @GET("/")
+    Observable<ResponseBody> getHomeHtml();
 
     @GET("/articles/{sid}.htm")
     Observable<ResponseBody> getArticleHtml(@Path("sid") int sid);
@@ -69,6 +75,11 @@ public interface WebApi {
                                     @Field("op") String op,
                                     @Field("sid") int sid,
                                     @Field("tid") int tid);
+
+    @GET("/home/more?type=jhcomment")
+    Observable<Result<List<HotComment>>> getHotComments(@Query("page") int page,
+                                                @Query("_csrf") String token,
+                                                @Query("_") long timestamp);
 
     class Result<T> {
 

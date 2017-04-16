@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.github.chrisbanes.photoview.OnPhotoTapListener;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -33,7 +35,6 @@ import org.chaos.fx.cnbeta.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * @author Chaos
@@ -54,22 +55,16 @@ public class ImageFragment extends Fragment {
         return fragment;
     }
 
-    @BindView(R.id.image) ImageView mPhotoView;
+    @BindView(R.id.image) PhotoView mPhotoView;
     @BindView(R.id.progress) ProgressBar mProgressBar;
 
-    private PhotoViewAttacher mAttacher;
     private String mUrl;
 
 
-    private PhotoViewAttacher.OnPhotoTapListener mImageTapListener = new PhotoViewAttacher.OnPhotoTapListener() {
+    private OnPhotoTapListener mImageTapListener = new OnPhotoTapListener() {
         @Override
-        public void onPhotoTap(View view, float x, float y) {
+        public void onPhotoTap(ImageView view, float x, float y) {
             loadImage();
-        }
-
-        @Override
-        public void onOutsidePhotoTap() {
-            // no-op
         }
     };
 
@@ -88,7 +83,6 @@ public class ImageFragment extends Fragment {
         mUrl = getArguments().getString(KEY_IMAGE_URL);
         ViewCompat.setTransitionName(mPhotoView, mUrl);
 
-        mAttacher = new PhotoViewAttacher(mPhotoView);
         loadImage();
     }
 
@@ -100,8 +94,7 @@ public class ImageFragment extends Fragment {
                     @Override
                     public void onSuccess() {
                         showLoading(false);
-                        mAttacher.update();
-                        mAttacher.setOnPhotoTapListener(null);
+                        mPhotoView.setOnPhotoTapListener(null);
                         getActivity().supportStartPostponedEnterTransition();
                     }
 
@@ -109,8 +102,7 @@ public class ImageFragment extends Fragment {
                     public void onError() {
                         showLoading(false);
                         mPhotoView.setImageResource(R.drawable.default_content_image_failed);
-                        mAttacher.update();
-                        mAttacher.setOnPhotoTapListener(mImageTapListener);
+                        mPhotoView.setOnPhotoTapListener(mImageTapListener);
                         getActivity().supportStartPostponedEnterTransition();
                     }
                 });

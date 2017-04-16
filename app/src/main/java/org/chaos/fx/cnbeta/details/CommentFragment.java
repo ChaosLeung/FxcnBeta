@@ -83,6 +83,7 @@ public class CommentFragment extends BaseFragment implements
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        setHasOptionsMenu(true);
         mOnCommentUpdateListener = (OnCommentUpdateListener) activity;
     }
 
@@ -219,7 +220,7 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.comment_menu, menu);
+        inflater.inflate(mPresenter.isCommentEnable() ? R.menu.comment_menu : R.menu.closed_comment_menu, menu);
     }
 
     @Override
@@ -247,7 +248,6 @@ public class CommentFragment extends BaseFragment implements
         }
 
         if (previousSize == 0) {
-            setHasOptionsMenu(mPresenter.isCommentEnable());
             getActivity().supportInvalidateOptionsMenu();
         }
     }

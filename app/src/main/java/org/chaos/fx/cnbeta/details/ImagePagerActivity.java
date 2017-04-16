@@ -18,7 +18,7 @@ package org.chaos.fx.cnbeta.details;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -27,9 +27,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.SharedElementCallback;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -41,14 +43,13 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         15/02/2017
  */
 
-public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.OnPageChangeListener {
+public class ImagePagerActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private static final String EXTRA_IMAGE_URLS = "image_urls";
     private static final String EXTRA_CURRENT_IMAGE = "current_image";
@@ -93,6 +94,10 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_pager);
 
+        getSupportActionBar().setBackgroundDrawable(
+                new ColorDrawable(
+                        ResourcesCompat.getColor(getResources(), R.color.gallery_action_bar, getTheme())));
+
         supportPostponeEnterTransition();
         setEnterSharedElementCallback(mSharedElementCallback);
 
@@ -118,15 +123,6 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
     }
 
     @Override
-    public void scrollToFinishActivity() {
-        if (Build.VERSION.SDK_INT >= 21) {
-            supportFinishAfterTransition();
-        } else {
-            super.scrollToFinishActivity();
-        }
-    }
-
-    @Override
     public void finishAfterTransition() {
         isReturning = true;
         Intent data = new Intent();
@@ -143,7 +139,7 @@ public class ImagePagerActivity extends SwipeBackActivity implements ViewPager.O
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            scrollToFinishActivity();
+            supportFinishAfterTransition();
             return true;
         }
         return super.onOptionsItemSelected(item);

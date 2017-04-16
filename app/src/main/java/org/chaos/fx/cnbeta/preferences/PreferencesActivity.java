@@ -19,17 +19,16 @@ package org.chaos.fx.cnbeta.preferences;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.chaos.fx.cnbeta.R;
-
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         2015/11/22
  */
-public class PreferencesActivity extends SwipeBackActivity {
+public class PreferencesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,7 @@ public class PreferencesActivity extends SwipeBackActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            scrollToFinishActivity();
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

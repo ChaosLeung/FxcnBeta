@@ -15,18 +15,6 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:orientation="vertical">
-
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/content_image_description" />
-
-    <include
-        android:id="@+id/progress"
-        layout="@layout/layout_loading" />
-</FrameLayout>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+        android:src="@drawable/ic_do_not_disturb_off_white_24dp"
+        android:tint="@color/active_tab_color" />

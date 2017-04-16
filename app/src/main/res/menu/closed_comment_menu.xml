@@ -15,18 +15,12 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:orientation="vertical">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/content_image_description" />
-
-    <include
-        android:id="@+id/progress"
-        layout="@layout/layout_loading" />
-</FrameLayout>
+    <item
+        android:id="@+id/comment_closed"
+        android:icon="@drawable/ic_comment_closed"
+        android:title="@string/comment_closed"
+        app:showAsAction="always" />
+</menu>

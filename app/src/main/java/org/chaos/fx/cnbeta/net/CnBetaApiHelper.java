@@ -21,7 +21,6 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.jakewharton.picasso.OkHttp3Downloader;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;
@@ -39,6 +38,7 @@ import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -238,6 +238,10 @@ public class CnBetaApiHelper {
         }
     }
 
+    public static Observable<ResponseBody> getHomeHtml() {
+        return sWebApi.getHomeHtml();
+    }
+
     public static Observable<ResponseBody> getArticleHtml(int sid) {
         return sWebApi.getArticleHtml(sid);
     }
@@ -282,6 +286,10 @@ public class CnBetaApiHelper {
 
     public static Observable<WebApi.Result> againstComment(String token, int sid, int tid) {
         return sWebApi.opForComment(token, "against", sid, tid);
+    }
+
+    public static Observable<WebApi.Result<List<HotComment>>> getHotComments(String token, int page) {
+        return sWebApi.getHotComments(page, token, System.currentTimeMillis());
     }
 
     public static Observable<ResponseBody> getHotCommentsByPage(int page) {

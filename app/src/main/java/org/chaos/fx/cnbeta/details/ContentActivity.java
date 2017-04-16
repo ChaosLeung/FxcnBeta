@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,13 +42,12 @@ import java.lang.ref.WeakReference;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
-public class ContentActivity extends SwipeBackActivity implements ContentContract.View,
+public class ContentActivity extends AppCompatActivity implements ContentContract.View,
         DetailsFragment.OnShowCommentListener, CommentFragment.OnCommentUpdateListener {
 
     private static final String TAG = "ContentActivity";
@@ -73,6 +73,8 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @BindView(R.id.error_container) View mErrorLayout;
     @BindView(R.id.loading_view) ProgressBar mLoadingView;
+
+    private int mLoadingVisible = View.GONE;
 
     private SectionsPagerAdapter mPagerAdapter;
 
@@ -100,6 +102,12 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
         mPresenter = new ContentPresenter(mSid);
         mPresenter.subscribe(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mLoadingView.setVisibility(mLoadingVisible);
     }
 
     @Override
@@ -132,7 +140,6 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                setSwipeBackEnable(position == 0);
                 setTitle(mPagerAdapter.getPageTitle(position));
             }
         });
@@ -143,7 +150,7 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (!backToPreviousFragment()) {
-                    scrollToFinishActivity();
+                    supportFinishAfterTransition();
                 }
                 return true;
         }
@@ -155,14 +162,14 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
         if (currentItem == 0) {
             return false;
         } else {
-            mViewPager.setCurrentItem(currentItem - 1);
+            mViewPager.setCurrentItem(currentItem - 1, false);
             return true;
         }
     }
 
     @Override
     public void onShowComment() {
-        mViewPager.setCurrentItem(1, true);
+        mViewPager.setCurrentItem(1, false);
     }
 
     @Override
@@ -180,7 +187,8 @@ public class ContentActivity extends SwipeBackActivity implements ContentContrac
 
     @Override
     public void showLoadingView(boolean show) {
-        mLoadingView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mLoadingVisible = show ? View.VISIBLE : View.GONE;
+        mLoadingView.setVisibility(mLoadingVisible);
     }
 
     @Override

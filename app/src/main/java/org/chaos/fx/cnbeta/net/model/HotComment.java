@@ -24,13 +24,40 @@ import com.google.gson.annotations.SerializedName;
  */
 public class HotComment {
 
+    /**
+     * Mobile Client API
+     *
+     * cid : 101847
+     * comment : 不用说不定 小县城里这种店的老板都是同一个
+     * sid : 0
+     * username : 匿名人士
+     * subject : 即将消失的“外籍车” 正在回归的“打车难”
+     *
+     *
+     * Web API
+     *
+     * sign : array
+     * data_id : 102057
+     * datafrom : article
+     * from_id : 598011
+     * title : <a href="http://www.cnbeta.com/articles/tech/598011.htm" target="_blank">压制一个能管得了的滴滴的结果就是路边多了很多管不了的黑车。</a>
+     * description : 来自<strong>北京</strong>的匿名人士对新闻:<a href="http://www.cnbeta.com/articles/tech/598011.htm" target="_blank">即将消失的“外籍车” 正在回归的“打车难”</a>的评论
+     * link : http://www.cnbeta.com/articles/tech/598011.htm
+     * thumb :
+     * relation : []
+     * relation_link : []
+     * relation_thumb : []
+     * relation_desc : []
+     * label : {"name":"科技","class":"tech"}
+     */
+
     @SerializedName("username")
     private String mUsername;
-    @SerializedName("subject")
+    @SerializedName(value = "subject", alternate = {"description"})
     private String mTitle;
-    @SerializedName("comment")
+    @SerializedName(value = "comment", alternate = {"title"})
     private String mComment;
-    @SerializedName("sid")
+    @SerializedName(value = "sid", alternate = {"from_id"})
     private int mSid;
 
     public void setUsername(String username) {

@@ -74,6 +74,8 @@ public class ContentActivity extends AppCompatActivity implements ContentContrac
     @BindView(R.id.error_container) View mErrorLayout;
     @BindView(R.id.loading_view) ProgressBar mLoadingView;
 
+    private int mLoadingVisible = View.GONE;
+
     private SectionsPagerAdapter mPagerAdapter;
 
     private ContentContract.Presenter mPresenter;
@@ -100,6 +102,12 @@ public class ContentActivity extends AppCompatActivity implements ContentContrac
 
         mPresenter = new ContentPresenter(mSid);
         mPresenter.subscribe(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mLoadingView.setVisibility(mLoadingVisible);
     }
 
     @Override
@@ -179,7 +187,8 @@ public class ContentActivity extends AppCompatActivity implements ContentContrac
 
     @Override
     public void showLoadingView(boolean show) {
-        mLoadingView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mLoadingVisible = show ? View.VISIBLE : View.GONE;
+        mLoadingView.setVisibility(mLoadingVisible);
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.chaos.fx.cnbeta.details;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +27,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.SharedElementCallback;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -91,6 +93,10 @@ public class ImagePagerActivity extends AppCompatActivity implements ViewPager.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_pager);
+
+        getSupportActionBar().setBackgroundDrawable(
+                new ColorDrawable(
+                        ResourcesCompat.getColor(getResources(), R.color.gallery_action_bar, getTheme())));
 
         supportPostponeEnterTransition();
         setEnterSharedElementCallback(mSharedElementCallback);

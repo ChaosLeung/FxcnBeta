@@ -55,6 +55,10 @@
     <string name="read_count">阅读 %d</string>
     <string name="comment_count">评论 %d</string>
 
+    <string name="read_1_decimal_comment_format">%1$.1fk 阅读 · %2$d 评论</string>
+    <string name="read_kilo_comment_format">%1$.0fk 阅读 · %2$d 评论</string>
+    <string name="read_comment_format">%1$dk 阅读 · %2$d 评论</string>
+
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
     <string name="no_more_comments">没有更多评论</string>

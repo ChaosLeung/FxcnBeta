@@ -30,6 +30,24 @@ class Top10Adapter extends BaseArticleAdapter {
     @Override
     protected void convert(ArticleHolder holder, ArticleSummary summary) {
         super.convert(holder, summary);
-        holder.summary.setText(String.format(mContext.getString(R.string.read_count), summary.getCounter()));
+
+        int counter = summary.getCounter();
+        int comment = summary.getComment();
+
+        String format;
+        String text;
+
+        if (counter >= 1000) {
+            if (counter % 1000 >= 100) {
+                format = mContext.getString(R.string.read_1_decimal_comment_format);
+            } else {
+                format = mContext.getString(R.string.read_kilo_comment_format);
+            }
+            text = String.format(format, (float) counter / 1000, comment);
+        } else {
+            format = mContext.getString(R.string.read_comment_format);
+            text = String.format(format, counter, comment);
+        }
+        holder.summary.setText(text);
     }
 }

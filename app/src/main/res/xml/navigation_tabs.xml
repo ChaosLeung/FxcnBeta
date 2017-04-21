@@ -21,10 +21,6 @@
         icon="@drawable/ic_home_black_24dp"
         title="@string/nav_home" />
     <tab
-        id="@+id/nav_rank"
-        icon="@drawable/ic_sort_black_24dp"
-        title="@string/nav_rank" />
-    <tab
         id="@+id/nav_hot_articles"
         icon="@drawable/ic_whatshot_black_24dp"
         title="@string/nav_hot_articles" />

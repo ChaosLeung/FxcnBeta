@@ -24,7 +24,7 @@
     android:fitsSystemWindows="true"
     tools:context="org.chaos.fx.cnbeta.MainActivity">
 
-    <include layout="@layout/layout_tab_app_bar" />
+    <include layout="@layout/layout_app_bar" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,7 +57,6 @@
             android:layout_gravity="bottom"
             android:background="@color/colorPrimary"
             app:bb_activeTabColor="@color/active_tab_color"
-            app:bb_behavior="shifting"
             app:bb_inActiveTabColor="@color/inactive_tab_color"
             app:bb_showShadow="false"
             app:bb_tabXmlResource="@xml/navigation_tabs" />

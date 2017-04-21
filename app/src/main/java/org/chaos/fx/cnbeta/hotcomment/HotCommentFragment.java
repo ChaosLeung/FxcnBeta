@@ -35,6 +35,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.ReselectedDispatcher;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.HotComment;
@@ -52,7 +53,7 @@ import butterknife.ButterKnife;
  *         2015/11/15.
  */
 public class HotCommentFragment extends BaseFragment implements HotCommentContract.View,
-        SwipeRefreshLayout.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener, ReselectedDispatcher.OnReselectListener {
 
     public static HotCommentFragment newInstance() {
         return new HotCommentFragment();
@@ -66,6 +67,8 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     private HotCommentContract.Presenter mPresenter;
 
+    private ReselectedDispatcher mReselectedDispatcher;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +80,9 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         super.onViewCreated(view, savedInstanceState);
 
         ButterKnife.bind(this, view);
+
+        mReselectedDispatcher = (ReselectedDispatcher) getActivity();
+        mReselectedDispatcher.addOnReselectListener(R.id.nav_hot_comments, this);
 
         mAdapter = new HotCommentAdapter();
 
@@ -133,6 +139,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.unsubscribe();
+        mReselectedDispatcher.removeOnReselectListener(this);
     }
 
     private void showSnackBar(@StringRes int strId) {
@@ -174,5 +181,14 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     public void showNothingTipsIfNeed() {
         mNoContentTipsView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onReselect() {
+        if (mRecyclerView.computeVerticalScrollOffset() == 0) {
+            onRefresh();
+        } else {
+            mRecyclerView.smoothScrollToFirstItem();
+        }
     }
 }

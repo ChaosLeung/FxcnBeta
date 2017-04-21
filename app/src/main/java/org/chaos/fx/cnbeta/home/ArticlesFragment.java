@@ -244,7 +244,11 @@ public class ArticlesFragment extends BaseFragment
 
     @Override
     public void onReselect() {
-        mRecyclerView.smoothScrollToFirstItem();
+        if (mRecyclerView.computeVerticalScrollOffset() == 0) {
+            onRefresh();
+        } else {
+            mRecyclerView.smoothScrollToFirstItem();
+        }
     }
 
     public void showNothingTipsIfNeed() {

@@ -18,27 +18,30 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:foreground="@drawable/list_item_overlay_darken"
+    android:orientation="vertical"
     android:padding="@dimen/card_inner_content_padding">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/comment"
+        style="@style/CardArticleItemText.Headline"
+        android:maxLines="0x7fffffff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/CardArticleItemText.Headline"
-        tools:text="Preview Article Item Title, Preview Article Item Title, Preview Article Item Title" />
+        tools:text="匿名网友：Holly Shit!" />
 
     <TextView
-        android:id="@+id/comment"
+        android:id="@+id/title"
+        style="@style/CardArticleItemText.Summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_inner_content_half_padding"
-        style="@style/CardArticleItemText.Summary"
-        android:textSize="14sp"
         android:singleLine="false"
-        tools:text="匿名网友：Holly Shit!" />
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textSize="14sp"
+        tools:text="Preview Article Item Title, Preview Article Item Title, Preview Article Item Title" />
 
 </LinearLayout>

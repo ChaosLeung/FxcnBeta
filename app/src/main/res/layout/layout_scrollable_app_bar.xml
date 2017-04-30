@@ -31,14 +31,4 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:layout_scrollFlags="scroll|enterAlways|snap" />
 
-    <!-- for RankFragment -->
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="?colorPrimary"
-        app:tabIndicatorColor="@color/active_tab_color"
-        app:tabSelectedTextColor="@color/active_tab_color"
-        app:tabTextColor="@color/inactive_tab_color" />
-
 </android.support.design.widget.AppBarLayout>

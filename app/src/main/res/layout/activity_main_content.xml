@@ -24,43 +24,25 @@
     android:fitsSystemWindows="true"
     tools:context="org.chaos.fx.cnbeta.MainActivity">
 
-    <include layout="@layout/layout_app_bar" />
+    <include layout="@layout/layout_scrollable_app_bar" />
 
-    <LinearLayout
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <android.support.design.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <!-- BottomBar top shadow -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:layout_gravity="bottom"
-                android:background="@drawable/top_shadow" />
-        </android.support.design.widget.CoordinatorLayout>
-
-        <com.roughike.bottombar.BottomBar
-            android:id="@+id/bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="bottom"
-            android:background="@color/colorPrimary"
-            app:bb_activeTabColor="@color/active_tab_color"
-            app:bb_inActiveTabColor="@color/inactive_tab_color"
-            app:bb_showShadow="false"
-            app:bb_tabXmlResource="@xml/navigation_tabs" />
-
-    </LinearLayout>
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        android:minHeight="?actionBarSize"
+        app:bb_activeTabColor="@color/active_tab_color"
+        app:bb_behavior="shifting"
+        app:bb_inActiveTabColor="@color/inactive_tab_color"
+        app:bb_tabXmlResource="@xml/navigation_tabs"
+        app:layout_behavior="@string/bottom_bar_scrolling_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

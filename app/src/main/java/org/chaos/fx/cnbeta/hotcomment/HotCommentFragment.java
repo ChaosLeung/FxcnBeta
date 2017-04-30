@@ -18,8 +18,6 @@ package org.chaos.fx.cnbeta.hotcomment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
@@ -30,11 +28,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.ReselectedDispatcher;
 import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.HotComment;
@@ -52,7 +52,7 @@ import butterknife.ButterKnife;
  *         2015/11/15.
  */
 public class HotCommentFragment extends BaseFragment implements HotCommentContract.View,
-        SwipeRefreshLayout.OnRefreshListener {
+        SwipeRefreshLayout.OnRefreshListener, ReselectedDispatcher.OnReselectListener {
 
     public static HotCommentFragment newInstance() {
         return new HotCommentFragment();
@@ -66,6 +66,8 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     private HotCommentContract.Presenter mPresenter;
 
+    private ReselectedDispatcher mReselectedDispatcher;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,6 +80,9 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
         ButterKnife.bind(this, view);
 
+        mReselectedDispatcher = (ReselectedDispatcher) getActivity();
+        mReselectedDispatcher.addOnReselectListener(R.id.nav_hot_comments, this);
+
         mAdapter = new HotCommentAdapter();
 
         mRecyclerView.setAdapter(mAdapter);
@@ -88,7 +93,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
                 HotComment comment = mAdapter.get(position);
 
                 if (comment.getSid() == 0) {
-                    showSnackBar(R.string.error_invalid_sid);
+                    Toast.makeText(getActivity(), R.string.error_invalid_sid, Toast.LENGTH_SHORT).show();
                 } else {
                     RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
 
@@ -133,10 +138,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.unsubscribe();
-    }
-
-    private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
+        mReselectedDispatcher.removeOnReselectListener(this);
     }
 
     @Override
@@ -152,13 +154,11 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     @Override
     public void showLoadFailed() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.load_articles_failed);
     }
 
     @Override
     public void showNoMoreContent() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.no_more_articles);
     }
 
     @Override
@@ -174,5 +174,14 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
 
     public void showNothingTipsIfNeed() {
         mNoContentTipsView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onReselect() {
+        if (mRecyclerView.computeVerticalScrollOffset() == 0) {
+            onRefresh();
+        } else {
+            mRecyclerView.smoothScrollToFirstItem();
+        }
     }
 }

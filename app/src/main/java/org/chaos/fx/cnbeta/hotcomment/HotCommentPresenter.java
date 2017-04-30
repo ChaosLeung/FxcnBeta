@@ -58,6 +58,7 @@ class HotCommentPresenter implements HotCommentContract.Presenter {
 
     @Override
     public void loadHotComments() {
+        mView.showRefreshing(true);
         mDisposable = getHotCommentFromWebAPI()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -84,7 +85,6 @@ class HotCommentPresenter implements HotCommentContract.Presenter {
     @Override
     public void subscribe(HotCommentContract.View view) {
         mView = view;
-        mView.showRefreshing(true);
         loadHotComments();
     }
 

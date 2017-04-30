@@ -18,8 +18,6 @@ package org.chaos.fx.cnbeta.hotarticles;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
@@ -142,10 +140,6 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         mReselectedDispatcher.removeOnReselectListener(this);
     }
 
-    private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onRefresh() {
         mPresenter.loadTop10Articles();
@@ -159,13 +153,11 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     @Override
     public void showNoMoreContent() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.no_more_articles);
     }
 
     @Override
     public void showLoadFailed() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.load_articles_failed);
     }
 
     @Override

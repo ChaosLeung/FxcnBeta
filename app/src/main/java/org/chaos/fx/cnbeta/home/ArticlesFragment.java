@@ -18,8 +18,6 @@ package org.chaos.fx.cnbeta.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
@@ -179,10 +177,6 @@ public class ArticlesFragment extends BaseFragment
         mPresenter.loadOldArticles(mAdapter.get(mAdapter.size() - 1).getSid());
     }
 
-    private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
-    }
-
     @Override
     public void setRefreshing(boolean refreshing) {
         mSwipeRefreshLayout.setRefreshing(refreshing);
@@ -231,13 +225,11 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void showNoArticles() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.no_more_articles);
     }
 
     @Override
     public void showLoadingArticlesError() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.load_articles_failed);
         setLoading(false);
         setRefreshing(false);
     }

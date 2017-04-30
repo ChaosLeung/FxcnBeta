@@ -18,8 +18,6 @@ package org.chaos.fx.cnbeta.hotcomment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.Pair;
@@ -30,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
@@ -94,7 +93,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
                 HotComment comment = mAdapter.get(position);
 
                 if (comment.getSid() == 0) {
-                    showSnackBar(R.string.error_invalid_sid);
+                    Toast.makeText(getActivity(), R.string.error_invalid_sid, Toast.LENGTH_SHORT).show();
                 } else {
                     RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(position);
 
@@ -142,10 +141,6 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         mReselectedDispatcher.removeOnReselectListener(this);
     }
 
-    private void showSnackBar(@StringRes int strId) {
-        Snackbar.make(mRecyclerView, strId, Snackbar.LENGTH_SHORT).show();
-    }
-
     @Override
     public void onRefresh() {
         mPresenter.loadHotComments();
@@ -159,13 +154,11 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
     @Override
     public void showLoadFailed() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.load_articles_failed);
     }
 
     @Override
     public void showNoMoreContent() {
         showNothingTipsIfNeed();
-        showSnackBar(R.string.no_more_articles);
     }
 
     @Override

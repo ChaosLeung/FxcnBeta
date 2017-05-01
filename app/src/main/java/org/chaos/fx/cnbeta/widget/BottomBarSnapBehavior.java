@@ -22,14 +22,12 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.roughike.bottombar.BottomBar;
-
 /**
  * @author Chaos
  *         29/04/2017
  */
 
-public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
+public class BottomBarSnapBehavior extends FooterBehavior<View> {
 
     private static final String TAG = "BottomBarSnapBehavior";
 
@@ -48,7 +46,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
     }
 
     @Override
-    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, BottomBar child, View directTargetChild, View target, int nestedScrollAxes) {
+    public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, View child, View directTargetChild, View target, int nestedScrollAxes) {
         // Return true if we're nested scrolling vertically, and we have scrollable children
         // and the scrolling view is big enough to scroll
         final boolean started = (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
@@ -62,7 +60,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
     }
 
     @Override
-    public void onNestedScroll(CoordinatorLayout coordinatorLayout, BottomBar child,
+    public void onNestedScroll(CoordinatorLayout coordinatorLayout, View child,
                                View target, int dxConsumed, int dyConsumed,
                                int dxUnconsumed, int dyUnconsumed) {
         if (dyUnconsumed < 0) {
@@ -78,7 +76,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
     }
 
     @Override
-    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, BottomBar child,
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, View child,
                                   View target, int dx, int dy, int[] consumed) {
         if (dy != 0 && !mSkipNestedPreScroll) {
             int min, max;
@@ -96,7 +94,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
     }
 
     @Override
-    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, BottomBar bb, View target) {
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, View bb, View target) {
         if (!mWasNestedFlung) {
             // If we haven't been flung then let's see if the current view has been set to snap
             snapIfNeeded(coordinatorLayout, bb);
@@ -109,7 +107,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
 
     @Override
     public boolean onNestedFling(final CoordinatorLayout coordinatorLayout,
-                                 final BottomBar child, View target, float velocityX, float velocityY,
+                                 final View child, View target, float velocityX, float velocityY,
                                  boolean consumed) {
         boolean flung = false;
 
@@ -140,7 +138,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
     }
 
     private void animateOffsetTo(final CoordinatorLayout coordinatorLayout,
-                                 final BottomBar child, final int offset, float velocity) {
+                                 final View child, final int offset, float velocity) {
         final int distance = Math.abs(getTopAndBottomOffset() - offset);
 
         final int duration;
@@ -155,7 +153,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
         animateOffsetWithDuration(coordinatorLayout, child, offset, duration);
     }
 
-    private void snapIfNeeded(CoordinatorLayout coordinatorLayout, BottomBar bb) {
+    private void snapIfNeeded(CoordinatorLayout coordinatorLayout, View bb) {
         final int offset = getTopBottomOffsetForScrolling();
 
         // We're set the snap, so animate the offset to the nearest edge
@@ -171,7 +169,7 @@ public class BottomBarSnapBehavior extends FooterBehavior<BottomBar> {
     }
 
     private void animateOffsetWithDuration(final CoordinatorLayout coordinatorLayout,
-                                           final BottomBar child, final int offset, final int duration) {
+                                           final View child, final int offset, final int duration) {
         final int currentOffset = getTopBottomOffsetForScrolling();
         if (currentOffset == offset) {
             if (mOffsetAnimator != null && mOffsetAnimator.isRunning()) {

@@ -50,7 +50,7 @@
     <color name="comment_ic_bg_pressed">#E0E0E0</color>
     <color name="comment_ic_tint">#727272</color>
 
-    <color name="inactive_tab_color">#D6D6D6</color>
+    <color name="inactive_tab_color">#CCD6D6D6</color>
     <color name="active_tab_color">#FFFFFF</color>
 
     <color name="gallery_action_bar">#7F000000</color>

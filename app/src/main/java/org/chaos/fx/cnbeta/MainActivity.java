@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -28,12 +30,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabReselectListener;
-import com.roughike.bottombar.OnTabSelectListener;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
@@ -48,8 +47,20 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, ReselectedDispatcher {
 
+    private static final int PAGE_HOME = 0;
+    private static final int PAGE_HOT_ARTICLES = 1;
+    private static final int PAGE_HOT_COMMENTS = 2;
+
+    private static SparseIntArray INDEX_ID_MAPPING = new SparseIntArray();
+
+    static {
+        INDEX_ID_MAPPING.put(PAGE_HOME, R.id.nav_home);
+        INDEX_ID_MAPPING.put(PAGE_HOT_ARTICLES, R.id.nav_hot_articles);
+        INDEX_ID_MAPPING.put(PAGE_HOT_COMMENTS, R.id.nav_hot_comments);
+    }
+
     @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.bottom_bar) BottomBar mBottomBar;
+    @BindView(R.id.bottom_bar) BottomNavigationView mBottomBar;
     @BindView(R.id.pager) ViewPager mViewPager;
 
     private String[] mPageTitles;
@@ -76,19 +87,20 @@ public class MainActivity extends AppCompatActivity implements
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                mBottomBar.selectTabAtPosition(position, true);
+                mBottomBar.setSelectedItemId(INDEX_ID_MAPPING.get(position));
             }
         });
-        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+        mBottomBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onTabSelected(@IdRes int tabId) {
-                mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId), false);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                mViewPager.setCurrentItem(INDEX_ID_MAPPING.keyAt(INDEX_ID_MAPPING.indexOfValue(item.getItemId())), false);
+                return true;
             }
         });
-        mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+        mBottomBar.setOnNavigationItemReselectedListener(new BottomNavigationView.OnNavigationItemReselectedListener() {
             @Override
-            public void onTabReSelected(@IdRes int tabId) {
-                OnReselectListener l = mOnReselectListeners.get(tabId);
+            public void onNavigationItemReselected(@NonNull MenuItem item) {
+                OnReselectListener l = mOnReselectListeners.get(item.getItemId());
                 if (l != null) {
                     l.onReselect();
                 }
@@ -151,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case PAGE_HOME:
                     return ArticlesFragment.newInstance("null");
-                case 1:
+                case PAGE_HOT_ARTICLES:
                     return Top10Fragment.newInstance();
-                case 2:
+                case PAGE_HOT_COMMENTS:
                     return HotCommentFragment.newInstance();
             }
             return new Fragment();

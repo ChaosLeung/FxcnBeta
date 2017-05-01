@@ -47,4 +47,6 @@
     <dimen name="load_more_progress_size">42dp</dimen>
     <dimen name="load_more_progress_padding">6dp</dimen>
 
+    <dimen name="bottom_navigation_elevation">8dp</dimen>
+
 </resources>

@@ -32,17 +32,32 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.roughike.bottombar.BottomBar
-        android:id="@+id/bottom_bar"
+    <!-- For use BottomBarSnapBehavior with top shadow, the trick is set the shadow container's height equals to BottomNavigationView's height -->
+    <FrameLayout
+        android:id="@+id/shadow_container"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_gravity="bottom"
-        android:background="@color/colorPrimary"
-        android:minHeight="?actionBarSize"
-        app:bb_activeTabColor="@color/active_tab_color"
-        app:bb_behavior="shifting"
-        app:bb_inActiveTabColor="@color/inactive_tab_color"
-        app:bb_tabXmlResource="@xml/navigation_tabs"
-        app:layout_behavior="@string/bottom_bar_scrolling_behavior" />
+        android:layout_marginBottom="@dimen/bottom_navigation_elevation"
+        app:layout_behavior="@string/bottom_bar_scrolling_behavior">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_navigation_elevation"
+            android:layout_gravity="top"
+            android:background="@drawable/top_shadow" />
+    </FrameLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?colorPrimary"
+        app:elevation="0dp"
+        app:itemIconTint="@color/nav_item_selector"
+        app:itemTextColor="@color/nav_item_selector"
+        app:layout_behavior="@string/bottom_bar_scrolling_behavior"
+        app:menu="@menu/navigation_tabs" />
 
 </android.support.design.widget.CoordinatorLayout>

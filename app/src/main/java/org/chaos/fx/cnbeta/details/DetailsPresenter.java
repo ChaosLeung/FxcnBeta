@@ -172,20 +172,6 @@ class DetailsPresenter implements DetailsContract.Presenter {
                 mImageUrls.add(link);
             } else if ("#text".equals(subNodeName)) {
                 sb.append(((TextNode) subNode).text());
-            } else if ("embed".equals(subNodeName)) {// 搜狐, 土豆
-                String src = subNode.attr("src");
-                if (!TextUtils.isEmpty(src)) {
-                    removeLastUselessChars(sb);
-                    sb.append("\n\n") // 与上边文字隔开
-                            .append(src);
-                }
-            } else if ("object".equals(subNodeName) && "FPlayer".equals(subNode.attr("id"))) {// 网易视频
-                String src = subNode.attr("data");
-                if (!TextUtils.isEmpty(src)) {
-                    removeLastUselessChars(sb);
-                    sb.append("\n\n") // 与上边文字隔开
-                            .append(src);
-                }
             } else {
                 addView(sb, subNode);
             }

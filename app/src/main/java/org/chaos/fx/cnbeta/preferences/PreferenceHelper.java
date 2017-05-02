@@ -93,4 +93,8 @@ public class PreferenceHelper {
     public int getContentTextLevel() {
         return mPreferences.getInt(PreferenceKeys.CONTENT_TEXT_LEVEL_INT, 1);
     }
+
+    public boolean inHideBarsAutomaticallyMode() {
+        return mPreferences.getBoolean(PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE, true);
+    }
 }

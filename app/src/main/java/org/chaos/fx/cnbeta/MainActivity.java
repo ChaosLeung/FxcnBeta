@@ -16,12 +16,15 @@
 
 package org.chaos.fx.cnbeta;
 
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.design.widget.TabLayout;
+import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -30,13 +33,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.DecelerateInterpolator;
-
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabReselectListener;
-import com.roughike.bottombar.OnTabSelectListener;
+import android.view.View;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
@@ -44,41 +44,37 @@ import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceKeys;
 import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
-import org.chaos.fx.cnbeta.rank.RanksFragment;
+import org.chaos.fx.cnbeta.widget.BottomBarSnapBehavior;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
+import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
+import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
+
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, ReselectedDispatcher {
 
-    private static final int DURATION_EXPAND_TAB_LAYOUT = 300;
-    private static final int DURATION_COLLAPSE_TAB_LAYOUT = 200;
+    private static final int PAGE_HOME = 0;
+    private static final int PAGE_HOT_ARTICLES = 1;
+    private static final int PAGE_HOT_COMMENTS = 2;
+
+    private static SparseIntArray INDEX_ID_MAPPING = new SparseIntArray();
+
+    static {
+        INDEX_ID_MAPPING.put(PAGE_HOME, R.id.nav_home);
+        INDEX_ID_MAPPING.put(PAGE_HOT_ARTICLES, R.id.nav_hot_articles);
+        INDEX_ID_MAPPING.put(PAGE_HOT_COMMENTS, R.id.nav_hot_comments);
+    }
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.tabs) TabLayout mTabLayout;
-    @BindView(R.id.bottom_bar) BottomBar mBottomBar;
+    @BindView(R.id.shadow_container) View mBottomBarShadow;
+    @BindView(R.id.bottom_bar) BottomNavigationView mBottomBar;
     @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.appbar) AppBarLayout mAppBarLayout;
 
     private String[] mPageTitles;
-
-    private ValueAnimator mExpandAnimator;
-    private ValueAnimator mCollapseAnimator;
-
-    private ValueAnimator.AnimatorUpdateListener mTabLayoutAnimatorListener = new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            float alpha = 1;
-            if (animation == mExpandAnimator) {
-                alpha = animation.getAnimatedFraction();
-            } else if (animation == mCollapseAnimator) {
-                alpha = 1 - animation.getAnimatedFraction();
-            }
-            mTabLayout.setAlpha(alpha);
-            mTabLayout.getLayoutParams().height = (int) animation.getAnimatedValue();
-            mTabLayout.requestLayout();
-        }
-    };
 
     private SharedPreferences mDefaultPreferences;
 
@@ -93,41 +89,40 @@ public class MainActivity extends AppCompatActivity implements
 
         setSupportActionBar(mToolbar);
 
-        mPageTitles = new String[]{getString(R.string.nav_home), getString(R.string.nav_rank),
+        mPageTitles = new String[]{getString(R.string.nav_home),
                 getString(R.string.nav_hot_articles), getString(R.string.nav_hot_comments)};
         mOnReselectListeners = new SparseArray<>(mPageTitles.length);
 
-        setTitle(mPageTitles[0]);
         mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(mPageTitles.length);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (position == 1) {// RankFragment
-                    expandTabLayout();
-                } else if (mTabLayout.getHeight() != 0) {
-                    collapseTabLayout();
-                }
-
-                mBottomBar.selectTabAtPosition(position, true);
-                setTitle(mPageTitles[position]);
+                mBottomBar.setSelectedItemId(INDEX_ID_MAPPING.get(position));
             }
         });
-        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+        mBottomBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onTabSelected(@IdRes int tabId) {
-                mViewPager.setCurrentItem(mBottomBar.findPositionForTabWithId(tabId), false);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                mViewPager.setCurrentItem(INDEX_ID_MAPPING.keyAt(INDEX_ID_MAPPING.indexOfValue(item.getItemId())), false);
+                return true;
             }
         });
-        mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+        mBottomBar.setOnNavigationItemReselectedListener(new BottomNavigationView.OnNavigationItemReselectedListener() {
             @Override
-            public void onTabReSelected(@IdRes int tabId) {
-                OnReselectListener l = mOnReselectListeners.get(tabId);
+            public void onNavigationItemReselected(@NonNull MenuItem item) {
+                OnReselectListener l = mOnReselectListeners.get(item.getItemId());
                 if (l != null) {
                     l.onReselect();
                 }
             }
         });
+
+        if (Build.VERSION.SDK_INT < 21) {
+            mBottomBarShadow.setVisibility(View.GONE);
+        }
+
+        setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
 
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -137,43 +132,6 @@ public class MainActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mDefaultPreferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    private void expandTabLayout() {
-        if (mCollapseAnimator != null && mCollapseAnimator.isRunning()) {
-            mCollapseAnimator.cancel();
-        }
-
-        int prevHeight = mTabLayout.getHeight();
-        int targetHeight = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
-
-        if (mExpandAnimator == null) {
-            mExpandAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
-            mExpandAnimator.setInterpolator(new DecelerateInterpolator());
-            mExpandAnimator.setDuration(DURATION_EXPAND_TAB_LAYOUT);
-            mExpandAnimator.addUpdateListener(mTabLayoutAnimatorListener);
-        } else {
-            mExpandAnimator.setIntValues(prevHeight, targetHeight);
-        }
-        mExpandAnimator.start();
-    }
-
-    private void collapseTabLayout() {
-        if (mExpandAnimator != null && mExpandAnimator.isRunning()) {
-            mExpandAnimator.cancel();
-        }
-
-        int prevHeight = mTabLayout.getHeight();
-        int targetHeight = 0;
-        if (mCollapseAnimator == null) {
-            mCollapseAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
-            mCollapseAnimator.setInterpolator(new DecelerateInterpolator());
-            mCollapseAnimator.setDuration(DURATION_COLLAPSE_TAB_LAYOUT);
-            mCollapseAnimator.addUpdateListener(mTabLayoutAnimatorListener);
-        } else {
-            mCollapseAnimator.setIntValues(prevHeight, targetHeight);
-        }
-        mCollapseAnimator.start();
     }
 
     @Override
@@ -199,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (PreferenceKeys.NIGHT_MODE.equals(key)) {
             recreate();
+        } else if (PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE.equals(key)) {
+            setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
         }
     }
 
@@ -213,6 +173,22 @@ public class MainActivity extends AppCompatActivity implements
         mOnReselectListeners.remove(key);
     }
 
+    private void setHideBarsAutomatically(boolean autoHide) {
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+        CoordinatorLayout.LayoutParams bottomParams = (CoordinatorLayout.LayoutParams) mBottomBar.getLayoutParams();
+        CoordinatorLayout.LayoutParams shadowParams = (CoordinatorLayout.LayoutParams) mBottomBarShadow.getLayoutParams();
+        if (autoHide) {
+            params.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_SNAP | SCROLL_FLAG_ENTER_ALWAYS);
+            bottomParams.setBehavior(new BottomBarSnapBehavior());
+            shadowParams.setBehavior(new BottomBarSnapBehavior());
+        } else {
+            params.setScrollFlags(0);
+            bottomParams.setBehavior(null);
+            shadowParams.setBehavior(null);
+        }
+        mAppBarLayout.requestLayout();
+    }
+
     private class PagerAdapter extends FragmentPagerAdapter {
 
         private PagerAdapter(FragmentManager fm) {
@@ -222,13 +198,11 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case PAGE_HOME:
                     return ArticlesFragment.newInstance("null");
-                case 1:
-                    return RanksFragment.newInstance();
-                case 2:
+                case PAGE_HOT_ARTICLES:
                     return Top10Fragment.newInstance();
-                case 3:
+                case PAGE_HOT_COMMENTS:
                     return HotCommentFragment.newInstance();
             }
             return new Fragment();

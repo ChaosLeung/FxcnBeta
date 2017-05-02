@@ -24,36 +24,42 @@
     <string name="reply_image_description">Button for reply comment.</string>
 
     <plurals name="time_second">
-        <item quantity="one">1 second ago</item>
-        <item quantity="other">%d seconds ago</item>
+        <item quantity="one">1 秒前</item>
+        <item quantity="other">%d 秒前</item>
     </plurals>
     <plurals name="time_minute">
-        <item quantity="one">1 minute ago</item>
-        <item quantity="other">%d minutes ago</item>
+        <item quantity="one">1 分钟前</item>
+        <item quantity="other">%d 分钟前</item>
     </plurals>
     <plurals name="time_hour">
-        <item quantity="one">1 hour ago</item>
-        <item quantity="other">%d hours ago</item>
+        <item quantity="one">1 小时前</item>
+        <item quantity="other">%d 小时前</item>
     </plurals>
     <plurals name="time_day">
-        <item quantity="one">yesterday</item>
-        <item quantity="other">%d days ago</item>
+        <item quantity="one">昨天</item>
+        <item quantity="other">%d 天前</item>
     </plurals>
     <plurals name="time_week">
-        <item quantity="one">1 week ago</item>
-        <item quantity="other">%d weeks ago</item>
+        <item quantity="one">1 周前</item>
+        <item quantity="other">%d 周前</item>
     </plurals>
     <plurals name="time_month">
-        <item quantity="one">1 month ago</item>
-        <item quantity="other">%d months ago</item>
+        <item quantity="one">1 个月前</item>
+        <item quantity="other">%d 个月前</item>
     </plurals>
     <plurals name="time_year">
-        <item quantity="one">1 year ago</item>
-        <item quantity="other">%d years ago</item>
+        <item quantity="one">1 年前</item>
+        <item quantity="other">%d 年前</item>
     </plurals>
+
+    <string name="home_summary_format">%1$s · %2$d 评论</string>
 
     <string name="read_count">阅读 %d</string>
     <string name="comment_count">评论 %d</string>
+
+    <string name="read_1_decimal_comment_format">%1$.1fk 阅读 · %2$d 评论</string>
+    <string name="read_kilo_comment_format">%1$.0fk 阅读 · %2$d 评论</string>
+    <string name="read_comment_format">%1$dk 阅读 · %2$d 评论</string>
 
     <string name="no_more_articles">没有更多内容</string>
     <string name="load_articles_failed">加载失败</string>
@@ -97,6 +103,8 @@
     <string name="night_mode">夜间模式</string>
     <string name="animation_mode">列表动画</string>
     <string name="animation_mode_summary">加载列表时显示动画</string>
+    <string name="hide_bars_automatically_mode">隐藏边栏</string>
+    <string name="hide_bars_automatically_mode_summary">首页自动隐藏标题栏及底部栏</string>
     <string name="about">关于</string>
     <string name="version_name">版本号</string>
     <string name="update_log">更新日志</string>
@@ -173,4 +181,6 @@
             color: %5$s;
         }
     </string>
+
+    <string name="bottom_bar_scrolling_behavior">org.chaos.fx.cnbeta.widget.BottomBarSnapBehavior</string>
 </resources>

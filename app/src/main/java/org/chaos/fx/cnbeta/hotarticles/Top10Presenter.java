@@ -43,6 +43,7 @@ class Top10Presenter implements Top10Contract.Presenter {
 
     @Override
     public void loadTop10Articles() {
+        mView.showRefreshing(true);
         mDisposable = CnBetaApiHelper.top10()
                 .subscribeOn(Schedulers.io())
                 .map(new Function<MobileApi.Result<List<ArticleSummary>>, List<ArticleSummary>>() {
@@ -77,7 +78,6 @@ class Top10Presenter implements Top10Contract.Presenter {
     @Override
     public void subscribe(Top10Contract.View view) {
         mView = view;
-        mView.showRefreshing(true);
         loadTop10Articles();
     }
 

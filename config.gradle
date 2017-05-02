@@ -80,6 +80,9 @@ subprojects {
                         }
 
                         buildTypes {
+                            debug {
+                                signingConfig signingConfigs.releaseConfig
+                            }
                             release {
                                 signingConfig signingConfigs.releaseConfig
                             }

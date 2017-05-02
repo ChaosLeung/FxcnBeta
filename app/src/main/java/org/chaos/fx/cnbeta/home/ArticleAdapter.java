@@ -16,6 +16,7 @@
 
 package org.chaos.fx.cnbeta.home;
 
+import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.widget.ArticleHolder;
@@ -30,6 +31,7 @@ class ArticleAdapter extends BaseArticleAdapter {
     @Override
     protected void convert(ArticleHolder holder, ArticleSummary summary) {
         super.convert(holder, summary);
-        holder.summary.setText(TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime()));
+        String timeStr = TimeStringHelper.getTimeStrByDefaultTimeStr(summary.getPublishTime());
+        holder.summary.setText(String.format(holder.itemView.getResources().getString(R.string.home_summary_format), timeStr, summary.getComment()));
     }
 }

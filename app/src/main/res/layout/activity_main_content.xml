@@ -24,7 +24,7 @@
     android:fitsSystemWindows="true"
     tools:context="org.chaos.fx.cnbeta.MainActivity">
 
-    <include layout="@layout/layout_scrollable_app_bar" />
+    <include layout="@layout/layout_app_bar" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
@@ -38,8 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/bottom_navigation_elevation"
-        app:layout_behavior="@string/bottom_bar_scrolling_behavior">
+        android:layout_marginBottom="@dimen/bottom_navigation_elevation">
 
         <View
             android:layout_width="match_parent"
@@ -57,7 +56,6 @@
         app:elevation="0dp"
         app:itemIconTint="@color/nav_item_selector"
         app:itemTextColor="@color/nav_item_selector"
-        app:layout_behavior="@string/bottom_bar_scrolling_behavior"
         app:menu="@menu/navigation_tabs" />
 
 </android.support.design.widget.CoordinatorLayout>

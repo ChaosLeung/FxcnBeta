@@ -22,7 +22,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -42,9 +44,14 @@ import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceKeys;
 import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
+import org.chaos.fx.cnbeta.widget.BottomBarSnapBehavior;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
+import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
+import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, ReselectedDispatcher {
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements
     @BindView(R.id.shadow_container) View mBottomBarShadow;
     @BindView(R.id.bottom_bar) BottomNavigationView mBottomBar;
     @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.appbar) AppBarLayout mAppBarLayout;
 
     private String[] mPageTitles;
 
@@ -114,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements
             mBottomBarShadow.setVisibility(View.GONE);
         }
 
+        setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
+
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -147,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (PreferenceKeys.NIGHT_MODE.equals(key)) {
             recreate();
+        } else if (PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE.equals(key)) {
+            setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
         }
     }
 
@@ -159,6 +171,22 @@ public class MainActivity extends AppCompatActivity implements
     public void removeOnReselectListener(OnReselectListener l) {
         int key = mOnReselectListeners.indexOfValue(l);
         mOnReselectListeners.remove(key);
+    }
+
+    private void setHideBarsAutomatically(boolean autoHide) {
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+        CoordinatorLayout.LayoutParams bottomParams = (CoordinatorLayout.LayoutParams) mBottomBar.getLayoutParams();
+        CoordinatorLayout.LayoutParams shadowParams = (CoordinatorLayout.LayoutParams) mBottomBarShadow.getLayoutParams();
+        if (autoHide) {
+            params.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_SNAP | SCROLL_FLAG_ENTER_ALWAYS);
+            bottomParams.setBehavior(new BottomBarSnapBehavior());
+            shadowParams.setBehavior(new BottomBarSnapBehavior());
+        } else {
+            params.setScrollFlags(0);
+            bottomParams.setBehavior(null);
+            shadowParams.setBehavior(null);
+        }
+        mAppBarLayout.requestLayout();
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

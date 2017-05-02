@@ -18,6 +18,7 @@ package org.chaos.fx.cnbeta;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.shadow_container) View mBottomBarShadow;
     @BindView(R.id.bottom_bar) BottomNavigationView mBottomBar;
     @BindView(R.id.pager) ViewPager mViewPager;
 
@@ -106,6 +109,10 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        if (Build.VERSION.SDK_INT < 21) {
+            mBottomBarShadow.setVisibility(View.GONE);
+        }
 
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);

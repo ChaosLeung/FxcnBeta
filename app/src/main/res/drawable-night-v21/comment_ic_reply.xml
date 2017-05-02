@@ -25,7 +25,7 @@
                 </shape>
             </item>
             <item android:bottom="@dimen/comment_ic_padding"
-                  android:drawable="@drawable/ic_reply_18dp"
+                  android:drawable="@drawable/ic_comment_reply"
                   android:left="@dimen/comment_ic_padding"
                   android:right="@dimen/comment_ic_padding"
                   android:top="@dimen/comment_ic_padding" />
@@ -41,7 +41,7 @@
                 </shape>
             </item>
             <item android:bottom="@dimen/comment_ic_padding"
-                  android:drawable="@drawable/ic_reply_18dp"
+                  android:drawable="@drawable/ic_comment_reply"
                   android:left="@dimen/comment_ic_padding"
                   android:right="@dimen/comment_ic_padding"
                   android:top="@dimen/comment_ic_padding" />

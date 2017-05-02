@@ -16,5 +16,5 @@
   -->
 
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-        android:src="@drawable/ic_exposure_neg_1_grey_200_18dp"
+        android:src="@drawable/ic_exposure_neg_1_18dp"
         android:tint="@color/comment_ic_tint" />

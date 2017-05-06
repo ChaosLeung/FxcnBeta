@@ -155,6 +155,8 @@
 
     <string name="email">lgf42031@gmail.com</string>
 
+    <string name="notices_title">开源许可</string>
+    <string name="notices_close">关闭</string>
     <string name="rgba_format" translatable="false">rgba(%1$d,%2$d,%3$d,%4$1f)</string>
     <string name="custom_notices_format_style" translatable="false">
         body {

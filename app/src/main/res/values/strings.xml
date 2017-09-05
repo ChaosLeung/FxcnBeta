@@ -185,4 +185,7 @@
     </string>
 
     <string name="bottom_bar_scrolling_behavior">org.chaos.fx.cnbeta.widget.BottomBarSnapBehavior</string>
+
+    <string name="share_error_success">分享成功</string>
+    <string name="share_error_failed">分享失败</string>
 </resources>

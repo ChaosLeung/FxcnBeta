@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import com.tencent.mm.opensdk.modelbase.BaseResp;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 
-import org.chaos.lib.thirdparty.R;
+import org.chaos.fx.cnbeta.R;
 
 /**
  * @author Chaos

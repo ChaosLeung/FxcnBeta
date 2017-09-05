@@ -62,7 +62,7 @@ public class RanksFragment extends BaseFragment {
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.setOffscreenPageLimit(pagerAdapter.getCount() - 1);
 
-        TabLayout tabLayout = (TabLayout) getActivity().findViewById(R.id.tabs);
+        TabLayout tabLayout = getActivity().findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
     }
 

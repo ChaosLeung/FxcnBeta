@@ -58,6 +58,10 @@
 
         <activity android:name=".help.FeedbackActivity"
                   android:exported="false" />
+
+        <activity android:name="org.chaos.fx.cnbeta.wxapi.WXEntryActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:exported="true" />
     </application>
 
 </manifest>

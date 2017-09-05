@@ -21,6 +21,8 @@ android {
 
     defaultConfig {
         applicationId "org.chaos.fx.cnbeta"
+
+        buildConfigField "String", "WECHAT_APPID", "\"${project.WECHAT_APPID}\""
     }
 
     buildTypes {
@@ -78,8 +80,8 @@ dependencies {
 
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.28'
 
-    compile project(':ThirdPartyLib')
-
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.0.2'
 }

@@ -249,6 +249,13 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     }
 
     @Override
+    public void loadAuthorImage(int authorImgId) {
+        Picasso.with(getActivity())
+                .load(authorImgId)
+                .into(mAuthorImg);
+    }
+
+    @Override
     public void setTitle(String title) {
         mTitleView.setText(title);
     }

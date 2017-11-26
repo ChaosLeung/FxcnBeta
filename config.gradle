@@ -31,7 +31,7 @@ def STORE_PASSWORD = properties.getProperty('STORE_PASSWORD')
 
 // config for dependencies
 ext {
-    libsVersion = [support : '26.0.2',
+    libsVersion = [support : '26.1.0',
                    retrofit: '2.3.0']
 
     libs = [supportAnnotations: "com.android.support:support-annotations:${libsVersion.support}",
@@ -99,7 +99,7 @@ subprojects {
             case 'com.android.build.gradle.LibraryPlugin':
                 project.android {
                     compileSdkVersion 26
-                    buildToolsVersion '26.0.1'
+                    buildToolsVersion '27.0.1'
 
                     defaultConfig {
                         minSdkVersion 14

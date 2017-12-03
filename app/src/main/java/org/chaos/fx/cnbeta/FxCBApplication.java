@@ -19,6 +19,8 @@ package org.chaos.fx.cnbeta;
 import android.app.Application;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
@@ -33,6 +35,10 @@ public class FxCBApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
         CnBetaApiHelper.initialize();
         TimeStringHelper.initialize(this);
         ArticlesRepository.initialize(this);

@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
-import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -250,6 +249,13 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     }
 
     @Override
+    public void loadAuthorImage(int authorImgId) {
+        Picasso.with(getActivity())
+                .load(authorImgId)
+                .into(mAuthorImg);
+    }
+
+    @Override
     public void setTitle(String title) {
         mTitleView.setText(title);
     }
@@ -289,7 +295,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         mContentLayout.addView(view);
         scaleTextSize(view, mTextRelativeSize);
         view.setText(text);
-        Linkify.addLinks(view, Linkify.WEB_URLS);
+        // TODO: 18/05/2017 某些情况下链接会带上了大量文字，暂时关闭该功能
+//        Linkify.addLinks(view, Linkify.WEB_URLS);
     }
 
     @Override

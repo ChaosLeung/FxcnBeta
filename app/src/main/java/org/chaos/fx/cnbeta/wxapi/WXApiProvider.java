@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Chaos
+ * Copyright 2017 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import org.chaos.lib.thirdparty.BuildConfig;
+import org.chaos.fx.cnbeta.BuildConfig;
 
 import java.io.ByteArrayOutputStream;
 

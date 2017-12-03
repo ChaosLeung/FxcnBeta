@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 import org.jsoup.Jsoup;
@@ -121,11 +122,16 @@ class DetailsPresenter implements DetailsContract.Presenter {
                         .replaceAll("&gt;", ">")
                         .replaceAll("&nbsp;", " "));
 
-
-        mView.loadAuthorImage(
-                TextUtils.isEmpty(mLogoLink)
-                        ? "http://static.cnbetacdn.com" + newsContent.getThumb()
-                        : mLogoLink);
+        if (TextUtils.isEmpty(mLogoLink)) {
+            mLogoLink = "https://static.cnbetacdn.com" + newsContent.getThumb();
+        } else if (!mLogoLink.startsWith("https") && mLogoLink.startsWith("http")) {
+            mLogoLink = mLogoLink.replaceFirst("http", "https");
+        }
+        if (mLogoLink.isEmpty()) {
+            mView.loadAuthorImage(R.mipmap.ic_launcher);
+        } else {
+            mView.loadAuthorImage(mLogoLink);
+        }
         mView.setTitle(newsContent.getTitle());
         mView.setAuthor(newsContent.getAuthor());
         mView.setTimeString(newsContent.getTime());

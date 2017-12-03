@@ -32,6 +32,8 @@ interface DetailsContract {
     interface View extends BaseView {
         void loadAuthorImage(String authorImgLink);
 
+        void loadAuthorImage(int authorImgId);
+
         void setTitle(String title);
 
         void setAuthor(String author);

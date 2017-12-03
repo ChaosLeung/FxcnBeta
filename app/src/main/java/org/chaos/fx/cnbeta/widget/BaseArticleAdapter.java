@@ -37,7 +37,11 @@ public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, Art
     @Override
     protected void convert(ArticleHolder holder, ArticleSummary summary) {
         holder.title.setText(summary.getTitle());
-        Picasso.with(mContext).load(summary.getThumb()).into(holder.image);
+        String thumb = summary.getThumb();
+        if (!thumb.startsWith("https") && thumb.startsWith("http")) {
+            thumb = thumb.replaceFirst("http", "https");
+        }
+        Picasso.with(mContext).load(thumb).into(holder.image);
         Resources res = mContext.getResources();
         if (ArticlesRepository.getInstance().hasReadArticle(summary)) {
             holder.title.setTextColor(res.getColor(R.color.card_text_has_read));

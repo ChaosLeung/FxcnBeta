@@ -27,9 +27,12 @@ import android.support.v7.preference.DialogPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.widget.Toast;
 
 import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
+
+import java.io.File;
 
 /**
  * @author Chaos
@@ -40,12 +43,18 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         Preference.OnPreferenceClickListener, PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback,
         Preference.OnPreferenceChangeListener {
 
+    private static final String TAG = "PreferencesFragment";
+
     private static final String DIALOG_FRAGMENT_TAG = "PreferencesFragment.DIALOG";
 
     private static final String KEY_HELP_AND_FEEDBACK = "help_and_feedback";
     private static final String KEY_RELEASE_NOTE = "release_note";
     private static final String KEY_LICENSE = "license";
     private static final String KEY_NIGHT_MODE = "night_mode";
+    private static final String KEY_VERSION_NAME = "version_name";
+    private static final String KEY_CLEAR_CACHE = "clear_cache";
+
+    private static final String PICASSO_CACHE_FLODER = "picasso-cache";
 
     @Override
     public void onAttach(Context context) {
@@ -64,10 +73,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.pref_general, rootKey);
 
-        findPreference("version_name").setSummary(BuildConfig.VERSION_NAME);
+        findPreference(KEY_VERSION_NAME).setSummary(BuildConfig.VERSION_NAME);
         findPreference(KEY_HELP_AND_FEEDBACK).setOnPreferenceClickListener(this);
         findPreference(KEY_NIGHT_MODE).setOnPreferenceChangeListener(this);
         findPreference(PreferenceKeys.CONTENT_TEXT_LEVEL).setOnPreferenceChangeListener(this);
+        findPreference(KEY_CLEAR_CACHE).setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -78,6 +88,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
 //            startActivity(new Intent(getActivity(), FeedbackActivity.class));
             composeEmail(getString(R.string.email), getString(R.string.feedback_subject));
             return true;
+        } else if (KEY_CLEAR_CACHE.equals(key)) {
+            clearCache();
         }
         return false;
     }
@@ -135,5 +147,26 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
+
+    private void clearCache() {
+        File picassoCacheDir = new File(getContext().getCacheDir(), PICASSO_CACHE_FLODER);
+        int messageId = R.string.clear_cache_failed;
+        if (!picassoCacheDir.exists() || deleteDir(picassoCacheDir)) {
+            messageId = R.string.clear_cache_success;
+        }
+        Toast.makeText(getActivity(), messageId, Toast.LENGTH_SHORT).show();
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] files = dir.list();
+            for (String file : files) {
+                if (!deleteDir(new File(dir, file))) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
     }
 }

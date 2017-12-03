@@ -36,10 +36,8 @@ STORE_PASSWORD=
 
 ## 开源库 
 
-* [SwipeBackLayout](https://github.com/ikew0ng/SwipeBackLayout)
 * [PhotoView](https://github.com/chrisbanes/PhotoView)
 * [MaterialProgressBar](https://github.com/DreaminginCodeZH/MaterialProgressBar)
-* [BottomBar](https://github.com/roughike/BottomBar)
 * [Butter Knife](http://jakewharton.github.io/butterknife)
 * [OkHttp](http://square.github.io/okhttp)
 * [Picasso](http://square.github.io/picasso)

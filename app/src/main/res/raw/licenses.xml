@@ -18,13 +18,6 @@
 <notices>
 
     <notice>
-        <name>SwipeBackLayout</name>
-        <url>https://github.com/ikew0ng/SwipeBackLayout</url>
-        <copyright>Copyright 2013 Issac Wong</copyright>
-        <license>Apache Software License 2.0</license>
-    </notice>
-
-    <notice>
         <name>PhotoView</name>
         <url>https://github.com/chrisbanes/PhotoView</url>
         <copyright>Copyright 2016 Chris Banes</copyright>
@@ -35,13 +28,6 @@
         <name>MaterialProgressBar</name>
         <url>https://github.com/DreaminginCodeZH/MaterialProgressBar</url>
         <copyright>Copyright 2015 Zhang Hai</copyright>
-        <license>Apache Software License 2.0</license>
-    </notice>
-
-    <notice>
-        <name>BottomBar</name>
-        <url>https://github.com/roughike/BottomBar</url>
-        <copyright>Copyright (c) 2016 Iiro Krankka (http://github.com/roughike)</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
 

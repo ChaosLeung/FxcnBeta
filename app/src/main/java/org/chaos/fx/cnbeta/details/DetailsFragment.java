@@ -243,14 +243,14 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     @Override
     public void loadAuthorImage(String authorImgLink) {
-        Picasso.with(getActivity())
+        Picasso.get()
                 .load(authorImgLink)
                 .into(mAuthorImg);
     }
 
     @Override
     public void loadAuthorImage(int authorImgId) {
-        Picasso.with(getActivity())
+        Picasso.get()
                 .load(authorImgId)
                 .into(mAuthorImg);
     }
@@ -308,7 +308,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         final ImageListener l = new ImageListener(view, link);
         view.setOnClickListener(l);
 
-        RequestCreator r = Picasso.with(getActivity()).load(link).placeholder(R.drawable.default_content_image_loading);
+        RequestCreator r = Picasso.get().load(link).placeholder(R.drawable.default_content_image_loading);
         if (PreferenceHelper.getInstance().inSafeDataMode()) {
             l.setLoadCacheForFirst(true);
             r.networkPolicy(NetworkPolicy.OFFLINE);
@@ -350,7 +350,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
             if (state == ERROR) {
                 state = LOADING;
-                Picasso.with(getContext())
+                Picasso.get()
                         .load(url)
                         .placeholder(R.drawable.default_content_image_loading)
                         .into(target, this);
@@ -371,9 +371,9 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         }
 
         @Override
-        public void onError() {
+        public void onError(Exception e) {
             state = ERROR;
-            Picasso.with(getContext())
+            Picasso.get()
                     .load(loadCacheForFirst
                             ? R.drawable.default_content_image_holder
                             : R.drawable.default_content_image_failed)

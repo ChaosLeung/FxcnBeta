@@ -20,7 +20,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.OkHttp3Downloader;
 
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.net.model.Comment;

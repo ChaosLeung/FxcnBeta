@@ -49,6 +49,14 @@
 # For OkHttpDownloader
 -dontwarn com.squareup.okhttp.*
 
+# For OkHttp
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
 # For BottomBar
 -dontwarn com.roughike.bottombar.**
 

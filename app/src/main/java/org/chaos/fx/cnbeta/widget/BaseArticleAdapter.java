@@ -41,7 +41,7 @@ public abstract class BaseArticleAdapter extends ListAdapter<ArticleSummary, Art
         if (!thumb.startsWith("https") && thumb.startsWith("http")) {
             thumb = thumb.replaceFirst("http", "https");
         }
-        Picasso.with(mContext).load(thumb).into(holder.image);
+        Picasso.get().load(thumb).into(holder.image);
         Resources res = mContext.getResources();
         if (ArticlesRepository.getInstance().hasReadArticle(summary)) {
             holder.title.setTextColor(res.getColor(R.color.card_text_has_read));

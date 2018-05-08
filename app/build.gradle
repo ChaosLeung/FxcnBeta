@@ -40,48 +40,48 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
 
-    compile "${libs.supportAnnotations}"
-    compile "${libs.recyclerviewV7}"
-    compile "${libs.cardviewV7}"
-    compile "${libs.appcompatV7}"
-    compile "${libs.preferenceV14}"
-    compile "${libs.design}"
-    compile "${libs.supportV4}"
+    implementation "${libs.supportAnnotations}"
+    implementation "${libs.recyclerviewV7}"
+    implementation "${libs.cardviewV7}"
+    implementation "${libs.appcompatV7}"
+    implementation "${libs.preferenceV14}"
+    implementation "${libs.design}"
+    implementation "${libs.supportV4}"
 
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
 
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
-    compile "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"
-    compile "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
-    compile "com.squareup.retrofit2:adapter-rxjava2:${libsVersion.retrofit}"
+    implementation "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${libsVersion.retrofit}"
 
-    compile 'io.reactivex.rxjava2:rxjava:2.1.6'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.6'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    compile 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
 
-    compile 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    compile 'org.jsoup:jsoup:1.11.2'
+    implementation 'org.jsoup:jsoup:1.11.3'
 
-    compile 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 
-    compile 'me.zhanghai.android.materialprogressbar:library:1.4.2'
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
 
-    compile 'de.psdev.licensesdialog:licensesdialog:1.8.3'
+    implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
 
-    compile 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.greenrobot:greendao:3.2.2'
 
-    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.38'
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
-    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:1.4.0'
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
 }

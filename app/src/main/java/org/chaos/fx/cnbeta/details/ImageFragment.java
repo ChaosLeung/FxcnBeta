@@ -88,7 +88,7 @@ public class ImageFragment extends Fragment {
 
     private void loadImage() {
         showLoading(true);
-        Picasso.with(getActivity())
+        Picasso.get()
                 .load(mUrl)
                 .into(mPhotoView, new Callback() {
                     @Override
@@ -99,7 +99,7 @@ public class ImageFragment extends Fragment {
                     }
 
                     @Override
-                    public void onError() {
+                    public void onError(Exception e) {
                         showLoading(false);
                         mPhotoView.setImageResource(R.drawable.default_content_image_failed);
                         mPhotoView.setOnPhotoTapListener(mImageTapListener);

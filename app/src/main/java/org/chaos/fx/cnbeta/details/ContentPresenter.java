@@ -133,7 +133,8 @@ class ContentPresenter implements ContentContract.Presenter {
                     }
                 }, new Consumer<Throwable>() {
                     @Override
-                    public void accept(Throwable e) throws Exception {
+                    public void accept(Throwable e) {
+                        // TODO 返回 564 时，可以请求 https://hot.cnbeta.com/articles/{sid}
                         Log.e(TAG, "loadWebApiContent: ", e);
                         mView.showLoadingView(false);
                         mView.showLoadingError(true);

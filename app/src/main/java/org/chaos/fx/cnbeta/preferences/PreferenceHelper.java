@@ -69,7 +69,11 @@ public class PreferenceHelper {
     }
 
     public boolean inMobileApiMode() {
-        return mPreferences.getBoolean(PreferenceKeys.MOBILE_API_MODE, false);
+//        return mPreferences.getBoolean(PreferenceKeys.MOBILE_API_MODE, false);
+        // 由于 cnBeta 一部分文章用 WebApi 加载时跳转过多时会出现 564 错误，
+        // 另外由于实名制 cnBeta 需登录评论，所以 WebApi 已经没有太多存在的必要
+        // 所以直接使用 MobileApi 就好
+        return true;
     }
 
     public void setNightMode(boolean night) {

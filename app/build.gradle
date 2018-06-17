@@ -23,6 +23,8 @@ android {
         applicationId "org.chaos.fx.cnbeta"
 
         buildConfigField "String", "WECHAT_APPID", "\"${project.WECHAT_APPID}\""
+        buildConfigField "String", "QQ_APPID", "\"${project.QQ_APPID}\""
+        resValue "string", "QQ_APP_ID", "${project.QQ_APPID}"
     }
 
     buildTypes {
@@ -59,8 +61,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
     implementation "com.squareup.retrofit2:adapter-rxjava2:${libsVersion.retrofit}"
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.6'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     implementation 'com.google.code.gson:gson:2.8.2'
 

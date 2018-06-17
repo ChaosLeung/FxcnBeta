@@ -23,6 +23,8 @@ if (localProperties.exists()) {
 
 def wechatAppId = properties.getProperty('WECHAT_APPID')
 ext.WECHAT_APPID = wechatAppId != null ? wechatAppId : ""
+def qqAppId = properties.getProperty('QQ_APPID')
+ext.QQ_APPID = qqAppId != null ? qqAppId : ""
 
 def KEY_ALIAS = properties.getProperty('KEY_ALIAS')
 def KEY_PASSWORD = properties.getProperty('KEY_PASSWORD')
@@ -31,7 +33,7 @@ def STORE_PASSWORD = properties.getProperty('STORE_PASSWORD')
 
 // config for dependencies
 ext {
-    libsVersion = [support : '27.1.1',
+    libsVersion = [support : '27.1.+',
                    retrofit: '2.4.0']
 
     libs = [supportAnnotations: "com.android.support:support-annotations:${libsVersion.support}",

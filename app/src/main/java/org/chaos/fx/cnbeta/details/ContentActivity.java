@@ -62,7 +62,8 @@ public class ContentActivity extends AppCompatActivity implements ContentContrac
         intent.putExtra(KEY_SID, sid);
         intent.putExtra(KEY_TITLE, title);
         intent.putExtra(KEY_TOPIC_LOGO, topicLogoLink);
-        ActivityCompat.startActivity(context, intent, options.toBundle());
+//        ActivityCompat.startActivity(context, intent, options.toBundle());
+        ActivityCompat.startActivity(context, intent, null);
     }
 
     private int mSid;

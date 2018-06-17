@@ -17,12 +17,14 @@
 package org.chaos.fx.cnbeta.details;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.net.model.NewsContent;
+import org.chaos.fx.cnbeta.qq.QQApiProvider;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -69,6 +71,14 @@ class DetailsPresenter implements DetailsContract.Presenter {
                 mNewsContent.getTitle(),
                 Jsoup.parseBodyFragment(mNewsContent.getHomeText()).text(),
                 bitmap, toTimeline);
+    }
+
+    @Override
+    public void shareUrlToQQ(Activity act) {
+        QQApiProvider.shareUrl(act, String.format(Locale.getDefault(), "http://m.cnbeta.com/view_%d.htm", mSid),
+                mNewsContent.getTitle(),
+                Jsoup.parseBodyFragment(mNewsContent.getHomeText()).text(),
+                mLogoLink);
     }
 
     @Override

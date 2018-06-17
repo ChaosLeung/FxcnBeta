@@ -38,6 +38,11 @@
                 android:id="@+id/wechat_timeline"
                 android:title="@string/wechat_timeline"
                 app:showAsAction="never" />
+
+            <item
+                android:id="@+id/qq"
+                android:title="@string/qq"
+                app:showAsAction="never" />
         </menu>
     </item>
 

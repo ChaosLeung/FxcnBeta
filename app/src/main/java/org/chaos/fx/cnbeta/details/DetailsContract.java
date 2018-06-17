@@ -16,6 +16,7 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 
 import org.chaos.fx.cnbeta.BasePresenter;
@@ -53,6 +54,8 @@ interface DetailsContract {
 
     interface Presenter extends BasePresenter<View> {
         void shareUrlToWeChat(Bitmap bitmap, boolean toTimeline);
+
+        void shareUrlToQQ(Activity act);
 
         String[] getAllImageUrls();
 

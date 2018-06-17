@@ -20,10 +20,12 @@ import android.app.Application;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.squareup.leakcanary.LeakCanary;
+import com.tencent.tauth.Tencent;
 
 import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.qq.QQApiProvider;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 
@@ -43,6 +45,7 @@ public class FxCBApplication extends Application {
         TimeStringHelper.initialize(this);
         ArticlesRepository.initialize(this);
         WXApiProvider.initialize(this);
+        QQApiProvider.initialize(this);
         PreferenceHelper.initialize(this);
         AppCompatDelegate.setDefaultNightMode(PreferenceHelper.getInstance().inNightMode() ?
                 AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);

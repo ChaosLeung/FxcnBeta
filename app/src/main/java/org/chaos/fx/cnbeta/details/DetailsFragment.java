@@ -223,6 +223,9 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             case R.id.wechat_timeline:
                 shareUrlToWeChat(true);
                 return true;
+            case R.id.qq:
+                mPresenter.shareUrlToQQ(getActivity());
+                return true;
             case R.id.open_in_browser:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
                         String.format(Locale.getDefault(), "http://www.cnbeta.com/articles/%d.htm", mSid))));

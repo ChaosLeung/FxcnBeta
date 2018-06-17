@@ -18,7 +18,10 @@ package org.chaos.fx.cnbeta.details;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -215,10 +218,10 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
                 mOnShowCommentListener.onShowComment();
                 return true;
             case R.id.wechat_friends:
-                shareUrlToWechat(false);
+                shareUrlToWeChat(false);
                 return true;
             case R.id.wechat_timeline:
-                shareUrlToWechat(true);
+                shareUrlToWeChat(true);
                 return true;
             case R.id.open_in_browser:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
@@ -228,9 +231,15 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         return super.onOptionsItemSelected(item);
     }
 
-    private void shareUrlToWechat(boolean toTimeline) {
-        mPresenter.shareUrlToWechat(
-                ((BitmapDrawable) mAuthorImg.getDrawable()).getBitmap(), toTimeline);
+    private void shareUrlToWeChat(boolean toTimeline) {
+        Drawable img = mAuthorImg.getDrawable();
+        Bitmap bitmap;
+        if (img != null) {
+            bitmap = ((BitmapDrawable) mAuthorImg.getDrawable()).getBitmap();
+        } else {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        }
+        mPresenter.shareUrlToWeChat(bitmap, toTimeline);
     }
 
     public void handleNewsContent(NewsContent content) {

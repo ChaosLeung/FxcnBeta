@@ -52,7 +52,7 @@ interface DetailsContract {
     }
 
     interface Presenter extends BasePresenter<View> {
-        void shareUrlToWechat(Bitmap bitmap, boolean toTimeline);
+        void shareUrlToWeChat(Bitmap bitmap, boolean toTimeline);
 
         String[] getAllImageUrls();
 

@@ -64,7 +64,7 @@ class DetailsPresenter implements DetailsContract.Presenter {
     }
 
     @Override
-    public void shareUrlToWechat(Bitmap bitmap, boolean toTimeline) {
+    public void shareUrlToWeChat(Bitmap bitmap, boolean toTimeline) {
         WXApiProvider.shareUrl(String.format(Locale.getDefault(), "http://m.cnbeta.com/view_%d.htm", mSid),
                 mNewsContent.getTitle(),
                 Jsoup.parseBodyFragment(mNewsContent.getHomeText()).text(),

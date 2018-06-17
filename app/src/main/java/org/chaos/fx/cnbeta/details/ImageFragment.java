@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.github.chrisbanes.photoview.OnOutsidePhotoTapListener;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.squareup.picasso.Callback;
@@ -84,6 +85,18 @@ public class ImageFragment extends Fragment {
         ViewCompat.setTransitionName(mPhotoView, mUrl);
 
         loadImage();
+        mPhotoView.setOnOutsidePhotoTapListener(new OnOutsidePhotoTapListener() {
+            @Override
+            public void onOutsidePhotoTap(ImageView imageView) {
+                getActivity().supportFinishAfterTransition();
+            }
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Picasso.get().cancelRequest(mPhotoView);
     }
 
     private void loadImage() {

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<android.support.v4.view.ViewPager
+<org.chaos.fx.cnbeta.widget.SafeViewPager
     android:id="@+id/pager"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

@@ -99,7 +99,6 @@ public class ImagePagerActivity extends AppCompatActivity implements ViewPager.O
                         ResourcesCompat.getColor(getResources(), R.color.gallery_action_bar, getTheme())));
 
         supportPostponeEnterTransition();
-        setEnterSharedElementCallback(mSharedElementCallback);
 
         ButterKnife.bind(this);
 
@@ -110,6 +109,8 @@ public class ImagePagerActivity extends AppCompatActivity implements ViewPager.O
         mViewPager.setAdapter(new ImagePagerAdapter(getSupportFragmentManager()));
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(currentItem);
+
+        setEnterSharedElementCallback(mSharedElementCallback);
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);

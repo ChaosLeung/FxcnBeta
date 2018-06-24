@@ -37,6 +37,7 @@ import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.chaos.fx.cnbeta.home.ArticlesFragment;
 import org.chaos.fx.cnbeta.hotarticles.Top10Fragment;
@@ -122,7 +123,12 @@ public class MainActivity extends AppCompatActivity implements
             mBottomBarShadow.setVisibility(View.GONE);
         }
 
-        setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
+        mAppBarLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
+            }
+        });
 
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -177,14 +183,17 @@ public class MainActivity extends AppCompatActivity implements
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
         CoordinatorLayout.LayoutParams bottomParams = (CoordinatorLayout.LayoutParams) mBottomBar.getLayoutParams();
         CoordinatorLayout.LayoutParams shadowParams = (CoordinatorLayout.LayoutParams) mBottomBarShadow.getLayoutParams();
+        ViewGroup.MarginLayoutParams pagerParams = (ViewGroup.MarginLayoutParams) mViewPager.getLayoutParams();
         if (autoHide) {
             params.setScrollFlags(SCROLL_FLAG_SCROLL | SCROLL_FLAG_SNAP | SCROLL_FLAG_ENTER_ALWAYS);
             bottomParams.setBehavior(new BottomBarSnapBehavior());
             shadowParams.setBehavior(new BottomBarSnapBehavior());
+            pagerParams.bottomMargin = 0;
         } else {
             params.setScrollFlags(0);
             bottomParams.setBehavior(null);
             shadowParams.setBehavior(null);
+            pagerParams.bottomMargin = mBottomBar.getHeight();
         }
         mAppBarLayout.requestLayout();
     }

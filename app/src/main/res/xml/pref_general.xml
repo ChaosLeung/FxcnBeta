@@ -48,6 +48,12 @@
 
         <android.support.v7.preference.SwitchPreferenceCompat
             android:defaultValue="false"
+            android:key="list_item_image_align_start"
+            android:summary="@string/list_item_image_align_start"
+            android:title="@string/list_item_style" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
             android:key="animation_mode"
             android:summary="@string/animation_mode_summary"
             android:title="@string/animation_mode" />

@@ -54,7 +54,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     private static final String KEY_VERSION_NAME = "version_name";
     private static final String KEY_CLEAR_CACHE = "clear_cache";
 
-    private static final String PICASSO_CACHE_FLODER = "picasso-cache";
+    private static final String PICASSO_CACHE_FOLDER = "picasso-cache";
 
     @Override
     public void onAttach(Context context) {
@@ -150,7 +150,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     }
 
     private void clearCache() {
-        File picassoCacheDir = new File(getContext().getCacheDir(), PICASSO_CACHE_FLODER);
+        File picassoCacheDir = new File(getContext().getCacheDir(), PICASSO_CACHE_FOLDER);
         int messageId = R.string.clear_cache_failed;
         if (!picassoCacheDir.exists() || deleteDir(picassoCacheDir)) {
             messageId = R.string.clear_cache_success;

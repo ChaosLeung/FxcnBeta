@@ -86,6 +86,10 @@ public class PreferenceHelper {
         return mPreferences.getBoolean(PreferenceKeys.NIGHT_MODE, false);
     }
 
+    public boolean isListItemAlignStart() {
+        return mPreferences.getBoolean(PreferenceKeys.LIST_ITEM_IMAGE_ALIGN_START, false);
+    }
+
     public boolean inAnimationMode() {
         return mPreferences.getBoolean(PreferenceKeys.ANIMATION_MODE, true);
     }

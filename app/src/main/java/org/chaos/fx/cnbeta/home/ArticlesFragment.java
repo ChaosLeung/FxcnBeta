@@ -96,7 +96,7 @@ public class ArticlesFragment extends BaseFragment
         mReselectedDispatcher.addOnReselectListener(R.id.nav_home, this);
 
         mAdapter = new ArticleAdapter();
-        mAdapter.setOnLoadMoreListener(this);
+        mAdapter.setOnLoadMoreListener(this, mRecyclerView);
         mAdapter.setLoadMoreView(new LoadingView());
 
         mRecyclerView.setAdapter(mAdapter);

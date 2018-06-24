@@ -31,6 +31,6 @@
         android:scrollbarThumbVertical="@drawable/scrollbar_handle_material"
         android:scrollbars="vertical"
         app:layoutManager="LinearLayoutManager"
-        tools:listitem="@layout/article_item" />
+        tools:listitem="@layout/article_item_image_align_end" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

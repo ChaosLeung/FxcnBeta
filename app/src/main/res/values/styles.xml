@@ -23,14 +23,14 @@
     </style>
 
     <style name="CardArticleItemText.Headline" parent="@style/CardArticleItemText">
-        <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
         <item name="android:textSize">@dimen/article_item_text_title</item>
         <item name="android:textColor">@color/card_text</item>
+        <item name="android:gravity">start</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:maxLines">2</item>
     </style>
 
     <style name="CardArticleItemText.Summary" parent="@style/CardArticleItemText">
-        <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
         <item name="android:textColor">@color/card_time_text</item>
         <item name="android:singleLine">true</item>
         <item name="android:textSize">@dimen/article_item_text_time</item>

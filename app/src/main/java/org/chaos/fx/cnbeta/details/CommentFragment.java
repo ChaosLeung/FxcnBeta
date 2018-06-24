@@ -220,7 +220,8 @@ public class CommentFragment extends BaseFragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(mPresenter.isCommentEnable() ? R.menu.comment_menu : R.menu.closed_comment_menu, menu);
+        // 屏蔽评论菜单
+//        inflater.inflate(mPresenter.isCommentEnable() ? R.menu.comment_menu : R.menu.closed_comment_menu, menu);
     }
 
     @Override

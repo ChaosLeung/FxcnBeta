@@ -444,7 +444,9 @@ class CommentPresenter implements CommentContract.Presenter {
 
     @Override
     public boolean isCommentEnable() {
-        return isCommentEnable;
+//        return isCommentEnable;
+        // 屏蔽添加评论入口
+        return false;
     }
 
     public String getOperationToken() {

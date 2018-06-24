@@ -30,11 +30,9 @@
         android:layout_height="wrap_content"
         style="@style/CardArticleItemText.Headline"
         tools:text="Preview Article Item Title, Preview Article Item Title, Preview Article Item Title"
-        android:layout_toLeftOf="@+id/image"
         android:layout_toStartOf="@+id/image"
         android:layout_above="@+id/summary"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -44,9 +42,7 @@
         android:layout_alignBottom="@+id/image"
         style="@style/CardArticleItemText.Summary"
         tools:text="2 hours ago"
-        android:layout_toLeftOf="@+id/image"
         android:layout_toStartOf="@+id/image"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true" />
 
@@ -55,10 +51,8 @@
         android:layout_width="@dimen/thumb_height"
         android:layout_height="@dimen/thumb_height"
         android:background="@drawable/image_loading"
-        android:layout_marginLeft="@dimen/card_inner_content_padding"
         android:layout_marginStart="@dimen/card_inner_content_padding"
         android:scaleType="centerCrop"
         android:contentDescription="@string/card_image_content_description"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 </RelativeLayout>

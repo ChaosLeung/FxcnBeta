@@ -43,9 +43,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/fb_content_length"
             android:layout_alignEnd="@+id/feedback"
-            android:layout_alignRight="@+id/feedback"
             android:layout_alignBottom="@+id/feedback"
-            android:layout_marginRight="@dimen/fb_edit_padding"
             android:layout_marginEnd="@dimen/fb_edit_padding"
             android:layout_marginBottom="@dimen/fb_edit_padding"
             android:text="@string/fb_feedback_max_length" />

@@ -110,8 +110,6 @@ public class ImagePagerActivity extends AppCompatActivity implements ViewPager.O
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setCurrentItem(currentItem);
 
-        setEnterSharedElementCallback(mSharedElementCallback);
-
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         setActionBarTitleByIndex(currentItem);
@@ -169,7 +167,11 @@ public class ImagePagerActivity extends AppCompatActivity implements ViewPager.O
 
         @Override
         public Fragment getItem(int position) {
+            Fragment preFragment = mCurrentFragment;
             mCurrentFragment = ImageFragment.newInstance(mImageUrls[position]);
+            if (preFragment == null) {
+                setEnterSharedElementCallback(mSharedElementCallback);
+            }
             return mCurrentFragment;
         }
 

@@ -28,6 +28,8 @@ import org.chaos.fx.cnbeta.skin.SkinMaterialViewInflater;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 
+import java.util.TimeZone;
+
 import skin.support.SkinCompatManager;
 import skin.support.app.SkinCardViewInflater;
 import skin.support.constraint.app.SkinConstraintViewInflater;
@@ -43,6 +45,9 @@ public class FxCBApplication extends Application {
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }
+
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
+
         LeakCanary.install(this);
         CnBetaApiHelper.initialize();
         TimeStringHelper.initialize(this);

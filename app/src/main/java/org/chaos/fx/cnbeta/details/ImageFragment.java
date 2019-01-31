@@ -17,14 +17,18 @@
 package org.chaos.fx.cnbeta.details;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.OnOutsidePhotoTapListener;
 import com.github.chrisbanes.photoview.OnPhotoTapListener;
@@ -33,6 +37,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.util.CryptUtil;
+
+import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +62,8 @@ public class ImageFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    private static final String FILE_SUFFIX = ".png";
 
     @BindView(R.id.image) PhotoView mPhotoView;
     @BindView(R.id.progress) ProgressBar mProgressBar;
@@ -88,7 +97,18 @@ public class ImageFragment extends Fragment {
         mPhotoView.setOnOutsidePhotoTapListener(new OnOutsidePhotoTapListener() {
             @Override
             public void onOutsidePhotoTap(ImageView imageView) {
-                getActivity().supportFinishAfterTransition();
+                if (getActivity() != null) {
+                    getActivity().supportFinishAfterTransition();
+                }
+            }
+        });
+        mPhotoView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                registerForContextMenu(v);
+                v.showContextMenu();
+                unregisterForContextMenu(v);
+                return true;
             }
         });
     }
@@ -97,6 +117,38 @@ public class ImageFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         Picasso.get().cancelRequest(mPhotoView);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.image_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                String fileName = CryptUtil.encryptToMD5(mUrl) + FILE_SUFFIX;
+                final String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + fileName;
+                Picasso.get().load(mUrl).into(new ImageStore(path, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        String message = getString(R.string.format_saved_to_path, path);
+                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        String message = e.getMessage();
+                        if (e instanceof NoSpaceLeftException) {
+                            message = getString(R.string.no_space_left);
+                        }
+                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                    }
+                }));
+                return true;
+        }
+        return false;
     }
 
     private void loadImage() {
@@ -108,7 +160,9 @@ public class ImageFragment extends Fragment {
                     public void onSuccess() {
                         showLoading(false);
                         mPhotoView.setOnPhotoTapListener(null);
-                        getActivity().supportStartPostponedEnterTransition();
+                        if (getActivity() != null) {
+                            getActivity().supportStartPostponedEnterTransition();
+                        }
                     }
 
                     @Override
@@ -116,7 +170,9 @@ public class ImageFragment extends Fragment {
                         showLoading(false);
                         mPhotoView.setImageResource(R.drawable.default_content_image_failed);
                         mPhotoView.setOnPhotoTapListener(mImageTapListener);
-                        getActivity().supportStartPostponedEnterTransition();
+                        if (getActivity() != null) {
+                            getActivity().supportStartPostponedEnterTransition();
+                        }
                     }
                 });
     }

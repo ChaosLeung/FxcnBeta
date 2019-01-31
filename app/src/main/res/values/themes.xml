@@ -49,7 +49,6 @@
 
     <style name="AppTheme.ActionBar.Translucent" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:textColorPrimary">@color/active_tab_color</item>
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 

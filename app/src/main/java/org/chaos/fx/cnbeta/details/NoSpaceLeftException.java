@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Chaos
+ * Copyright 2019 Chaos
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package org.chaos.fx.cnbeta.util;
+package org.chaos.fx.cnbeta.details;
 
-import org.chaos.fx.cnbeta.net.model.Comment;
-
-import java.util.Comparator;
-
-/**
- * @author Chaos
- *         27/02/2017
- */
-
-public class CommentComparator implements Comparator<Comment> {
-    @Override
-    public int compare(Comment o1, Comment o2) {
-        int x = o1.getTid();
-        int y = o2.getTid();
-        return Integer.compare(x, y);
-    }
+public class NoSpaceLeftException extends Exception {
 }

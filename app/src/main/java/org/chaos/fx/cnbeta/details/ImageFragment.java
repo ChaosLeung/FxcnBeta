@@ -16,6 +16,7 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -38,6 +39,7 @@ import com.squareup.picasso.Picasso;
 
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.util.CryptUtil;
+import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
 
 import java.io.File;
 
@@ -128,9 +130,8 @@ public class ImageFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
-                String fileName = CryptUtil.encryptToMD5(mUrl) + FILE_SUFFIX;
-                final String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + fileName;
-                Picasso.get().load(mUrl).into(new ImageStore(path, new Callback() {
+                final String path = getImageCachePath();
+                storeImageToLocalIfNeed(path, new Callback() {
                     @Override
                     public void onSuccess() {
                         String message = getString(R.string.format_saved_to_path, path);
@@ -145,10 +146,47 @@ public class ImageFragment extends Fragment {
                         }
                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                     }
-                }));
+                });
+                return true;
+            case R.id.wechat_friends:
+                shareImageToWeChat(false);
+                return true;
+            case R.id.wechat_timeline:
+                shareImageToWeChat(true);
                 return true;
         }
         return false;
+    }
+
+    private String getImageCachePath() {
+        String fileName = CryptUtil.encryptToMD5(mUrl) + FILE_SUFFIX;
+        return getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + fileName;
+    }
+
+    private void storeImageToLocalIfNeed(String path, Callback callback) {
+        File f = new File(path);
+        if (f.exists()) {
+            if (callback != null) {
+                callback.onSuccess();
+            }
+        } else {
+            Picasso.get().load(mUrl).into(new ImageStore(path, callback));
+        }
+    }
+
+    private void shareImageToWeChat(final boolean toTimeline) {
+        final String path = getImageCachePath();
+        storeImageToLocalIfNeed(path, new Callback() {
+            @Override
+            public void onSuccess() {
+                WXApiProvider.sharePicture(((BitmapDrawable) mPhotoView.getDrawable()).getBitmap(), path, toTimeline);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     private void loadImage() {

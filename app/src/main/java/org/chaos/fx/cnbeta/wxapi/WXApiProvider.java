@@ -20,12 +20,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXImageObject;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.chaos.fx.cnbeta.BuildConfig;
+import org.jsoup.helper.StringUtil;
 
 import java.io.ByteArrayOutputStream;
 
@@ -46,15 +48,30 @@ public class WXApiProvider {
         return sWXApi;
     }
 
-    public static void shareUrl(String url, String title, String description, Bitmap author, boolean toTimeline) {
+    public static void shareUrl(String url, String title, String description, Bitmap thumbnail, boolean toTimeline) {
         WXMediaMessage msg = new WXMediaMessage();
         msg.mediaObject = new WXWebpageObject(url);
         msg.title = title;
         msg.description = description;
-        if (author != null && !author.isRecycled()) {
-            msg.thumbData = bitmap2Bytes(author);
+        if (thumbnail != null && !thumbnail.isRecycled()) {
+            msg.thumbData = bitmap2Bytes(thumbnail);
         }
 
+        sendRequest2Wechat(msg, toTimeline);
+    }
+
+    public static void sharePicture(Bitmap thumbnail, String path, final boolean toTimeline) {
+        WXImageObject image;
+        if (!StringUtil.isBlank(path)) {
+            image = new WXImageObject();
+            image.setImagePath(path);
+        } else {
+            image = new WXImageObject(thumbnail);
+        }
+        WXMediaMessage msg = new WXMediaMessage();
+        msg.mediaObject = image;
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(thumbnail, 88, 88, true);
+        msg.thumbData = bitmap2Bytes(scaledBitmap);
         sendRequest2Wechat(msg, toTimeline);
     }
 

@@ -81,7 +81,7 @@ public class ImageStore implements Target {
                 return new NoSpaceLeftException();
             }
 
-            File f = new File(mRef.get().mCachePath);
+            File f = new File(mRef.get().mCachePath + ".bak");
             if (f.exists()) {
                 f.delete();
             }
@@ -92,6 +92,11 @@ public class ImageStore implements Target {
                 b.compress(Bitmap.CompressFormat.PNG, 100, fos);
                 fos.flush();
                 fos.close();
+                File dest = new File(mRef.get().mCachePath);
+                if (dest.exists()) {
+                    dest.delete();
+                }
+                f.renameTo(dest);
             } catch (IOException e) {
                 return e;
             }

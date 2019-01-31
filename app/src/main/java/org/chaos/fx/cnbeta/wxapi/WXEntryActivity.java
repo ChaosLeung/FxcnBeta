@@ -19,7 +19,6 @@ package org.chaos.fx.cnbeta.wxapi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -58,7 +57,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     @Override
     public void onResp(BaseResp resp) {
-        switch (resp.errCode) {
+        // 新版微信 SDK 不再区分 errCode
+        /*switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
                 Toast.makeText(this, R.string.share_error_success, Toast.LENGTH_SHORT).show();
                 break;
@@ -67,7 +67,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
             default:
                 Toast.makeText(this, R.string.share_error_failed, Toast.LENGTH_SHORT).show();
                 break;
-        }
+        }*/
         finish();
     }
 }

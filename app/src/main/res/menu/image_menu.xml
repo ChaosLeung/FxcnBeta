@@ -23,4 +23,26 @@
         android:title="@string/save_image"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/share"
+        android:title="@string/share"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/wechat_friends"
+                android:title="@string/wechat_friends"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/wechat_timeline"
+                android:title="@string/wechat_timeline"
+                app:showAsAction="never" />
+
+            <!-- 没有电子著作权，不能申请 -->
+            <!--<item
+                android:id="@+id/qq"
+                android:title="@string/qq"
+                app:showAsAction="never" />-->
+        </menu>
+    </item>
 </menu>

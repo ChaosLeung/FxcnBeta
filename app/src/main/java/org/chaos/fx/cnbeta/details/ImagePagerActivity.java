@@ -73,7 +73,7 @@ public class ImagePagerActivity extends AppCompatActivity implements ViewPager.O
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (isReturning) {
-                View target = mCurrentFragment.mPhotoView;
+                View target = mCurrentFragment == null ? null : mCurrentFragment.mPhotoView;
                 if (target == null) {
                     names.clear();
                     sharedElements.clear();

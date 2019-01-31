@@ -18,6 +18,13 @@
 <notices>
 
     <notice>
+        <name>Sunrise Sunset Calculator</name>
+        <url>https://github.com/caarmen/SunriseSunset</url>
+        <copyright>Copyright (C) 2013-2017 Carmen Alvarez</copyright>
+        <license>GNU Lesser General Public License 2.1</license>
+    </notice>
+
+    <notice>
         <name>PhotoView</name>
         <url>https://github.com/chrisbanes/PhotoView</url>
         <copyright>Copyright 2016 Chris Banes</copyright>
@@ -32,7 +39,7 @@
     </notice>
 
     <notice>
-        <name>Butter Knife</name>
+        <name>ButterKnife</name>
         <url>http://jakewharton.github.io/butterknife/</url>
         <copyright>Copyright 2013 Jake Wharton</copyright>
         <license>Apache Software License 2.0</license>

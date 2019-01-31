@@ -38,6 +38,7 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.skin.SkinItemDecoration;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 import org.chaos.fx.cnbeta.widget.NonAnimation;
 
@@ -45,13 +46,16 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import skin.support.SkinCompatManager;
+import skin.support.observe.SkinObservable;
+import skin.support.observe.SkinObserver;
 
 /**
  * @author Chaos
  *         2015/11/15.
  */
 public class Top10Fragment extends BaseFragment implements Top10Contract.View,
-        SwipeRefreshLayout.OnRefreshListener, ReselectedDispatcher.OnReselectListener {
+        SwipeRefreshLayout.OnRefreshListener, ReselectedDispatcher.OnReselectListener, SkinObserver {
 
     public static Top10Fragment newInstance() {
         return new Top10Fragment();
@@ -87,7 +91,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         mAdapter = new Top10Adapter();
 
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new SkinItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -111,6 +115,8 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
 
         mPresenter = new Top10Presenter();
         mPresenter.subscribe(this);
+
+        SkinCompatManager.getInstance().addObserver(this);
     }
 
     @Override
@@ -136,6 +142,7 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        SkinCompatManager.getInstance().deleteObserver(this);
         mPresenter.unsubscribe();
         mReselectedDispatcher.removeOnReselectListener(this);
     }
@@ -182,5 +189,10 @@ public class Top10Fragment extends BaseFragment implements Top10Contract.View,
         } else {
             mRecyclerView.smoothScrollToFirstItem();
         }
+    }
+
+    @Override
+    public void updateSkin(SkinObservable observable, Object o) {
+        mAdapter.notifyDataSetChanged();
     }
 }

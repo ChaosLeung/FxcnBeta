@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatDelegate;
 
 /**
  * @author Chaos
@@ -41,7 +40,6 @@ public class PreferenceHelper {
             }
         }
     }
-
 
     private SharedPreferences mPreferences;
     private WifiManager mWifiManager;
@@ -78,8 +76,6 @@ public class PreferenceHelper {
 
     public void setNightMode(boolean night) {
         mPreferences.edit().putBoolean(PreferenceKeys.NIGHT_MODE, night).apply();
-        AppCompatDelegate.setDefaultNightMode(night ?
-                AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     public boolean inNightMode() {

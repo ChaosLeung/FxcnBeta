@@ -42,6 +42,7 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.net.model.Comment;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
+import org.chaos.fx.cnbeta.skin.SkinItemDecoration;
 
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class CommentFragment extends BaseFragment implements
         }
 
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new SkinItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
             public void onSimpleItemChildClick(BaseQuickAdapter adapter, View v, int position) {

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Chaos
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +15,11 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:foreground="@drawable/list_item_overlay_darken"
-                android:padding="@dimen/card_inner_content_padding">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="@drawable/list_item_overlay_darken"
+    android:padding="@dimen/card_inner_content_padding">
 
     <TextView
         android:id="@+id/username"
@@ -73,6 +72,7 @@
         android:drawablePadding="@dimen/card_inner_content_half_padding"
         android:drawableStart="@drawable/comment_ic_exposure_plus_1"
         android:gravity="center_vertical"
+        android:textColor="@color/textColorSecondary"
         android:textSize="@dimen/article_item_text_time"
         tools:text="123" />
 
@@ -87,6 +87,7 @@
         android:drawablePadding="@dimen/card_inner_content_half_padding"
         android:drawableStart="@drawable/comment_ic_exposure_neg_1"
         android:gravity="center_vertical"
+        android:textColor="@color/textColorSecondary"
         android:textSize="@dimen/article_item_text_time"
         tools:text="123" />
 
@@ -98,6 +99,6 @@
         android:layout_alignTop="@+id/support"
         android:layout_below="@id/comment"
         android:background="@null"
-        android:src="@drawable/comment_ic_reply"
-        android:contentDescription="@string/reply_image_description" />
+        android:contentDescription="@string/reply_image_description"
+        android:src="@drawable/comment_ic_reply" />
 </RelativeLayout>

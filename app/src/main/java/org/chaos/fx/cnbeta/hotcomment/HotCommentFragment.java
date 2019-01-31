@@ -39,6 +39,7 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.HotComment;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.skin.SkinItemDecoration;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 import org.chaos.fx.cnbeta.widget.NonAnimation;
 
@@ -86,7 +87,7 @@ public class HotCommentFragment extends BaseFragment implements HotCommentContra
         mAdapter = new HotCommentAdapter();
 
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new SkinItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {

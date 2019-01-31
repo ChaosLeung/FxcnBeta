@@ -257,6 +257,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     public void loadAuthorImage(String authorImgLink) {
         Picasso.get()
                 .load(authorImgLink)
+                .placeholder(PreferenceHelper.getInstance().inNightMode() ? R.color.holder_color_night : R.color.holder_color)
                 .into(mAuthorImg);
     }
 
@@ -264,6 +265,7 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     public void loadAuthorImage(int authorImgId) {
         Picasso.get()
                 .load(authorImgId)
+                .placeholder(PreferenceHelper.getInstance().inNightMode() ? R.color.holder_color_night : R.color.holder_color)
                 .into(mAuthorImg);
     }
 

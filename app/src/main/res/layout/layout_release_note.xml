@@ -19,7 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="24dp"
+            android:paddingTop="24dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             android:scrollbars="none">
 
     <FrameLayout

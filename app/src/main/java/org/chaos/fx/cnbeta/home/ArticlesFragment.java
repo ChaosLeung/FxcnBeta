@@ -38,6 +38,7 @@ import org.chaos.fx.cnbeta.app.BaseFragment;
 import org.chaos.fx.cnbeta.details.ContentActivity;
 import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
+import org.chaos.fx.cnbeta.skin.SkinItemDecoration;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 import org.chaos.fx.cnbeta.widget.LoadingView;
 import org.chaos.fx.cnbeta.widget.NonAnimation;
@@ -46,15 +47,17 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import skin.support.SkinCompatManager;
+import skin.support.observe.SkinObservable;
+import skin.support.observe.SkinObserver;
 
 /**
  * @author Chaos
  *         2015/11/14.
  */
 public class ArticlesFragment extends BaseFragment
-        implements SwipeRefreshLayout.OnRefreshListener,
-        BaseQuickAdapter.RequestLoadMoreListener,
-        ArticlesContract.View, ReselectedDispatcher.OnReselectListener {
+        implements SwipeRefreshLayout.OnRefreshListener, BaseQuickAdapter.RequestLoadMoreListener,
+        ArticlesContract.View, ReselectedDispatcher.OnReselectListener, SkinObserver {
 
     private static final String KEY_TOPIC_ID = "topic_id";
 
@@ -100,7 +103,7 @@ public class ArticlesFragment extends BaseFragment
         mAdapter.setLoadMoreView(new LoadingView());
 
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new SkinItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -108,11 +111,13 @@ public class ArticlesFragment extends BaseFragment
                 mPreClickPosition = position;
                 ArticleSummary summary = mAdapter.get(position);
 
-                View tv = holder.itemView.findViewById(R.id.title);
-                ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(tv, getString(R.string.transition_details_title)),
-                                Pair.create(holder.itemView, getString(R.string.transition_details_background)));
+                ActivityOptionsCompat options = null;
+                if (holder != null) {
+                    View tv = holder.itemView.findViewById(R.id.title);
+                    options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                            Pair.create(tv, getString(R.string.transition_details_title)),
+                            Pair.create(holder.itemView, getString(R.string.transition_details_background)));
+                }
                 ContentActivity.start(getActivity(), summary.getSid(), summary.getTitle(),
                         summary.getTopicLogo(), options);
             }
@@ -125,6 +130,8 @@ public class ArticlesFragment extends BaseFragment
         String topicId = getArguments().getString(KEY_TOPIC_ID, "null");
         mPresenter = new ArticlesPresenter(topicId);
         mPresenter.subscribe(this);
+
+        SkinCompatManager.getInstance().addObserver(this);
     }
 
     @Override
@@ -150,6 +157,8 @@ public class ArticlesFragment extends BaseFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        SkinCompatManager.getInstance().deleteObserver(this);
 
         mReselectedDispatcher.removeOnReselectListener(this);
 
@@ -245,5 +254,10 @@ public class ArticlesFragment extends BaseFragment
 
     public void showNothingTipsIfNeed() {
         mNoContentTipsView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void updateSkin(SkinObservable observable, Object o) {
+        mAdapter.notifyDataSetChanged();
     }
 }

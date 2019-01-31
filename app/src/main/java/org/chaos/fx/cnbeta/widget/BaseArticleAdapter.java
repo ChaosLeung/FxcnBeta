@@ -16,8 +16,6 @@
 
 package org.chaos.fx.cnbeta.widget;
 
-import android.content.res.Resources;
-
 import com.chad.library.adapter.base.provider.BaseItemProvider;
 import com.squareup.picasso.Picasso;
 
@@ -27,6 +25,8 @@ import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 
 import java.util.ArrayList;
+
+import skin.support.content.res.SkinCompatResources;
 
 /**
  * @author Chaos
@@ -62,14 +62,17 @@ public abstract class BaseArticleAdapter extends MultipleItemListAdapter<Article
             thumb = thumb.replaceFirst("http", "https");
         }
         Picasso.get().load(thumb).into(holder.image);
-        Resources res = mContext.getResources();
+        int textColor;
+        int timeColor;
         if (ArticlesRepository.getInstance().hasReadArticle(summary)) {
-            holder.title.setTextColor(res.getColor(R.color.card_text_has_read));
-            holder.summary.setTextColor(res.getColor(R.color.card_time_text_has_read));
+            textColor = SkinCompatResources.getColor(mContext, R.color.card_text_has_read);
+            timeColor = SkinCompatResources.getColor(mContext, R.color.card_time_text_has_read);
         } else {
-            holder.title.setTextColor(res.getColor(R.color.card_text));
-            holder.summary.setTextColor(res.getColor(R.color.card_time_text));
+            textColor = SkinCompatResources.getColor(mContext, R.color.card_text);
+            timeColor = SkinCompatResources.getColor(mContext, R.color.card_time_text);
         }
+        holder.title.setTextColor(textColor);
+        holder.summary.setTextColor(timeColor);
     }
 
     private static class ArticleImageAlignEndItem extends BaseItemProvider<ArticleSummary, ArticleHolder> {

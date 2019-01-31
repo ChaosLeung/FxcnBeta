@@ -24,6 +24,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- Automatically toggle theme mode -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".FxCBApplication"
         android:icon="@mipmap/ic_launcher"
@@ -55,7 +59,8 @@
                   android:theme="@style/AppTheme.ActionBar.Translucent" />
 
         <activity android:name=".preferences.PreferencesActivity"
-                  android:exported="false" />
+                  android:exported="false"
+                  android:theme="@style/AlertDialogTheme" />
 
         <activity android:name=".help.FeedbackActivity"
                   android:exported="false" />
@@ -80,6 +85,12 @@
         <activity android:name="com.tencent.connect.common.AssistActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <receiver android:name=".SkinReceiver">
+            <intent-filter>
+                <action android:name="org.chaos.fx.cnbeta.ACTION_SWITCH_THEME" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

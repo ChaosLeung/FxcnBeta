@@ -50,7 +50,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginTop="16dp"
             android:contentDescription="@string/author_image_description"
-            android:src="@color/holder_color"
+            tools:src="@color/holder_color"
             tools:background="#000" />
 
         <TextView

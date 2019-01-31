@@ -26,36 +26,10 @@
 
     <include layout="@layout/layout_app_bar" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <!-- For use BottomBarSnapBehavior with top shadow, the trick is set the shadow container's height equals to BottomNavigationView's height -->
-    <FrameLayout
-        android:id="@+id/shadow_container"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/bottom_navigation_elevation">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_navigation_elevation"
-            android:layout_gravity="top"
-            android:background="@drawable/top_shadow" />
-    </FrameLayout>
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:layout_gravity="bottom"
-        android:background="@color/colorPrimary"
-        app:elevation="0dp"
-        app:itemIconTint="@color/nav_item_selector"
-        app:itemTextColor="@color/nav_item_selector"
-        app:menu="@menu/navigation_tabs" />
 
 </android.support.design.widget.CoordinatorLayout>

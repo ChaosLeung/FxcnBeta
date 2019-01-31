@@ -49,6 +49,7 @@ import org.chaos.fx.cnbeta.widget.BottomBarSnapBehavior;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import skin.support.SkinCompatManager;
 
 import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
 import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
@@ -132,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements
 
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        updateTheme();
     }
 
     @Override
@@ -162,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (PreferenceKeys.NIGHT_MODE.equals(key)) {
-            recreate();
+            updateTheme();
         } else if (PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE.equals(key)) {
             setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
         }
@@ -196,6 +199,14 @@ public class MainActivity extends AppCompatActivity implements
             pagerParams.bottomMargin = mBottomBar.getHeight();
         }
         mAppBarLayout.requestLayout();
+    }
+
+    private void updateTheme() {
+        if (PreferenceHelper.getInstance().inNightMode()) {
+            SkinCompatManager.getInstance().loadSkin("night", null, SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
+        } else {
+            SkinCompatManager.getInstance().restoreDefaultTheme();
+        }
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

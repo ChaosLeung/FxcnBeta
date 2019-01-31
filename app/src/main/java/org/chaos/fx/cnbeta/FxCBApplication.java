@@ -17,17 +17,20 @@
 package org.chaos.fx.cnbeta;
 
 import android.app.Application;
-import android.support.v7.app.AppCompatDelegate;
 
 import com.squareup.leakcanary.LeakCanary;
-import com.tencent.tauth.Tencent;
 
 import org.chaos.fx.cnbeta.data.ArticlesRepository;
 import org.chaos.fx.cnbeta.net.CnBetaApiHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.qq.QQApiProvider;
+import org.chaos.fx.cnbeta.skin.SkinMaterialViewInflater;
 import org.chaos.fx.cnbeta.util.TimeStringHelper;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
+
+import skin.support.SkinCompatManager;
+import skin.support.app.SkinCardViewInflater;
+import skin.support.constraint.app.SkinConstraintViewInflater;
 
 /**
  * @author Chaos
@@ -47,7 +50,14 @@ public class FxCBApplication extends Application {
         WXApiProvider.initialize(this);
         QQApiProvider.initialize(this);
         PreferenceHelper.initialize(this);
-        AppCompatDelegate.setDefaultNightMode(PreferenceHelper.getInstance().inNightMode() ?
-                AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
+        SkinCompatManager.withoutActivity(this)                         // 基础控件换肤初始化
+                .addInflater(new SkinMaterialViewInflater())            // material design 控件换肤初始化[可选]
+                .addInflater(new SkinConstraintViewInflater())          // ConstraintLayout 控件换肤初始化[可选]
+                .addInflater(new SkinCardViewInflater())                // CardView v7 控件换肤初始化[可选]
+                .setSkinStatusBarColorEnable(true)                     // 关闭状态栏换肤，默认打开[可选]
+                .setSkinWindowBackgroundEnable(true)                   // 关闭windowBackground换肤，默认打开[可选]
+                .setSkinAllActivityEnable(true)
+                .loadSkin();
     }
 }

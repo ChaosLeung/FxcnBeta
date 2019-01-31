@@ -196,4 +196,6 @@
     <string name="clear_cache_success">清理成功</string>
     <string name="clear_cache_failed">清理失败</string>
     <string name="qq">QQ</string>
+
+    <string name="close">关闭</string>
 </resources>

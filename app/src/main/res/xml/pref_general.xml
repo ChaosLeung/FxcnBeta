@@ -91,7 +91,7 @@
             android:dialogTitle="@null"
             android:key="release_note"
             android:negativeButtonText="@null"
-            android:positiveButtonText="@null"
+            android:positiveButtonText="@string/close"
             android:title="@string/update_log" />
 
         <android.support.v7.preference.Preference

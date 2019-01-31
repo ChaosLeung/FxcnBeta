@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Chaos
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <color name="colorPrimary_night">#181818</color>
+    <color name="colorPrimaryDark_night">#121212</color>
+    <color name="colorAccent_night">#00796B</color>
+
+    <color name="textColorPrimary_night">#c0c0c0</color>
+    <color name="textColorSecondary_night">#909090</color>
+
+    <color name="card_ripple_color_darken_night">#0a000000</color>
+    <color name="main_background_night">#212121</color>
+
+    <color name="card_text_night">@color/textColorPrimary_night</color>
+    <color name="card_text_has_read_night">#616161</color>
+    <color name="card_time_text_night">#b0b0b0</color>
+    <color name="card_time_text_has_read_night">#515151</color>
+
+    <color name="content_text_night">@color/textColorPrimary_night</color>
+    <color name="content_title_night">#c5c5c5</color>
+    <color name="content_source_night">@color/content_text_night</color>
+    <color name="content_author_night">@color/textColorSecondary_night</color>
+    <color name="content_time_night">@color/textColorSecondary_night</color>
+    <color name="content_comment_count_night">@color/textColorSecondary_night</color>
+
+    <color name="image_not_available_night">#424242</color>
+
+    <color name="reply_comment_night">#323232</color>
+
+    <color name="divider_night">#303030</color>
+
+    <color name="fb_content_length_night">#aaaaaa</color>
+
+    <color name="comment_ic_bg_night">#323232</color>
+    <color name="comment_ic_bg_pressed_night">#2B2B2B</color>
+    <color name="comment_ic_tint_night">#c5c5c5</color>
+
+    <color name="inactive_tab_color_night">#CC9E9E9E</color>
+    <color name="active_tab_color_night">#E0E0E0</color>
+
+    <color name="gallery_action_bar_night">#7F000000</color>
+
+    <color name="holder_color_night">#424242</color>
+
+    <color name="scrollbar_color_night">#84BDBDBD</color>
+
+    <color name="css_body_background_night">@color/main_background_night</color>
+    <color name="css_pre_background_night">#313131</color>
+    <color name="css_pre_color_night">@color/main_background_night</color>
+    <color name="css_li_color_night">@color/textColorPrimary_night</color>
+    <color name="css_a_color_night">@color/colorAccent_night</color>
+</resources>

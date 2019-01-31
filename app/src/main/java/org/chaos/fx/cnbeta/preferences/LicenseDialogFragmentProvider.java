@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
-import android.support.v4.content.res.ResourcesCompat;
 
 import org.chaos.fx.cnbeta.R;
 
@@ -39,17 +38,21 @@ class LicenseDialogFragmentProvider {
                 .setShowFullLicenseText(false)
                 .setUseAppCompat(true)
                 .setIncludeOwnLicense(true)
-                .setNoticesCssStyle(newCssStyle(context))
+                .setNoticesCssStyle(newCssStyle(context, false))
+                .setNoticesNightCssStyle(newCssStyle(context, true))
+                .setIsNightStyle(PreferenceHelper.getInstance().inNightMode())
+                .setThemeResourceId(R.style.AppTheme_License)
                 .build();
     }
 
-    private static String newCssStyle(Context context) {
+    private static String newCssStyle(Context context, boolean isNight) {
         Resources res = context.getResources();
         String format = res.getString(R.string.custom_notices_format_style);
-        int background = ResourcesCompat.getColor(res, R.color.css_body_background, context.getTheme());
-        int preBackground = ResourcesCompat.getColor(res, R.color.css_pre_background, context.getTheme());
-        int liColor = ResourcesCompat.getColor(res, R.color.css_li_color, context.getTheme());
-        int aColor = ResourcesCompat.getColor(res, R.color.css_a_color, context.getTheme());
+
+        int background = res.getColor(isNight ? R.color.css_body_background_night : R.color.css_body_background);
+        int preBackground = res.getColor(isNight ? R.color.css_pre_background_night : R.color.css_pre_background);
+        int liColor = res.getColor(isNight ? R.color.css_li_color_night : R.color.css_li_color);
+        int aColor = res.getColor(isNight ? R.color.css_a_color_night : R.color.css_a_color);
 
         String body = getRGBAString(context, background);
         String pre = getRGBAString(context, preBackground);

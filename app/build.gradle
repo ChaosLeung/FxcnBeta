@@ -27,6 +27,12 @@ android {
         resValue "string", "QQ_APP_ID", "${project.QQ_APPID}"
     }
 
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res', 'src/main/res-night']
+        }
+    }
+
     buildTypes {
         release {
             zipAlignEnabled true
@@ -39,6 +45,11 @@ android {
     lintOptions {
         lintConfig file("lint.xml")
     }
+}
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 12, 'hours'
+    resolutionStrategy.cacheChangingModulesFor 12, 'hours'
 }
 
 dependencies {
@@ -61,8 +72,8 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
     implementation "com.squareup.retrofit2:adapter-rxjava2:${libsVersion.retrofit}"
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
@@ -75,7 +86,10 @@ dependencies {
 
     implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
 
-    implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
+//    implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
+    implementation ('com.github.ChaosLeong:LicensesDialog:feature~night-theme-SNAPSHOT') {
+        changing = false
+    }
 
     implementation 'org.greenrobot:greendao:3.2.2'
 
@@ -85,4 +99,11 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
+
+    implementation 'ca.rmen:lib-sunrise-sunset:1.1.1'
+
+    implementation 'skin.support:skin-support:3.1.1'                   // skin-support 基础控件支持
+    implementation 'skin.support:skin-support-design:3.1.1'            // skin-support-design material design 控件支持[可选]
+    implementation 'skin.support:skin-support-cardview:3.1.1'          // skin-support-cardview CardView 控件支持[可选]
+    implementation 'skin.support:skin-support-constraint-layout:3.1.1' // skin-support-constraint-layout
 }

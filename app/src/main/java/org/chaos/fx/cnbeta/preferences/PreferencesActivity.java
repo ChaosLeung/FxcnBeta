@@ -20,6 +20,7 @@ package org.chaos.fx.cnbeta.preferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.chaos.fx.cnbeta.R;
@@ -33,11 +34,13 @@ public class PreferencesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_preferences);
         setupActionBar();
-        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, new PreferencesFragment()).commit();
     }
 
     private void setupActionBar() {
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

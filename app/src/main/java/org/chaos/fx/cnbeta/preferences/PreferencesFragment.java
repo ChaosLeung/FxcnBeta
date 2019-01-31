@@ -18,21 +18,32 @@ package org.chaos.fx.cnbeta.preferences;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.DialogPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.TwoStatePreference;
+import android.view.View;
 import android.widget.Toast;
 
 import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
 
 import java.io.File;
+
+import de.psdev.licensesdialog.LicensesDialogFragment;
+import skin.support.SkinCompatManager;
+import skin.support.content.res.SkinCompatResources;
+import skin.support.observe.SkinObservable;
+import skin.support.observe.SkinObserver;
 
 /**
  * @author Chaos
@@ -41,7 +52,8 @@ import java.io.File;
 
 public class PreferencesFragment extends PreferenceFragmentCompat implements
         Preference.OnPreferenceClickListener, PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback,
-        Preference.OnPreferenceChangeListener {
+        Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener,
+        SkinObserver {
 
     private static final String TAG = "PreferencesFragment";
 
@@ -70,6 +82,14 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        updateDivider(PreferenceHelper.getInstance().inNightMode());
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
+        SkinCompatManager.getInstance().addObserver(this);
+    }
+
+    @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.pref_general, rootKey);
 
@@ -78,6 +98,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         findPreference(KEY_NIGHT_MODE).setOnPreferenceChangeListener(this);
         findPreference(PreferenceKeys.CONTENT_TEXT_LEVEL).setOnPreferenceChangeListener(this);
         findPreference(KEY_CLEAR_CACHE).setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        SkinCompatManager.getInstance().deleteObserver(this);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -98,9 +125,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         if (KEY_NIGHT_MODE.equals(key)) {
-            AppCompatDelegate.setDefaultNightMode((boolean) newValue ?
-                    AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            getActivity().recreate();
+            updateDivider((boolean) newValue);
             return true;
         } else if (PreferenceKeys.CONTENT_TEXT_LEVEL.equals(key)) {
             ListPreference p = (ListPreference) preference;
@@ -168,5 +193,35 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
             }
         }
         return dir.delete();
+    }
+
+    private void updateDivider(boolean isNight) {
+        Context host = getActivity();
+        if (host != null) {
+            setDivider(host.getDrawable(isNight ? R.drawable.list_divider_night : R.drawable.list_divider));
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (KEY_NIGHT_MODE.equals(key)) {
+            TwoStatePreference preference = ((TwoStatePreference) findPreference(KEY_NIGHT_MODE));
+            boolean isNight = PreferenceHelper.getInstance().inNightMode();
+            preference.setChecked(isNight);
+            preference.callChangeListener(isNight);
+        }
+    }
+
+    @Override
+    public void updateSkin(SkinObservable observable, Object o) {
+        Context host = getActivity();
+        if (host == null) {
+            return;
+        }
+        Fragment f = getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG);
+        if (f != null && f.getClass() == LicensesDialogFragment.class) {
+            ((LicensesDialogFragment) f).getLicensesDialog().switchToNight(PreferenceHelper.getInstance().inNightMode());
+        }
+        setDivider(SkinCompatResources.getDrawable(host, R.drawable.list_divider));
     }
 }

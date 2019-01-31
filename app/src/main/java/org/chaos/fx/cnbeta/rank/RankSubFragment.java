@@ -42,6 +42,7 @@ import org.chaos.fx.cnbeta.net.model.ArticleSummary;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.widget.FxRecyclerView;
 import org.chaos.fx.cnbeta.widget.NonAnimation;
+import org.chaos.fx.cnbeta.skin.SkinItemDecoration;
 
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class RankSubFragment extends Fragment implements RankSubContract.View,
         mAdapter = new RankSubAdapter(type);
 
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new SkinItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {

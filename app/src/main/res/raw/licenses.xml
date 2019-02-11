@@ -18,10 +18,10 @@
 <notices>
 
     <notice>
-        <name>Sunrise Sunset Calculator</name>
-        <url>https://github.com/caarmen/SunriseSunset</url>
-        <copyright>Copyright (C) 2013-2017 Carmen Alvarez</copyright>
-        <license>GNU Lesser General Public License 2.1</license>
+        <name>Android-skin-support</name>
+        <url>https://github.com/ximsfei/Android-skin-support</url>
+        <copyright>Copyright (c) 2017 pengfeng wang</copyright>
+        <license>MIT License</license>
     </notice>
 
     <notice>

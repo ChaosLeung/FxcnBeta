@@ -21,7 +21,9 @@
     <color name="colorAccent_night">#00796B</color>
 
     <color name="textColorPrimary_night">#c0c0c0</color>
+    <color name="textColorPrimary_disable_night">#50E0E0E0</color>
     <color name="textColorSecondary_night">#909090</color>
+    <color name="textColorSecondary_disable_night">@color/textColorPrimary_disable_night</color>
 
     <color name="card_ripple_color_darken_night">#0a000000</color>
     <color name="main_background_night">#212121</color>

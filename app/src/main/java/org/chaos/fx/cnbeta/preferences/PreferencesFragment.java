@@ -36,6 +36,8 @@ import android.widget.Toast;
 
 import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
+import org.chaos.fx.cnbeta.theme.ThemeHelper;
+import org.chaos.fx.cnbeta.theme.ThemePreferencesActivity;
 
 import java.io.File;
 
@@ -62,7 +64,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     private static final String KEY_HELP_AND_FEEDBACK = "help_and_feedback";
     private static final String KEY_RELEASE_NOTE = "release_note";
     private static final String KEY_LICENSE = "license";
-    private static final String KEY_NIGHT_MODE = "night_mode";
+    private static final String KEY_AUTO_SWITCH_THEME = "auto_switch_theme_parent";
     private static final String KEY_VERSION_NAME = "version_name";
     private static final String KEY_CLEAR_CACHE = "clear_cache";
 
@@ -84,7 +86,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        updateDivider(PreferenceHelper.getInstance().inNightMode());
+        updateDivider();
         PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
         SkinCompatManager.getInstance().addObserver(this);
     }
@@ -95,9 +97,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
 
         findPreference(KEY_VERSION_NAME).setSummary(BuildConfig.VERSION_NAME);
         findPreference(KEY_HELP_AND_FEEDBACK).setOnPreferenceClickListener(this);
-        findPreference(KEY_NIGHT_MODE).setOnPreferenceChangeListener(this);
         findPreference(PreferenceKeys.CONTENT_TEXT_LEVEL).setOnPreferenceChangeListener(this);
         findPreference(KEY_CLEAR_CACHE).setOnPreferenceClickListener(this);
+        findPreference(KEY_AUTO_SWITCH_THEME).setOnPreferenceClickListener(this);
+        findPreference(PreferenceKeys.NIGHT_MODE).setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -117,6 +120,13 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
             return true;
         } else if (KEY_CLEAR_CACHE.equals(key)) {
             clearCache();
+            return true;
+        } else if (KEY_AUTO_SWITCH_THEME.equals(key)) {
+            startActivity(new Intent(getActivity(), ThemePreferencesActivity.class));
+            return true;
+        } else if (PreferenceKeys.NIGHT_MODE.equals(key)) {
+            ThemeHelper.disableAutoSwitch(getActivity());
+            return true;
         }
         return false;
     }
@@ -124,10 +134,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-        if (KEY_NIGHT_MODE.equals(key)) {
-            updateDivider((boolean) newValue);
-            return true;
-        } else if (PreferenceKeys.CONTENT_TEXT_LEVEL.equals(key)) {
+        if (PreferenceKeys.CONTENT_TEXT_LEVEL.equals(key)) {
             ListPreference p = (ListPreference) preference;
             PreferenceHelper.getInstance().setContentTextLevel(p.findIndexOfValue((String) newValue));
             return true;
@@ -195,17 +202,17 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         return dir.delete();
     }
 
-    private void updateDivider(boolean isNight) {
+    private void updateDivider() {
         Context host = getActivity();
         if (host != null) {
-            setDivider(host.getDrawable(isNight ? R.drawable.list_divider_night : R.drawable.list_divider));
+            setDivider(SkinCompatResources.getDrawable(host, R.drawable.list_divider));
         }
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (KEY_NIGHT_MODE.equals(key)) {
-            TwoStatePreference preference = ((TwoStatePreference) findPreference(KEY_NIGHT_MODE));
+        if (PreferenceKeys.NIGHT_MODE.equals(key)) {
+            TwoStatePreference preference = ((TwoStatePreference) findPreference(PreferenceKeys.NIGHT_MODE));
             boolean isNight = PreferenceHelper.getInstance().inNightMode();
             preference.setChecked(isNight);
             preference.callChangeListener(isNight);

@@ -34,8 +34,10 @@ import java.util.Locale;
 public class TimeStringHelper {
 
     private static Resources sResources;
-    private static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-    private static final SimpleDateFormat CN_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日 HH:mm", Locale.CHINA);
+    private static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz", Locale.CHINA);
+    private static final SimpleDateFormat CN_DATE_FORMAT = new SimpleDateFormat("yyyy年MM月dd日 HH:mm zzz", Locale.CHINA);
+
+    private static final String CHINA_TIMEZONE_SUFFIX = " GMT+08:00";
 
     private static final long SECOND = 1000;
     private static final long MINUTE = 60 * SECOND;
@@ -87,10 +89,16 @@ public class TimeStringHelper {
     }
 
     public static long parseFormattedTimeStr(String formattedTime) throws ParseException {
+        if (!formattedTime.endsWith(CHINA_TIMEZONE_SUFFIX)) {
+            formattedTime += CHINA_TIMEZONE_SUFFIX;
+        }
         return DEFAULT_DATE_FORMAT.parse(formattedTime).getTime();
     }
 
     public static long parseCNFormattedTimeStr(String cnFormattedTime) throws ParseException {
+        if (!cnFormattedTime.endsWith(CHINA_TIMEZONE_SUFFIX)) {
+            cnFormattedTime += CHINA_TIMEZONE_SUFFIX;
+        }
         return CN_DATE_FORMAT.parse(cnFormattedTime).getTime();
     }
 

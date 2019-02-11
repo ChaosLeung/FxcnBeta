@@ -30,4 +30,7 @@ public class PreferenceKeys {
     public static final String CONTENT_TEXT_LEVEL = "content_text_level";
     public static final String CONTENT_TEXT_LEVEL_INT = "content_text_level_int";
     public static final String HIDE_BARS_AUTOMATICALLY_MODE = "hide_bars_automatically_mode";
+    public static final String AUTO_SWITCH_THEME = "auto_switch_theme";
+    public static final String NIGHT_MODE_START_TIME = "night_mode_start_time";
+    public static final String NIGHT_MODE_END_TIME = "night_mode_end_time";
 }

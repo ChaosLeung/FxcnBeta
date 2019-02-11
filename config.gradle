@@ -33,7 +33,7 @@ def STORE_PASSWORD = properties.getProperty('STORE_PASSWORD')
 
 // config for dependencies
 ext {
-    libsVersion = [support : '28.0.0',
+    libsVersion = [support : '27.1.1',
                    retrofit: '2.4.0']
 
     libs = [supportAnnotations: "com.android.support:support-annotations:${libsVersion.support}",

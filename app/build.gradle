@@ -66,7 +66,7 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
 
     implementation "com.squareup.retrofit2:retrofit:${libsVersion.retrofit}"
     implementation "com.squareup.retrofit2:converter-gson:${libsVersion.retrofit}"
@@ -99,8 +99,6 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
-
-    implementation 'ca.rmen:lib-sunrise-sunset:1.1.1'
 
     implementation 'skin.support:skin-support:3.1.1'                   // skin-support 基础控件支持
     implementation 'skin.support:skin-support-design:3.1.1'            // skin-support-design material design 控件支持[可选]

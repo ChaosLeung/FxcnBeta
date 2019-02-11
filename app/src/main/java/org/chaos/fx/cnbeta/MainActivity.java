@@ -16,7 +16,10 @@
 
 package org.chaos.fx.cnbeta;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,11 +48,11 @@ import org.chaos.fx.cnbeta.hotcomment.HotCommentFragment;
 import org.chaos.fx.cnbeta.preferences.PreferenceHelper;
 import org.chaos.fx.cnbeta.preferences.PreferenceKeys;
 import org.chaos.fx.cnbeta.preferences.PreferencesActivity;
+import org.chaos.fx.cnbeta.theme.ThemeHelper;
 import org.chaos.fx.cnbeta.widget.BottomBarSnapBehavior;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import skin.support.SkinCompatManager;
 
 import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS;
 import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements
     private SharedPreferences mDefaultPreferences;
 
     private SparseArray<OnReselectListener> mOnReselectListeners;
+
+    private TimeBroadcastReceiver mTimeBroadcastReceiver = new TimeBroadcastReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,13 +139,14 @@ public class MainActivity extends AppCompatActivity implements
         mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mDefaultPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        updateTheme();
+        mTimeBroadcastReceiver.register(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mDefaultPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        mTimeBroadcastReceiver.unregister(this);
     }
 
     @Override
@@ -153,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.night_mode:
+                ThemeHelper.disableAutoSwitch(this);
                 PreferenceHelper.getInstance().setNightMode(!PreferenceHelper.getInstance().inNightMode());
                 break;
             case R.id.nav_settings:
@@ -164,9 +171,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (PreferenceKeys.NIGHT_MODE.equals(key)) {
-            updateTheme();
-        } else if (PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE.equals(key)) {
+        if (PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE.equals(key)) {
             setHideBarsAutomatically(PreferenceHelper.getInstance().inHideBarsAutomaticallyMode());
         }
     }
@@ -201,14 +206,6 @@ public class MainActivity extends AppCompatActivity implements
         mAppBarLayout.requestLayout();
     }
 
-    private void updateTheme() {
-        if (PreferenceHelper.getInstance().inNightMode()) {
-            SkinCompatManager.getInstance().loadSkin("night", null, SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
-        } else {
-            SkinCompatManager.getInstance().restoreDefaultTheme();
-        }
-    }
-
     private class PagerAdapter extends FragmentPagerAdapter {
 
         private PagerAdapter(FragmentManager fm) {
@@ -236,6 +233,30 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public int getCount() {
             return mPageTitles.length;
+        }
+    }
+
+    private static class TimeBroadcastReceiver extends BroadcastReceiver {
+
+        private final String[] actions = new String[]{Intent.ACTION_TIME_CHANGED, Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_DATE_CHANGED};
+
+        public void register(Context c) {
+            IntentFilter filter = new IntentFilter();
+            for (String action : actions) {
+                filter.addAction(action);
+            }
+            c.registerReceiver(this, filter);
+        }
+
+        public void unregister(Context c) {
+            c.unregisterReceiver(this);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (PreferenceHelper.getInstance().isAutoSwitchTheme()) {
+                ThemeHelper.alarmToSwitchTheme(context);
+            }
         }
     }
 }

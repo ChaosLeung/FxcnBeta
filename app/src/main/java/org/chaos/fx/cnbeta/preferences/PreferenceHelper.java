@@ -22,6 +22,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Chaos
  *         14/02/2017
@@ -100,5 +102,29 @@ public class PreferenceHelper {
 
     public boolean inHideBarsAutomaticallyMode() {
         return mPreferences.getBoolean(PreferenceKeys.HIDE_BARS_AUTOMATICALLY_MODE, true);
+    }
+
+    public void setAutoSwitchTheme(boolean autoSwitch) {
+        mPreferences.edit().putBoolean(PreferenceKeys.AUTO_SWITCH_THEME, autoSwitch).apply();
+    }
+
+    public boolean isAutoSwitchTheme() {
+        return mPreferences.getBoolean(PreferenceKeys.AUTO_SWITCH_THEME, false);
+    }
+
+    public void setNightModeStartTime(long millis) {
+        mPreferences.edit().putLong(PreferenceKeys.NIGHT_MODE_START_TIME, millis).apply();
+    }
+
+    public long getNightModeStartTime() {
+        return mPreferences.getLong(PreferenceKeys.NIGHT_MODE_START_TIME, TimeUnit.HOURS.toMillis(19));
+    }
+
+    public void setNightModeEndTime(long millis) {
+        mPreferences.edit().putLong(PreferenceKeys.NIGHT_MODE_END_TIME, millis).apply();
+    }
+
+    public long getNightModeEndTime() {
+        return mPreferences.getLong(PreferenceKeys.NIGHT_MODE_END_TIME, TimeUnit.HOURS.toMillis(7));
     }
 }

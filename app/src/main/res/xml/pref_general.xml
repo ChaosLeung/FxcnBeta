@@ -17,14 +17,25 @@
 <android.support.v7.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.v7.preference.SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:key="night_mode"
-        android:title="@string/night_mode" />
+    <android.support.v7.preference.PreferenceCategory
+        android:key="display"
+        android:title="@string/display_settings">
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="night_mode"
+            android:title="@string/night_mode" />
+
+        <android.support.v7.preference.Preference
+            android:defaultValue="false"
+            android:key="auto_switch_theme_parent"
+            android:title="@string/auto_switch_theme" />
+
+    </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory
         android:key="basic"
-        android:title="@string/basic_setting">
+        android:title="@string/basic_settings">
 
         <android.support.v7.preference.ListPreference
             android:defaultValue="@string/default_content_text_level"

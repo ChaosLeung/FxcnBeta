@@ -21,7 +21,9 @@
     <color name="colorAccent">#009688</color>
 
     <color name="textColorPrimary">#212121</color>
+    <color name="textColorPrimary_disable">#E0E0E0</color>
     <color name="textColorSecondary">#757575</color>
+    <color name="textColorSecondary_disable">@color/textColorPrimary_disable</color>
 
     <color name="card_ripple_color_darken">#0a000000</color>
     <color name="main_background">#ffffffff</color>

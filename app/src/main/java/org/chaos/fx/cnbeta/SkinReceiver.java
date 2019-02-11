@@ -27,12 +27,14 @@ import skin.support.SkinCompatManager;
 public class SkinReceiver extends BroadcastReceiver {
 
     public static final String ACTION_THEME_SWITCH = "org.chaos.fx.cnbeta.ACTION_SWITCH_THEME";
+    public static final String EXTRA_NIGHT_THEME = "is_night_theme";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ACTION_THEME_SWITCH.equals(intent.getAction())) {
-            PreferenceHelper.getInstance().setNightMode(!PreferenceHelper.getInstance().inNightMode());
-            if (PreferenceHelper.getInstance().inNightMode()) {
+            boolean isNight = intent.getBooleanExtra(EXTRA_NIGHT_THEME, false);
+            PreferenceHelper.getInstance().setNightMode(isNight);
+            if (isNight) {
                 SkinCompatManager.getInstance().loadSkin("night", null, SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
             } else {
                 SkinCompatManager.getInstance().restoreDefaultTheme();

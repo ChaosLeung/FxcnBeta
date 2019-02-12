@@ -23,10 +23,8 @@
     <string name="captcha_image_description">The verification code required to add a comment.</string>
     <string name="reply_image_description">Button for reply comment.</string>
 
-    <plurals name="time_second">
-        <item quantity="one">1 秒前</item>
-        <item quantity="other">%d 秒前</item>
-    </plurals>
+    <string name="time_unknown">未知</string>
+    <string name="time_second">刚刚</string>
     <plurals name="time_minute">
         <item quantity="one">1 分钟前</item>
         <item quantity="other">%d 分钟前</item>

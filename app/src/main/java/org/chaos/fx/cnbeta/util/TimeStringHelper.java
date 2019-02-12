@@ -81,9 +81,10 @@ public class TimeStringHelper {
         } else if (deltaTime >= MINUTE) {
             int minute = (int) (deltaTime / MINUTE);
             pubTime = getResString(R.plurals.time_minute, minute);
+        } else if (deltaTime >= 0) {
+            pubTime = sResources.getString(R.string.time_second);
         } else {
-            int second = (int) (deltaTime / SECOND);
-            pubTime = getResString(R.plurals.time_second, second);
+            pubTime = sResources.getString(R.string.time_unknown);
         }
         return pubTime;
     }

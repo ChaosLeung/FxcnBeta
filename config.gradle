@@ -16,7 +16,7 @@
 
 // config for properties
 Properties properties = new Properties()
-File localProperties = project.rootProject.file('local.properties');
+File localProperties = project.rootProject.file('local.properties')
 if (localProperties.exists()) {
     properties.load(localProperties.newDataInputStream())
 }
@@ -100,12 +100,14 @@ subprojects {
                 // fall through
             case 'com.android.build.gradle.LibraryPlugin':
                 project.android {
-                    compileSdkVersion 28
+                    compileSdkVersion 27
                     buildToolsVersion '28.0.2'
 
                     defaultConfig {
                         minSdkVersion 21
-                        targetSdkVersion 28
+                        // FIXME: Apache HTTP client has been removed in Android 9, but tencent sdk still use it.
+                        // therefore, target sdk must lower than 28. See: https://stackoverflow.com/q/50461881
+                        targetSdkVersion 27
                     }
                 }
                 break

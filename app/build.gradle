@@ -98,7 +98,7 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
-    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.1.4'
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:5.3.1'
 
     implementation 'skin.support:skin-support:3.1.1'                   // skin-support 基础控件支持
     implementation 'skin.support:skin-support-design:3.1.1'            // skin-support-design material design 控件支持[可选]

@@ -117,12 +117,12 @@ public class ContentActivity extends AppCompatActivity implements ContentContrac
         mPresenter.unsubscribe();
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         if (!backToPreviousFragment()) {
             super.onBackPressed();
         }
-    }
+    }*/
 
     private void setupActionBar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -150,9 +150,10 @@ public class ContentActivity extends AppCompatActivity implements ContentContrac
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (!backToPreviousFragment()) {
+                /*if (!backToPreviousFragment()) {
                     supportFinishAfterTransition();
-                }
+                }*/
+                supportFinishAfterTransition();
                 return true;
         }
         return super.onOptionsItemSelected(item);

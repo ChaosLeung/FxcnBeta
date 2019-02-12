@@ -16,11 +16,15 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -37,6 +41,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.chaos.fx.cnbeta.BuildConfig;
 import org.chaos.fx.cnbeta.R;
 import org.chaos.fx.cnbeta.util.CryptUtil;
 import org.chaos.fx.cnbeta.wxapi.WXApiProvider;
@@ -71,7 +76,7 @@ public class ImageFragment extends Fragment {
     @BindView(R.id.progress) ProgressBar mProgressBar;
 
     private String mUrl;
-
+    private ImageStore mImageStore;
 
     private OnPhotoTapListener mImageTapListener = new OnPhotoTapListener() {
         @Override
@@ -118,6 +123,7 @@ public class ImageFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        cancelStoreRequest();
         Picasso.get().cancelRequest(mPhotoView);
     }
 
@@ -140,11 +146,7 @@ public class ImageFragment extends Fragment {
 
                     @Override
                     public void onError(Exception e) {
-                        String message = e.getMessage();
-                        if (e instanceof NoSpaceLeftException) {
-                            message = getString(R.string.no_space_left);
-                        }
-                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                        failedToStoreImage(e);
                     }
                 });
                 return true;
@@ -153,6 +155,9 @@ public class ImageFragment extends Fragment {
                 return true;
             case R.id.wechat_timeline:
                 shareImageToWeChat(true);
+                return true;
+            case R.id.share_more:
+                shareToMore();
                 return true;
         }
         return false;
@@ -170,7 +175,15 @@ public class ImageFragment extends Fragment {
                 callback.onSuccess();
             }
         } else {
-            Picasso.get().load(mUrl).into(new ImageStore(path, callback));
+            cancelStoreRequest();
+            mImageStore = new ImageStore(path, callback);
+            Picasso.get().load(mUrl).into(mImageStore);
+        }
+    }
+
+    private void cancelStoreRequest() {
+        if (mImageStore != null) {
+            Picasso.get().cancelRequest(mImageStore);
         }
     }
 
@@ -184,9 +197,40 @@ public class ImageFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
-
+                failedToStoreImage(e);
             }
         });
+    }
+
+    private void shareToMore() {
+        final String path = getImageCachePath();
+        storeImageToLocalIfNeed(path, new Callback() {
+            @Override
+            public void onSuccess() {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/jpg");
+                if (Build.VERSION.SDK_INT >= 24) {
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(getActivity().getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", new File(path)));
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(path)));
+                }
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share_to)));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                failedToStoreImage(e);
+            }
+        });
+    }
+
+    private void failedToStoreImage(Exception e) {
+        String message = e.getMessage();
+        if (e instanceof NoSpaceLeftException) {
+            message = getString(R.string.no_space_left);
+        }
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void loadImage() {

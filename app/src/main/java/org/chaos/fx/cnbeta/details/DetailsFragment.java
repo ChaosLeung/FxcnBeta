@@ -226,9 +226,11 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             /*case R.id.qq:
                 mPresenter.shareUrlToQQ(getActivity());
                 return true;*/
+            case R.id.share_more:
+                shareToMore();
+                return true;
             case R.id.open_in_browser:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                        String.format(Locale.getDefault(), "http://www.cnbeta.com/articles/%d.htm", mSid))));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getArticleUrl())));
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -243,6 +245,17 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
             bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         }
         mPresenter.shareUrlToWeChat(bitmap, toTimeline);
+    }
+
+    private void shareToMore() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getArticleUrl());
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_to)));
+    }
+
+    private String getArticleUrl() {
+        return String.format(Locale.getDefault(), "http://www.cnbeta.com/articles/%d.htm", mSid);
     }
 
     public void handleNewsContent(NewsContent content) {

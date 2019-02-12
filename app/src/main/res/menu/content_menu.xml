@@ -44,6 +44,11 @@
                 android:id="@+id/qq"
                 android:title="@string/qq"
                 app:showAsAction="never" />-->
+
+            <item
+                android:id="@+id/share_more"
+                android:title="@string/share_more"
+                app:showAsAction="never" />
         </menu>
     </item>
 

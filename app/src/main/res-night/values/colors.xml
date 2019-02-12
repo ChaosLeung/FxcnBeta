@@ -16,8 +16,8 @@
   -->
 
 <resources>
-    <color name="colorPrimary_night">#181818</color>
-    <color name="colorPrimaryDark_night">#121212</color>
+    <color name="colorPrimary_night">#121212</color>
+    <color name="colorPrimaryDark_night">#060606</color>
     <color name="colorAccent_night">#00796B</color>
 
     <color name="textColorPrimary_night">#c0c0c0</color>
@@ -26,7 +26,7 @@
     <color name="textColorSecondary_disable_night">@color/textColorPrimary_disable_night</color>
 
     <color name="card_ripple_color_darken_night">#0a000000</color>
-    <color name="main_background_night">#212121</color>
+    <color name="main_background_night">#000000</color>
 
     <color name="card_text_night">@color/textColorPrimary_night</color>
     <color name="card_text_has_read_night">#616161</color>
@@ -44,7 +44,7 @@
 
     <color name="reply_comment_night">#323232</color>
 
-    <color name="divider_night">#303030</color>
+    <color name="divider_night">#1E1E1E</color>
 
     <color name="fb_content_length_night">#aaaaaa</color>
 

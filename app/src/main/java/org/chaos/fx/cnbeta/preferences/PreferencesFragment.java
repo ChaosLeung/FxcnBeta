@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -176,6 +177,9 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{address});
         intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, "\n\n\n\nApp Version：" + BuildConfig.VERSION_NAME
+                + "\nAndroid Version: " + Build.VERSION.RELEASE
+                + "\nDevice Model: " + Build.MODEL);
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(intent);
         }

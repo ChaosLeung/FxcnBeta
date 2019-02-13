@@ -250,7 +250,9 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
     private void shareToMore() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getArticleUrl());
+        String title = mTitleView.getText().toString();
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                getString(R.string.share_link_format, title, getArticleUrl()));
         startActivity(Intent.createChooser(shareIntent, getString(R.string.share_to)));
     }
 

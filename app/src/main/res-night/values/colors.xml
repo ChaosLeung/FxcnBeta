@@ -16,7 +16,7 @@
   -->
 
 <resources>
-    <color name="colorPrimary_night">#121212</color>
+    <color name="colorPrimary_night">#0C0C0C</color>
     <color name="colorPrimaryDark_night">#060606</color>
     <color name="colorAccent_night">#00796B</color>
 
@@ -44,7 +44,7 @@
 
     <color name="reply_comment_night">#323232</color>
 
-    <color name="divider_night">#1E1E1E</color>
+    <color name="divider_night">#1C1C1C</color>
 
     <color name="fb_content_length_night">#aaaaaa</color>
 

@@ -160,6 +160,7 @@
     <string name="wechat_timeline">朋友圈</string>
     <string name="share_more">更多</string>
     <string name="share_to">分享到…</string>
+    <string name="share_link_format">"【%s】    详细信息：%s"</string>
 
     <string name="transition_details_background" translatable="false">transition_details_background</string>
     <string name="transition_details_title" translatable="false">transition_details_title</string>

@@ -16,7 +16,7 @@
   -->
 
 <resources>
-    <color name="colorPrimary_night">#0C0C0C</color>
+    <color name="colorPrimary_night">#0D0D0D</color>
     <color name="colorPrimaryDark_night">#060606</color>
     <color name="colorAccent_night">#00796B</color>
 

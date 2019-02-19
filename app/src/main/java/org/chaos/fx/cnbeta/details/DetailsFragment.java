@@ -16,18 +16,23 @@
 
 package org.chaos.fx.cnbeta.details;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -127,6 +132,8 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     private float mTextRelativeSize;
 
+    private SelectedActionCallback mSelectedActionCallback;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -154,6 +161,10 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         mTitleView.setText(getArguments().getString(KEY_TITLE));
 
         getActivity().supportStartPostponedEnterTransition();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            mSelectedActionCallback = new SelectedActionCallback(getActivity().getPackageManager());
+        }
 
         mCommentCountView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,6 +335,9 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
         mContentLayout.addView(view);
         scaleTextSize(view, mTextRelativeSize);
         view.setText(text);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            view.setCustomSelectionActionModeCallback(mSelectedActionCallback);
+        }
         // TODO: 18/05/2017 某些情况下链接会带上了大量文字，暂时关闭该功能
 //        Linkify.addLinks(view, Linkify.WEB_URLS);
     }
@@ -413,5 +427,50 @@ public class DetailsFragment extends BaseFragment implements DetailsContract.Vie
 
     public interface OnShowCommentListener {
         void onShowComment();
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private static class SelectedActionCallback extends ActionMode.Callback2 {
+
+        private PackageManager pm;
+        private List<ResolveInfo> resolveInfoList;
+        private Intent targetIntent;
+
+        private SelectedActionCallback(PackageManager pm) {
+            this.pm = pm;
+            targetIntent = new Intent(Intent.ACTION_PROCESS_TEXT);
+            targetIntent.addCategory(Intent.CATEGORY_DEFAULT);
+            targetIntent.setType("text/plain");
+            resolveInfoList = pm.queryIntentActivities(targetIntent, PackageManager.GET_META_DATA);
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            int menuItemOrder = 100;
+            for (ResolveInfo info : resolveInfoList) {
+                Intent intent = new Intent(targetIntent);
+                intent.putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, true)
+                        .setClassName(info.activityInfo.packageName, info.activityInfo.name);
+                menu.add(Menu.NONE, Menu.NONE, menuItemOrder, info.loadLabel(pm))
+                        .setIntent(intent)
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
     }
 }
